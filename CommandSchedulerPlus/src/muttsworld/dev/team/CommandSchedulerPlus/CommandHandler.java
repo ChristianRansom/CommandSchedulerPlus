@@ -26,6 +26,8 @@ public class CommandHandler implements CommandExecutor{
 
             // Give the player our items (comma-separated list of all ItemStack)
             player.getInventory().addItem(bricks, diamond);
+            MainThread mainthread = new MainThread();
+            mainthread.start();
         }
         
 

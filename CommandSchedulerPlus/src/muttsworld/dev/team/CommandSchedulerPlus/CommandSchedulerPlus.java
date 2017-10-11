@@ -28,6 +28,9 @@ public class CommandSchedulerPlus extends JavaPlugin {
         }
         
         this.getCommand("csp").setExecutor(new CommandHandler());
+        
+        MainThread mainthread = new MainThread();
+        mainthread.start();
 
     }
 
