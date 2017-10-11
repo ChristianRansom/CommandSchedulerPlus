@@ -1,0 +1,7 @@
+name: CommandSchedulerPlus
+main: muttsworld.dev.team.CommandSchedulerPlus.CommandSchedulerPlus
+version: 1.0
+commands:
+  csp:
+    description: Main Command
+    usage: /cps <args> 
