@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 
 public class CommandHandler implements CommandExecutor{
 	private boolean waitingForDate = false;
-	private ScheduledCommand currentCommand = new ScheduledCommand();
 	private final CommandList commandList;
 	
 	
@@ -28,6 +27,7 @@ public class CommandHandler implements CommandExecutor{
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
+		ScheduledCommand currentCommand = new ScheduledCommand();
 
 		if(!waitingForDate){
 			

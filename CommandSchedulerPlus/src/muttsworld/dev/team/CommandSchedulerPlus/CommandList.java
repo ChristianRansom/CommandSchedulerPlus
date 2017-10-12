@@ -12,7 +12,9 @@ public class CommandList {
 	
 	
     public synchronized void addCommand(ScheduledCommand command){
+    	System.out.print("DEBUG: adding " + command + " to the command list");
     	commands.add(command);
+    	System.out.print(commands);
     }
 
 
