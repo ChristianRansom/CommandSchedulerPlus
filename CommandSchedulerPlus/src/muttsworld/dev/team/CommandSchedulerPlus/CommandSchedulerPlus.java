@@ -1,6 +1,8 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 
+import java.util.ArrayList;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -8,7 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandSchedulerPlus extends JavaPlugin {
 	
-	 FileConfiguration config = getConfig();
+	private FileConfiguration config = getConfig();
+	public CommandList commands = new CommandList();
+	
 	
     @Override
     public void onEnable() {
@@ -27,9 +31,9 @@ public class CommandSchedulerPlus extends JavaPlugin {
         	System.out.println("ScheduledTimer equals 100!");
         }
         
-        this.getCommand("csp").setExecutor(new CommandHandler());
+        this.getCommand("csp").setExecutor(new CommandHandler(commands));
         
-        MainThread mainthread = new MainThread();
+        MainThread mainthread = new MainThread(commands);
         mainthread.start();
 
     }

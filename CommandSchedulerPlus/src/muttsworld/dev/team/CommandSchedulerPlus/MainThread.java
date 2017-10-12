@@ -2,11 +2,17 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 public class MainThread implements Runnable {
 	private Thread t;
+	public final CommandList commands;
 	   
+	public MainThread(CommandList theCommands) {
+		commands = theCommands;
+	}
+
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		 System.out.println("Running thread" );
+		 /*System.out.println("Running thread" );
 	      try {
 	         for(int i = 50; i > 0; i--) {
 	            System.out.println("Thread: " + i);
@@ -15,7 +21,7 @@ public class MainThread implements Runnable {
 	         }
 	      }catch (InterruptedException e) {
 	         System.out.println("Thread interrupted.");
-	      }
+	      }*/
 	      System.out.println("Thread exiting.");
 	}
 
