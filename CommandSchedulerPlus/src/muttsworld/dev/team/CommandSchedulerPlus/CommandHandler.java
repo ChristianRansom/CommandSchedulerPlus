@@ -43,10 +43,8 @@ public class CommandHandler implements CommandExecutor{
 			}
 			else {
 				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
-					synchronized(commandList) {
-						Iterator<ScheduledCommand> iterator = commandList.iterator(); 
-						while (iterator.hasNext())
-			            System.out.println(iterator.next());
+					for(ScheduledCommand command : commandList){
+			            System.out.println(command);
 					}
 					return true;
 				}
@@ -69,9 +67,7 @@ public class CommandHandler implements CommandExecutor{
 	        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
 	        	currentCommand.setDate(gcalendarDate);
 				
-				synchronized(commandList) {
-					commandList.add(currentCommand);
-				}
+				commandList.add(currentCommand);
 	        		        	
 	        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 	        	waitingForDate = false;
@@ -88,45 +84,44 @@ public class CommandHandler implements CommandExecutor{
 
     	
     	/*
-    	
-    	
-    	if (sender instanceof Player) {
-            Player player = (Player) sender;
-
-        }
-
-        String str = String.join(" ", args);
-        
-        
-        GregorianCalendar gcalendar = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-        
-        ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();;
-        Bukkit.dispatchCommand(console, str);
-        System.out.print(str);
-        
-        
-        
-        String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", 
-                "Oct", "Nov", "Dec"};
-             
-        // Display current time and date information.
-        System.out.print("Date: ");
-        System.out.print(months[gcalendar.get(Calendar.MONTH)]);
-        System.out.print(" " + gcalendar.get(Calendar.DATE) + " ");
-        System.out.println(year = gcalendar.get(Calendar.YEAR));
-        System.out.print("Time: ");
-        System.out.print(gcalendar.get(Calendar.HOUR) + ":");
-        System.out.print(gcalendar.get(Calendar.MINUTE) + ":");
-        System.out.println(gcalendar.get(Calendar.AM_PM));
-
-        // Test if the current year is a leap year
-        if(gcalendar.isLeapYear(year)) {
-           System.out.println("The current year is a leap year");
-        }else {
-           System.out.println("The current year is not a leap year");
-        }
-        
-        // If the player (or console) uses our command correct, we can return true
-        return true;*/
+		 * 
+		 * 
+		 * if (sender instanceof Player) { Player player = (Player) sender;
+		 * 
+		 * }
+		 * 
+		 * String str = String.join(" ", args);
+		 * 
+		 * 
+		 * GregorianCalendar gcalendar = new GregorianCalendar(year, month,
+		 * dayOfMonth, hourOfDay, minute);
+		 * 
+		 * ConsoleCommandSender console =
+		 * Bukkit.getServer().getConsoleSender();;
+		 * Bukkit.dispatchCommand(console, str); System.out.print(str);
+		 * 
+		 * 
+		 * 
+		 * String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+		 * "Aug", "Sep", "Oct", "Nov", "Dec"};
+		 * 
+		 * // Display current time and date information.
+		 * System.out.print("Date: ");
+		 * System.out.print(months[gcalendar.get(Calendar.MONTH)]);
+		 * System.out.print(" " + gcalendar.get(Calendar.DATE) + " ");
+		 * System.out.println(year = gcalendar.get(Calendar.YEAR));
+		 * System.out.print("Time: ");
+		 * System.out.print(gcalendar.get(Calendar.HOUR) + ":");
+		 * System.out.print(gcalendar.get(Calendar.MINUTE) + ":");
+		 * System.out.println(gcalendar.get(Calendar.AM_PM));
+		 * 
+		 * // Test if the current year is a leap year
+		 * if(gcalendar.isLeapYear(year)) {
+		 * System.out.println("The current year is a leap year"); }else {
+		 * System.out.println("The current year is not a leap year"); }
+		 * 
+		 * // If the player (or console) uses our command correct, we can return
+		 * true return true;
+		 */
     }
 }
