@@ -29,8 +29,8 @@ public class MainThread implements Runnable {
 	            System.out.println("Running Commands");
 	            
 	            for(ScheduledCommand aCommand : commands){
+		            System.out.print("DEBUG: running this command: " + aCommand.getCommand());
 		            Bukkit.dispatchCommand(console, aCommand.getCommand());
-		            System.out.print(aCommand.getCommand());
 	            }
 	            
 	            // Let the thread sleep for a while.

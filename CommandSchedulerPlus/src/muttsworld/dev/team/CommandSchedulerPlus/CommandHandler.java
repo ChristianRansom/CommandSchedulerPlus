@@ -3,15 +3,12 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 
 
 public class CommandHandler implements CommandExecutor{
@@ -45,7 +42,11 @@ public class CommandHandler implements CommandExecutor{
 			}
 			else {
 				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
-					//commandList.listCommands();
+					synchronized(commandList) {
+						Iterator<ScheduledCommand> iterator = commandList.iterator(); 
+						while (iterator.hasNext())
+			            System.out.println(iterator.next());
+					}
 					return true;
 				}
 				else {
