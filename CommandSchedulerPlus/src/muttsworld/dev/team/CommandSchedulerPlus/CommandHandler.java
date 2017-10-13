@@ -1,6 +1,7 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -15,10 +16,10 @@ import org.bukkit.entity.Player;
 
 public class CommandHandler implements CommandExecutor{
 	private boolean waitingForDate = false;
-	private final CommandList commandList;
+	private final ArrayList<ScheduledCommand> commandList;
 	
 	
-    public CommandHandler(CommandList commands) {
+    public CommandHandler(ArrayList<ScheduledCommand> commands) {
     	commandList = commands;
 		// TODO Auto-generated constructor stub
 	}
@@ -36,7 +37,7 @@ public class CommandHandler implements CommandExecutor{
 				//handle new command being added
 				String command = String.join(" ", Arrays.copyOfRange(args, 1, args.length)); //remove 'add' argument from the command
 				currentCommand.setCommand(command);
-				commandList.addCommand(currentCommand);
+				commandList.add(currentCommand);
 				waitingForDate = true;
 				
 				System.out.println("Good job, now enter a date. /csp Year Month Day Hour Seconds");
@@ -44,7 +45,7 @@ public class CommandHandler implements CommandExecutor{
 			}
 			else {
 				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
-					commandList.listCommands();
+					//commandList.listCommands();
 					return true;
 				}
 				else {
