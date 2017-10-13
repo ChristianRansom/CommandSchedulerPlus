@@ -10,7 +10,7 @@ public class ScheduledCommand {
 	
 	
 	public ScheduledCommand() {
-		command = "";
+		command = "No Command Given";
 		date = new GregorianCalendar();
 	}
 	
@@ -23,8 +23,8 @@ public class ScheduledCommand {
 		return command;
 	}
 
-	public void setCommand(String command) {
-		this.command = command;
+	public void setCommand(String aCommand) {
+		this.command = aCommand;
 	}
 
 	public GregorianCalendar getDate() {

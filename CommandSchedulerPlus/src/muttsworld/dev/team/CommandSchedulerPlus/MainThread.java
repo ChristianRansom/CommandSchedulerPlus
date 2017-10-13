@@ -1,20 +1,21 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
 public class MainThread implements Runnable {
 	private Thread t;
-	public ArrayList<ScheduledCommand> commands = 
-			(ArrayList<ScheduledCommand>) Collections.synchronizedList(new ArrayList<ScheduledCommand>());
+	public List<ScheduledCommand> commands;
 	private long sleepTime;
-    private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();;
     
-	public MainThread(ArrayList<ScheduledCommand> theCommands, long aSleepTime) {
-		commands = theCommands;
+	public MainThread(List<ScheduledCommand> commands2, long aSleepTime) {
+		commands = commands2;
 		sleepTime = aSleepTime;
 	}
 
@@ -24,23 +25,42 @@ public class MainThread implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		 System.out.println("DEBUG: Running thread" );
-	      try {
-	         do {
-	            System.out.println("Running Commands");
+         do {
+            System.out.println("Running Commands");
+			synchronized(commands) {
+				Iterator<ScheduledCommand> iterator = commands.iterator(); 
+				ScheduledCommand command;
+				while (iterator.hasNext()){
+					command = iterator.next();
+            		GregorianCalendar date = command.getDate();
+            		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
+					+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
+					":" + date.get(Calendar.MINUTE); 
+					if(command.getDate().before(new GregorianCalendar())){
+	            		System.out.print(dateString + " is before now: " + new Date());
+	            		System.out.print("DEBUG: running this command: " + command.getCommand());
+	                    ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();;
+			            Bukkit.dispatchCommand(console, command.getCommand());
+					}
+					else{
+	            		System.out.print(dateString + " is NOT before now: " + new Date());
+					}						
+				}
 	            
-	            for(ScheduledCommand aCommand : commands){
-		            System.out.print("DEBUG: running this command: " + aCommand.getCommand());
-		            Bukkit.dispatchCommand(console, aCommand.getCommand());
-	            }
+	            	
+            }
 	            
 	            // Let the thread sleep for a while.
-	            Thread.sleep(sleepTime);
-	         }
-	         while(true);
-	      }catch (InterruptedException e) {
-	         System.out.println("Thread interrupted.");
-	      }
-	      System.out.println("DEBUG: Thread exiting.");
+			try {
+				Thread.sleep(sleepTime);
+     		}
+     		catch (InterruptedException e) {
+     			System.out.println("Thread interrupted.");
+     		}
+         }
+         while(true);
+         
+	     //System.out.println("DEBUG: Thread exiting.");
 	}
 
 	

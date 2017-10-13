@@ -1,10 +1,10 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,10 +13,11 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHandler implements CommandExecutor{
 	private boolean waitingForDate = false;
-	private final ArrayList<ScheduledCommand> commandList;
+	private final List<ScheduledCommand> commandList;
+	private ScheduledCommand currentCommand;
 	
 	
-    public CommandHandler(ArrayList<ScheduledCommand> commands) {
+    public CommandHandler(List<ScheduledCommand> commands) {
     	commandList = commands;
 		// TODO Auto-generated constructor stub
 	}
@@ -25,7 +26,7 @@ public class CommandHandler implements CommandExecutor{
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
-		ScheduledCommand currentCommand = new ScheduledCommand();
+		
 
 		if(!waitingForDate){
 			
@@ -33,8 +34,8 @@ public class CommandHandler implements CommandExecutor{
 			if(args[0].equals("add")){
 				//handle new command being added
 				String command = String.join(" ", Arrays.copyOfRange(args, 1, args.length)); //remove 'add' argument from the command
+				currentCommand = new ScheduledCommand();
 				currentCommand.setCommand(command);
-				commandList.add(currentCommand);
 				waitingForDate = true;
 				
 				System.out.println("Good job, now enter a date. /csp Year Month Day Hour Seconds");
@@ -67,8 +68,11 @@ public class CommandHandler implements CommandExecutor{
 	        	
 	        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
 	        	currentCommand.setDate(gcalendarDate);
-	        	
-	        	
+				
+				synchronized(commandList) {
+					commandList.add(currentCommand);
+				}
+	        		        	
 	        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 	        	waitingForDate = false;
 				return true;

@@ -4,6 +4,7 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,8 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CommandSchedulerPlus extends JavaPlugin {
 	
 	private FileConfiguration config = getConfig();
-	public final ArrayList<ScheduledCommand> commands = 
-		(ArrayList<ScheduledCommand>) Collections.synchronizedList(new ArrayList<ScheduledCommand>());
+	public final List<ScheduledCommand> commands = 
+			(List<ScheduledCommand>)Collections.synchronizedList(new ArrayList<ScheduledCommand>());
 
 	
 	
@@ -27,10 +28,12 @@ public class CommandSchedulerPlus extends JavaPlugin {
         config.options().copyDefaults(true);
         saveConfig();
         
-        this.getCommand("csp").setExecutor(new CommandHandler(commands));
-        
         MainThread mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000);
         mainthread.start();
+        
+        this.getCommand("csp").setExecutor(new CommandHandler(commands));
+        
+
 
     }
 
