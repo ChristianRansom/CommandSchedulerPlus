@@ -1,10 +1,15 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class ScheduledCommand {
+public class ScheduledCommand implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String command;
 	private GregorianCalendar date;
 	
