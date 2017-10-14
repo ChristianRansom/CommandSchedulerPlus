@@ -6,14 +6,11 @@ import java.util.GregorianCalendar;
 
 public class ScheduledCommand implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String command;
 	private GregorianCalendar date;
 	
-	
+	//Default Constructor
 	public ScheduledCommand() {
 		command = "No Command Given";
 		date = new GregorianCalendar();

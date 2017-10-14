@@ -14,6 +14,7 @@ public class MainThread implements Runnable {
 	public List<ScheduledCommand> commands;
 	private long sleepTime;
 
+	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
 	public MainThread(List<ScheduledCommand> commands2, long aSleepTime) {
 		commands = commands2;
 		sleepTime = aSleepTime;
@@ -21,7 +22,6 @@ public class MainThread implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		System.out.println("DEBUG: Running thread");
 		do {
 			System.out.println("Running Commands");

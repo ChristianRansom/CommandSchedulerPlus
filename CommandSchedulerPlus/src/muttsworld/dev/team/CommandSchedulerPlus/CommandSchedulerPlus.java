@@ -8,23 +8,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-
 public class CommandSchedulerPlus extends JavaPlugin {
 	
 	private FileConfiguration config = getConfig();
-	public List<ScheduledCommand> commands = 
-			(List<ScheduledCommand>)Collections.synchronizedList(new ArrayList<ScheduledCommand>());
+	
+	//Using Collections.synchronizedList to handle the synchronization easy without having to do it myself
+	//A linked list is better for inserting elements into the middle of it. Array list would have to move everything over
+	//Not decided on which to use yet.... 
+	public LinkedList<ScheduledCommand> commands = 
+			(LinkedList<ScheduledCommand>)Collections.synchronizedList(new LinkedList<ScheduledCommand>());
 
-	
-	
+	//This warning is thrown by the readObject... idk how the warning could possibly be avoided... 
     @SuppressWarnings("unchecked")
 	@Override
     public void onEnable() {
@@ -34,7 +35,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			// read object from file
 			FileInputStream fis = new FileInputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			commands = (List<ScheduledCommand>)ois.readObject();
+			commands = (LinkedList<ScheduledCommand>)ois.readObject();
 			ois.close();
 		} catch (FileNotFoundException e) {
 			System.out.print("No command data found. Making a new one...");
@@ -44,20 +45,18 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			e.printStackTrace();
 		}
     	
-    	
-    	//sets up the CommanadHandler class to handle csp commands
-        
+    	//generate default config or load in configured values
         config.addDefault("ScheduleTimer", 60);
         config.options().copyDefaults(true);
         saveConfig();
         
+        //Start MainThread
         MainThread mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000);
         mainthread.start();
         
+        //Set up the command handling class to be able to receive command events
         this.getCommand("csp").setExecutor(new CommandHandler(commands));
         
-
-
     }
 
     @Override

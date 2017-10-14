@@ -12,24 +12,22 @@ import org.bukkit.command.CommandSender;
 
 
 public class CommandHandler implements CommandExecutor{
-	private boolean waitingForDate = false;
-	private final List<ScheduledCommand> commandList;
-	private ScheduledCommand currentCommand;
+	private boolean waitingForDate = false; //Temp value to handle multi-step creation of commands
+	private final List<ScheduledCommand> commandList; //the list of commands
+	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	
-	
+	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
     public CommandHandler(List<ScheduledCommand> commands) {
     	commandList = commands;
-		// TODO Auto-generated constructor stub
 	}
 
-
+    //Called when a command registered to the plugin in the plugin.yml is entered
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
 		
 
 		if(!waitingForDate){
-			
 			//TODO check for valid date like month etc. 
 			if(args[0].equals("add")){
 				//handle new command being added
@@ -42,6 +40,7 @@ public class CommandHandler implements CommandExecutor{
 				return true;
 			}
 			else {
+				//List all the commands
 				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
 					for(ScheduledCommand command : commandList){
 			            System.out.println(command);
@@ -67,6 +66,7 @@ public class CommandHandler implements CommandExecutor{
 	        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
 	        	currentCommand.setDate(gcalendarDate);
 				
+	        	//This needs to be synchronized but it is because of the Synchronized Collection
 				commandList.add(currentCommand);
 	        		        	
 	        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
