@@ -3,6 +3,7 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,29 +25,24 @@ public class CommandSchedulerPlus extends JavaPlugin {
 
 	
 	
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void onEnable() {
     	
     	// ***** Load command list from file ******
-    	ObjectInputStream objectinputstream = null;
     	try {
-    	    FileInputStream streamIn = new FileInputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus.ser");
-    	    objectinputstream = new ObjectInputStream(streamIn);
-    	    List<ScheduledCommand> readCase = (List<ScheduledCommand>) objectinputstream.readObject();
-    	    commands = readCase;
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	} finally {
-    	    if(objectinputstream != null){
-    	        try {
-					objectinputstream .close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    	    } 
-    	}
-    	
+			// read object from file
+			FileInputStream fis = new FileInputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			commands = (List<ScheduledCommand>)ois.readObject();
+			ois.close();
+		} catch (FileNotFoundException e) {
+			System.out.print("No command data found. Making a new one...");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
     	
     	
     	//sets up the CommanadHandler class to handle csp commands
@@ -66,25 +62,17 @@ public class CommandSchedulerPlus extends JavaPlugin {
 
     @Override
     public void onDisable() {
-    	//Save commands to a file
-    	ObjectOutputStream oos = null;
-    	FileOutputStream fout = null;
-    	try{
-    		System.out.println("Saving Commands");
-    	    fout = new FileOutputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus.ser", true);
-    	    oos = new ObjectOutputStream(fout);
-    	    oos.writeObject(commands);
-    	} catch (Exception e) {
-    	    e.printStackTrace();
-    	} finally {
-    	    if(oos  != null){
-    	        try {
-					oos.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-    	    } 
-    	}
+    	try {
+			// write object to file
+			FileOutputStream fos = new FileOutputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(commands);
+			oos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
 
