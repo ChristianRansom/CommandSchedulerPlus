@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CommandSchedulerPlus extends JavaPlugin {
 	
 	private FileConfiguration config = getConfig();
-	
+	MainThread mainthread;
 	//Using Collections.synchronizedList to handle the synchronization easy without having to do it myself
 	//A linked list is better for inserting elements into the middle of it. Array list would have to move everything over
 	//Not decided on which to use yet.... 
@@ -57,7 +57,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
         saveConfig();
         
         //Start MainThread
-        MainThread mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000);
+        mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000);
         mainthread.start();
         
         //Set up the command handling class to be able to receive command events
@@ -67,6 +67,9 @@ public class CommandSchedulerPlus extends JavaPlugin {
 
     @Override
     public void onDisable() {
+    	
+    	System.out.println("Stopping Main Thread");
+    	mainthread.stopThread();
     	try {
     		
     		System.out.println("Saving commands");

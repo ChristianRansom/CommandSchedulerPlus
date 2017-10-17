@@ -13,6 +13,7 @@ public class MainThread implements Runnable {
 	private Thread t;
 	public RedBlackTree<ScheduledCommand> commands;
 	private long sleepTime;
+	private volatile boolean running = true;
 
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
 	public MainThread(RedBlackTree<ScheduledCommand> commands2, long aSleepTime) {
@@ -23,7 +24,7 @@ public class MainThread implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("DEBUG: Running thread");
-		do {
+		while(running){
 			System.out.println("Running Commands");
 			synchronized(commands){
 				/*for(ScheduledCommand command : commands) {
@@ -50,14 +51,18 @@ public class MainThread implements Runnable {
 			} catch (InterruptedException e) {
 				System.out.println("Thread interrupted.");
 			}
-		} while (true);
+		}
 
-		// System.out.println("DEBUG: Thread exiting.");
+		System.out.println("DEBUG: Thread exiting.");
 	}
 
 	public void start() {
 		System.out.println("Starting thread");
 		t = new Thread(this, "mainthread");
 		t.start();
+	}
+	
+	public void stopThread(){
+		running = false;
 	}
 }

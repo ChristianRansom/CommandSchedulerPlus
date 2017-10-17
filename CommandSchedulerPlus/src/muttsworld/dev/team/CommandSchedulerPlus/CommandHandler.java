@@ -3,8 +3,6 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
