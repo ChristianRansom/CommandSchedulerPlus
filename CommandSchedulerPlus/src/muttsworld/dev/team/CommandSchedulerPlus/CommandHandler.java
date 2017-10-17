@@ -13,11 +13,11 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHandler implements CommandExecutor{
 	private boolean waitingForDate = false; //Temp value to handle multi-step creation of commands
-	private final List<ScheduledCommand> commandList; //the list of commands
+	private final RedBlackTree<ScheduledCommand> commandList; //the list of commands
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
-    public CommandHandler(List<ScheduledCommand> commands) {
+    public CommandHandler(RedBlackTree<ScheduledCommand> commands) {
     	commandList = commands;
 	}
 
@@ -42,8 +42,8 @@ public class CommandHandler implements CommandExecutor{
 			else {
 				//List all the commands
 				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
-					for(ScheduledCommand command : commandList){
-			            System.out.println(command);
+					synchronized(commandList){
+						commandList.inorder();
 					}
 					return true;
 				}
@@ -67,8 +67,12 @@ public class CommandHandler implements CommandExecutor{
 	        	currentCommand.setDate(gcalendarDate);
 				
 	        	//This needs to be synchronized but it is because of the Synchronized Collection
-				commandList.add(currentCommand);
-	        		        	
+	        	//Inserts it with magical AVLTree powers to the order of O(logn)
+        		synchronized(commandList){
+        			System.out.println("Inserting into the tree..." );
+        			commandList.insert(currentCommand);
+        		}
+	        	
 	        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 	        	waitingForDate = false;
 				return true;

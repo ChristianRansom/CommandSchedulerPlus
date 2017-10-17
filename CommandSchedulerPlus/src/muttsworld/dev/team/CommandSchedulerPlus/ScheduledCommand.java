@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class ScheduledCommand implements Serializable{
+public class ScheduledCommand implements Serializable, Comparable<ScheduledCommand>{
 
 	private static final long serialVersionUID = 1L;
 	private String command;
@@ -44,6 +44,11 @@ public class ScheduledCommand implements Serializable{
 							":" + date.get(Calendar.MINUTE);
 
 		return "ScheduledCommand [command = " + command + ", date = " + dateString + "]";
+	}
+
+	@Override
+	public int compareTo(ScheduledCommand otherCommand) {
+		return this.getDate().compareTo(otherCommand.getDate());		
 	}
 	
 	
