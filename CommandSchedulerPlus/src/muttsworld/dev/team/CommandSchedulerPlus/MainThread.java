@@ -1,22 +1,16 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
 public class MainThread implements Runnable {
 	private Thread t;
-	public RedBlackTree<ScheduledCommand> commands;
+	public AVLTree<ScheduledCommand> commands;
 	private long sleepTime;
 	private volatile boolean running = true;
 
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
-	public MainThread(RedBlackTree<ScheduledCommand> commands2, long aSleepTime) {
+	public MainThread(AVLTree<ScheduledCommand> commands2, long aSleepTime) {
 		commands = commands2;
 		sleepTime = aSleepTime;
 	}

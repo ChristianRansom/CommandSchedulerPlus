@@ -25,7 +25,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	//         Collections.synchronizedList(new ArrayList<ScheduledCommand>());
 	//***WARNING using the iterator still needs to be in a synchronized block***
 	
-	RedBlackTree<ScheduledCommand> commands = new RedBlackTree<ScheduledCommand>();
+	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
 	
 
 	
@@ -41,7 +41,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			// read object from file
 			FileInputStream fis = new FileInputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			commands = (RedBlackTree<ScheduledCommand>)ois.readObject();
+			commands = (AVLTree<ScheduledCommand>)ois.readObject();
 			ois.close();
 		} catch (FileNotFoundException e) {
 			System.out.print("No command data found. Making a new one...");

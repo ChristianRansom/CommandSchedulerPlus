@@ -3,7 +3,6 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,11 +10,11 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHandler implements CommandExecutor{
 	private boolean waitingForDate = false; //Temp value to handle multi-step creation of commands
-	private final RedBlackTree<ScheduledCommand> commandList; //the list of commands
+	private final AVLTree<ScheduledCommand> commandList; //the list of commands
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
-    public CommandHandler(RedBlackTree<ScheduledCommand> commands) {
+    public CommandHandler(AVLTree<ScheduledCommand> commands) {
     	commandList = commands;
 	}
 
@@ -41,7 +40,12 @@ public class CommandHandler implements CommandExecutor{
 				//List all the commands
 				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
 					synchronized(commandList){
-						commandList.inorder();
+						/*RedBlackIterator iterator = (RedBlackIterator) commandList.iterator();
+						while(iterator.hasNext()){
+							//System.out.print(iterator.next());
+							
+						}*/
+						commandList.inOrder();
 					}
 					return true;
 				}
