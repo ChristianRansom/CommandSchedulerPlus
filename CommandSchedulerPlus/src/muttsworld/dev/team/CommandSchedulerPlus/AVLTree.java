@@ -399,7 +399,15 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable
     }
     
     
-    public ArrayList<TreeNode<E>> path(E e)
+    public TreeNode<E> getRoot() {
+		return root;
+	}
+
+	public void setRoot(TreeNode<E> root) {
+		this.root = root;
+	}
+
+	public ArrayList<TreeNode<E>> path(E e)
     {
         ArrayList<TreeNode<E>> list =
                 new ArrayList<>();
@@ -472,7 +480,11 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable
         if (current == null)
         return false;
         
-        if (current.left == null)
+        return deleteNode(e, parent, current);
+    }
+
+	private boolean deleteNode(E e, TreeNode<E> parent, TreeNode<E> current) {
+		if (current.left == null)
         {
             if (parent == null)
             {
@@ -506,7 +518,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable
         }
         size--;
         return true;
-    }
+	}
     
     
     // way to make sure
