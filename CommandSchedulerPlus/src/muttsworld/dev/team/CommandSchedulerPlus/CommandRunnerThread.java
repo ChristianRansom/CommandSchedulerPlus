@@ -1,6 +1,5 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-import java.util.GregorianCalendar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -58,6 +57,11 @@ public class CommandRunnerThread implements Runnable {
 		Bukkit.dispatchCommand(console, node.element.getCommand());
 
 		//System.out.println("DEBUG: this command should be run " + node.element);
-	}	
+	}
 
+	public void start() {
+		System.out.println("Starting thread");
+		t = new Thread(this, "mainthread");
+		t.start();
+	}
 }

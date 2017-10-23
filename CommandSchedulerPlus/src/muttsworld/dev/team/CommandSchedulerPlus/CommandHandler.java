@@ -37,7 +37,8 @@ public class CommandHandler implements CommandExecutor{
 			}
 			else if(args[0].equals("forceupdate")){
 				CommandRunnerThread thread = new CommandRunnerThread(commands);
-
+				thread.start();
+				return true;
 			}
 			else if(args[0].equals("listcommands") || args[0].equals("commandlist")){
 				synchronized(commands){
@@ -86,7 +87,6 @@ public class CommandHandler implements CommandExecutor{
 
 	    	}
 		}
-		return false;
 
     	
     	/*

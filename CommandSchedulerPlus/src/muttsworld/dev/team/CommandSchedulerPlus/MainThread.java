@@ -25,13 +25,6 @@ public class MainThread extends CommandRunnerThread {
 			System.out.println("DEBUG: Thread exiting.");
 		}
 	}
-
-
-	public void start() {
-		System.out.println("Starting thread");
-		t = new Thread(this, "mainthread");
-		t.start();
-	}
 	
 	public void stopThread(){
 		running = false;
