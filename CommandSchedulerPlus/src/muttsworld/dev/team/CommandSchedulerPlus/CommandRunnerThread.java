@@ -37,11 +37,13 @@ public class CommandRunnerThread implements Runnable {
 		            	//System.out.println("DEBUG: this command should be run " + current.element);
 		        		Bukkit.dispatchCommand(console, current.element.getCommand());
 		                runCommands(current.left);
+		                current.left = null; //Cuts off left subtree 
+		                parent = current;
 		                current = current.right;
+		                commands.delete(parent.element); //deletes parent of the left subtree to call a tree re-balance
 		            }
 		            else if (nowCommand.compareTo(current.element) < 0){
 		                current = current.left;
-		                //System.out.println("Now is greater than run date so not running this one...");
 		            }
 	            }
 	        }
