@@ -9,11 +9,14 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	private static final long serialVersionUID = 1L;
 	private String command;
 	private GregorianCalendar date;
+	private GregorianCalendar repeat;
 	
 	//Default Constructor
 	public ScheduledCommand() {
 		command = "No Command Given";
 		date = new GregorianCalendar();
+		//month = day = year = hour = minute = 0; - default construct creates a date that matched current time
+		repeat = new GregorianCalendar(0, 0, 0, 0, 0);
 	}
 	
 	public ScheduledCommand(GregorianCalendar aDate, String aCommand){
@@ -49,6 +52,14 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	@Override
 	public int compareTo(ScheduledCommand otherCommand) {
 		return this.getDate().compareTo(otherCommand.getDate());		
+	}
+
+	public GregorianCalendar getRepeate() {
+		return repeat;
+	}
+
+	public void setRepeate(GregorianCalendar repeate) {
+		this.repeat = repeate;
 	}
 	
 	
