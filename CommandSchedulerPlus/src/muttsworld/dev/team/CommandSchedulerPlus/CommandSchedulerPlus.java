@@ -18,12 +18,6 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	
 	private FileConfiguration config = getConfig();
 	MainThread mainthread;
-	//Using Collections.synchronizedList to handle the synchronization easy without having to do it myself
-	//A linked list is better for inserting elements into the middle of it. Array list would have to move everything over
-	//Not decided on which to use yet.... 
-	//List<ScheduledCommand> commands = 
-	//         Collections.synchronizedList(new ArrayList<ScheduledCommand>());
-	//***WARNING using the iterator still needs to be in a synchronized block***
 	
 	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
 	

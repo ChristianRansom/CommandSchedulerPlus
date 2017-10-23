@@ -1,6 +1,5 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import org.bukkit.command.Command;
@@ -10,12 +9,12 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHandler implements CommandExecutor{
 	private boolean waitingForDate = false; //Temp value to handle multi-step creation of commands
-	private final AVLTree<ScheduledCommand> commandList; //the list of commands
+	private final AVLTree<ScheduledCommand> commands; //the list of commands
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
-    public CommandHandler(AVLTree<ScheduledCommand> commands) {
-    	commandList = commands;
+    public CommandHandler(AVLTree<ScheduledCommand> commands2) {
+    	commands = commands2;
 	}
 
     //Called when a command registered to the plugin in the plugin.yml is entered
@@ -36,25 +35,25 @@ public class CommandHandler implements CommandExecutor{
 				System.out.println("Good job, now enter a date. /csp Year Month Day Hour Seconds");
 				return true;
 			}
-			else {
-				//List all the commands
-				if(args[0].equals("listcommands") || args[0].equals("commandlist")){
-					synchronized(commandList){
-						/*RedBlackIterator iterator = (RedBlackIterator) commandList.iterator();
-						while(iterator.hasNext()){
-							//System.out.print(iterator.next());
-							
-						}*/
-						commandList.inOrder();
-					}
-					return true;
-				}
-				else {
-					System.out.println("Uknown command usage");
-					return true;
-				}
+			else if(args[0].equals("forceupdate")){
+				CommandRunnerThread thread = new CommandRunnerThread(commands);
+
 			}
-	    	
+			else if(args[0].equals("listcommands") || args[0].equals("commandlist")){
+				synchronized(commands){
+					/*RedBlackIterator iterator = (RedBlackIterator) commandList.iterator();
+					while(iterator.hasNext()){
+						//System.out.print(iterator.next());
+						
+					}*/
+					commands.inOrder();
+				}
+				return true;
+			}
+			else {
+				System.out.println("Uknown command usage");
+				return true;
+			}
 		}
 		else {
 			//handle date entry 
@@ -70,9 +69,9 @@ public class CommandHandler implements CommandExecutor{
 				
 	        	//This needs to be synchronized but it is because of the Synchronized Collection
 	        	//Inserts it with magical AVLTree powers to the order of O(logn)
-        		synchronized(commandList){
+        		synchronized(commands){
         			System.out.println("Inserting into the tree..." );
-        			commandList.insert(currentCommand);
+        			commands.insert(currentCommand);
         		}
 	        	
 	        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
@@ -87,6 +86,7 @@ public class CommandHandler implements CommandExecutor{
 
 	    	}
 		}
+		return false;
 
     	
     	/*
