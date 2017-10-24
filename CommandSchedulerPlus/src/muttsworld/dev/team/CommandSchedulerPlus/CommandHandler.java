@@ -79,7 +79,18 @@ public class CommandHandler implements CommandExecutor{
 		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
 		        		case 3 : System.out.println("Enter the time from now you want the command to run"); break;
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
-		        		case 7 : System.out.println("Saving the command"); break;
+		        		case 7 : System.out.println("Saving the command"); 
+		        			System.out.println("Inserting into the tree..." );
+		        			synchronized(commands){
+			        			commands.insert(currentCommand);
+			        		}
+				        	commandEditorOption = 0;
+				        	commandEditor = false;
+		        			break;
+		    	        case 8 : 
+		    	        	System.out.println("Exiting");
+		    	        	commandEditorOption = 0;
+		    	        	commandEditor = false;
 		        		//case 5 : System.out.println("");
 		        	}
 	        	}
@@ -123,18 +134,6 @@ public class CommandHandler implements CommandExecutor{
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand);
 	        	break;
-	        case 7 : 
-	        	//This needs to be synchronized but it is because of the Synchronized Collection
-	        	//Inserts it with magical AVLTree powers to the order of O(logn)
-        		synchronized(commands){
-        			System.out.println("Inserting into the tree..." );
-        			commands.insert(currentCommand);
-        		}
-	        	commandEditorOption = 0;
-	        	commandEditor = false;
-	        case 8 : 
-	        	commandEditorOption = 0;
-	        	commandEditor = false;
         }
         return true;
 

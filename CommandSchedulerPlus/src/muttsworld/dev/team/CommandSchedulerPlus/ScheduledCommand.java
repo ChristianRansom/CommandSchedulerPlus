@@ -71,5 +71,6 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 
 		return "ScheduledCommand [command = " + command + ", date = " + dateString + "]";
 	}
+
 	
 }

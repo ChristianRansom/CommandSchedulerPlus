@@ -35,16 +35,16 @@ public class CommandRunnerThread implements Runnable {
 	        else {
 	            while (current != null){
 	            	//if now date is greater than current node, then this node, and all left of it needs to run
-		            if (nowCommand.compareTo(current.element) >= 0) {
+		            if (nowCommand.compareTo(current.element) > 0) {
 		            	//System.out.println("DEBUG: this command should be run " + current.element);
-		        		Bukkit.dispatchCommand(console, current.element.getCommand());
+		        		execucteCommmand(current); //this node will be deleted, for now its saved in the parent node
 		                runCommands(current.left);
 		                current.left = null; //Cuts off left subtree 
 		                parent = current;
 		                current = current.right;
 		                commands.delete(parent.element); //deletes parent of the left subtree to call a tree re-balance
 		            }
-		            else if (nowCommand.compareTo(current.element) < 0){
+		            else if (nowCommand.compareTo(current.element) <= 0){
 		                current = current.left;
 		            }
 	            }
@@ -58,21 +58,28 @@ public class CommandRunnerThread implements Runnable {
 		if(node == null) return;
 		runCommands(node.left);
 		runCommands(node.right);
-		Bukkit.dispatchCommand(console, node.element.getCommand());
+		execucteCommmand(node);
 
 		//System.out.println("DEBUG: this command should be run " + node.element);
 	}
 	
 	public void execucteCommmand(TreeNode<ScheduledCommand> node){
+		
 		Bukkit.dispatchCommand(console, node.element.getCommand());
-		if(!node.element.getRepeat().equals(new GregorianCalendar(0, 0, 0, 0, 0))){
+		commands.delete(node.element);
+		if(!node.element.getRepeat().isZero()){
 			GregorianCalendar newDate = new GregorianCalendar();
-			GregorianCalendar difference = new GregorianCalendar();
+			GregorianCalendar newScheduleTime = new GregorianCalendar();
 			//Calculate difference from when its scheduled run time and now
-			difference.setTimeInMillis(newDate.getTimeInMillis() - node.element.getDate().getTimeInMillis());
-			newDate.setTimeInMillis(node.element.getRepeat().getMiliseconds() % difference.getTimeInMillis());
-			System.out.println("repeate % difference: " + newDate.toString());
-			commands.insert(node.element.copy());
+			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() % node.element.getRepeat().getMillis());
+			System.out.println("repeat % difference: " + new ScheduledCommand(newScheduleTime, "Test command").toString());
+			ScheduledCommand newCommand = node.element.copy();
+			//reschedule for now + repeat - currenttime % repeat 
+			//This keeps it running according the the expected repeat time, so it doesn't shift over time due to restarts
+			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() + (node.element.getRepeat().getMiliseconds() - newScheduleTime.getTimeInMillis()));
+			newCommand.setDate(newScheduleTime);
+			newCommand.setRepeat(node.element.getRepeat());
+			commands.insert(newCommand);
 		}
 	}
 

@@ -43,13 +43,13 @@ public class RepeatTime implements Serializable {
 
 
 	public long getMillis() {
-		return millis;
+		return this.getMiliseconds();
 	}
 
 
 	public void setMillis(long millis) {
 		this.millis = millis;
-		updateMillis();
+		updateNonMillis();
 	}
 	
 	public int getDays() {
@@ -94,6 +94,7 @@ public class RepeatTime implements Serializable {
 	}
 
 	public boolean isZero() {
+		System.out.println("Repeat millis = " + millis);
 		return (millis == 0);
 	}
 	
