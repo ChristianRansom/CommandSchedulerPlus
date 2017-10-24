@@ -24,7 +24,6 @@ public class CommandHandler implements CommandExecutor{
     //Called when a command registered to the plugin in the plugin.yml is entered
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
 		if(commandEditor){
 			return commandEditor(args);
 		}
@@ -57,57 +56,87 @@ public class CommandHandler implements CommandExecutor{
 		System.out.println("1: Command/s to be run: " + aCommand.getCommand());
 		System.out.println("2: Date to be run: " + displayDate(aCommand.getDate()));
 		System.out.println("3: Time until run: " + simpleDate(now));
-		if(!aCommand.getRepeate().equals(new GregorianCalendar(0, 0, 0, 0, 0))){
-			System.out.println("4: Repeating: " + simpleDate(aCommand.getRepeate()));
+		if(!aCommand.getRepeat().equals(new GregorianCalendar(0, 0, 0, 0, 0))){
+			System.out.println("4: Repeating: " + simpleDate(aCommand.getRepeat()));
 		}
 		else {
 			System.out.println("4: Repeating: false");
 		}
-		System.out.println("5: Player or Consol run: not implemented");
-		System.out.println("6: Extend time till next run: not implemented");
+		System.out.println("5: Player or Consol run: not implemented.");
+		System.out.println("6: Extend time till next run: not implemented.");
+		System.out.println("7: Save Command.");
+		System.out.println("8: Exit.");
 	}
 		
 	private boolean commandEditor(String[] args) {
-		//TODO check for valid date like month etc. 
         int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
-
-		if(args[0].equals("1")){
-			//handle new command being added
-			String command = String.join(" ", Arrays.copyOfRange(args, 1, args.length)); //remove 'add' argument from the command
-			currentCommand.setCommand(command);
-			
-			System.out.println("Good job, now enter a date. /csp Year Month Day Hour Seconds");
-			return true;
-		}
-		else {
-			//handle date entry 
-	        if(args.length == 5){
-	        	year = Integer.parseInt(args[0]); 
-	        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
-	        	dayOfMonth = Integer.parseInt(args[2]); 
-	        	hourOfDay = Integer.parseInt(args[3]); 
-	        	minute = Integer.parseInt(args[4]); 
-	        	
-	        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-	        	currentCommand.setDate(gcalendarDate);
-				
+        switch(commandEditorOption) {
+	        case 0 :
+	        	commandEditorOption = Integer.parseInt(args[0]);
+	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
+		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
+		        		case 1 : System.out.println("Enter the command you wish to schedule."); break;
+		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
+		        		case 3 : System.out.println("Enter the time from now you want the command to run"); break;
+		        		case 4 : System.out.println("Enter the how often you want the command to repeat"); break;
+		        		case 7 : System.out.println("Saving the command"); break;
+		        		//case 5 : System.out.println("");
+		        	}
+	        	}
+	        	else{
+		    		System.out.println("Enter an option from 1 to 8");
+	        	}
+	        	break;
+	        case 1 : //handle new command being added
+				String command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
+				currentCommand.setCommand(command);
+	        	commandEditorOption = 0;
+	        	displayCommand(currentCommand);
+				break; 
+	        case 2 : //handle date entry 
+		        if(args.length == 5){ 		//TODO check for valid date like month etc. 
+		        	year = Integer.parseInt(args[0]); 
+		        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
+		        	dayOfMonth = Integer.parseInt(args[2]); 
+		        	hourOfDay = Integer.parseInt(args[3]); 
+		        	minute = Integer.parseInt(args[4]); 
+		        	
+		        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
+		        	currentCommand.setDate(gcalendarDate);
+		        	
+		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
+		        }
+	        	commandEditorOption = 0;
+	        	displayCommand(currentCommand);
+	        	break;
+	        case 4 : 
+	        	if(args.length == 5){ 		//TODO check for valid date like month etc. 
+		        	year = Integer.parseInt(args[0]); 
+		        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
+		        	dayOfMonth = Integer.parseInt(args[2]); 
+		        	hourOfDay = Integer.parseInt(args[3]); 
+		        	minute = Integer.parseInt(args[4]); 
+		        	
+		        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
+		        	currentCommand.setRepeat(gcalendarDate);
+		        	
+		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
+		        }
+	        	commandEditorOption = 0;
+	        	displayCommand(currentCommand);
+	        	break;
+	        case 7 : 
 	        	//This needs to be synchronized but it is because of the Synchronized Collection
 	        	//Inserts it with magical AVLTree powers to the order of O(logn)
         		synchronized(commands){
         			System.out.println("Inserting into the tree..." );
         			commands.insert(currentCommand);
         		}
-	        	
-	        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 	        	commandEditor = false;
-				return true;
-
-	        }   
-	        else {
-	        	System.out.println("Waiting for a date. Usage: /csp Year Month Day Hour Seconds");
-				return true;
-	    	}
-		}
+	        case 8 : 
+	        	commandEditor = false;
+        }
+        return true;
 
 	}
 
@@ -139,7 +168,7 @@ public class CommandHandler implements CommandExecutor{
         millis -= TimeUnit.HOURS.toMillis(hours);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
         millis -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        //long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
         StringBuilder sb = new StringBuilder(64);
         sb.append(days);
         sb.append(" Days ");

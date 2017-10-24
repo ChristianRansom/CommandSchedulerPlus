@@ -1,6 +1,8 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 
+import java.util.GregorianCalendar;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
@@ -59,6 +61,19 @@ public class CommandRunnerThread implements Runnable {
 		Bukkit.dispatchCommand(console, node.element.getCommand());
 
 		//System.out.println("DEBUG: this command should be run " + node.element);
+	}
+	
+	public void execucteCommmand(TreeNode<ScheduledCommand> node){
+		Bukkit.dispatchCommand(console, node.element.getCommand());
+		if(!node.element.getRepeat().equals(new GregorianCalendar(0, 0, 0, 0, 0))){
+			GregorianCalendar newDate = new GregorianCalendar();
+			GregorianCalendar difference = new GregorianCalendar();
+			//Calculate difference from when its scheduled run time and now
+			difference.setTimeInMillis(newDate.getTimeInMillis() - node.element.getDate().getTimeInMillis());
+			newDate.setTimeInMillis(node.element.getRepeat().getTimeInMillis() % difference.getTimeInMillis());
+			System.out.println("repeate % difference: " + newDate.toString());
+			commands.insert(node.element.copy());
+		}
 	}
 
 	public void start() {

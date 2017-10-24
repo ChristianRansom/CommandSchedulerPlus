@@ -11,6 +11,12 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	private GregorianCalendar date;
 	private GregorianCalendar repeat;
 	
+	public ScheduledCommand(String command, GregorianCalendar date, GregorianCalendar repeat) {
+		this.command = command;
+		this.date = date;
+		this.repeat = repeat;
+	}
+
 	//Default Constructor
 	public ScheduledCommand() {
 		command = "No Command Given";
@@ -54,13 +60,17 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		return this.getDate().compareTo(otherCommand.getDate());		
 	}
 
-	public GregorianCalendar getRepeate() {
+	public GregorianCalendar getRepeat() {
 		return repeat;
 	}
 
-	public void setRepeate(GregorianCalendar repeate) {
-		this.repeat = repeate;
+	public void setRepeat(GregorianCalendar repeat) {
+		this.repeat = repeat;
 	}
+	
+	public ScheduledCommand copy(){  
+		return new ScheduledCommand(this.command, this.date, this.repeat); 
+	}  
 	
 	
 	

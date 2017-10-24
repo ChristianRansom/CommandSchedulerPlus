@@ -321,8 +321,8 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
     public E find(int k, AVLTreeNode<E> bla)
     {
         // key players
-        AVLTreeNode<E> A = (AVLTreeNode)(bla.left);
-        AVLTreeNode<E> B = (AVLTreeNode)(bla.right);
+		AVLTreeNode<E> A = (AVLTreeNode<E>)(bla.left);
+        AVLTreeNode<E> B = (AVLTreeNode<E>)(bla.right);
         
         
         if (A == null && k == 1)
