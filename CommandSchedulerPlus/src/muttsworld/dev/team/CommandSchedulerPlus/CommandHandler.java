@@ -56,8 +56,8 @@ public class CommandHandler implements CommandExecutor{
 		System.out.println("1: Command/s to be run: " + aCommand.getCommand());
 		System.out.println("2: Date to be run: " + displayDate(aCommand.getDate()));
 		System.out.println("3: Time until run: " + simpleDate(now));
-		if(!aCommand.getRepeat().equals(new GregorianCalendar(0, 0, 0, 0, 0))){
-			System.out.println("4: Repeating: " + simpleDate(aCommand.getRepeat()));
+		if(!aCommand.getRepeat().isZero()){
+			System.out.println("4: Repeating Every: " + (aCommand.getRepeat()));
 		}
 		else {
 			System.out.println("4: Repeating: false");
@@ -78,7 +78,7 @@ public class CommandHandler implements CommandExecutor{
 		        		case 1 : System.out.println("Enter the command you wish to schedule."); break;
 		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
 		        		case 3 : System.out.println("Enter the time from now you want the command to run"); break;
-		        		case 4 : System.out.println("Enter the how often you want the command to repeat"); break;
+		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
 		        		case 7 : System.out.println("Saving the command"); break;
 		        		//case 5 : System.out.println("");
 		        	}
@@ -110,15 +110,13 @@ public class CommandHandler implements CommandExecutor{
 	        	displayCommand(currentCommand);
 	        	break;
 	        case 4 : 
-	        	if(args.length == 5){ 		//TODO check for valid date like month etc. 
-		        	year = Integer.parseInt(args[0]); 
-		        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
-		        	dayOfMonth = Integer.parseInt(args[2]); 
-		        	hourOfDay = Integer.parseInt(args[3]); 
-		        	minute = Integer.parseInt(args[4]); 
+	        	if(args.length == 4){ 		//TODO check for valid date like month etc. 
+	        		dayOfMonth = Integer.parseInt(args[0]); 
+	        		hourOfDay = Integer.parseInt(args[1]); 
+	        		minute = Integer.parseInt(args[2]); 
+	        		int second = Integer.parseInt(args[3]); 
 		        	
-		        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-		        	currentCommand.setRepeat(gcalendarDate);
+		        	currentCommand.setRepeat(new RepeatTime(dayOfMonth, hourOfDay, minute, second));
 		        	
 		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 		        }
@@ -132,8 +130,10 @@ public class CommandHandler implements CommandExecutor{
         			System.out.println("Inserting into the tree..." );
         			commands.insert(currentCommand);
         		}
+	        	commandEditorOption = 0;
 	        	commandEditor = false;
 	        case 8 : 
+	        	commandEditorOption = 0;
 	        	commandEditor = false;
         }
         return true;

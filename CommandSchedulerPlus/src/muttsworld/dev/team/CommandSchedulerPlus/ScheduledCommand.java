@@ -9,20 +9,20 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	private static final long serialVersionUID = 1L;
 	private String command;
 	private GregorianCalendar date;
-	private GregorianCalendar repeat;
+	private RepeatTime repeat; //stores a millisecond value
 	
-	public ScheduledCommand(String command, GregorianCalendar date, GregorianCalendar repeat) {
-		this.command = command;
-		this.date = date;
-		this.repeat = repeat;
+	public ScheduledCommand(String Acommand, GregorianCalendar Adate, RepeatTime Arepeat) {
+		this.command = Acommand;
+		this.date = Adate;
+		this.repeat = Arepeat;
 	}
 
 	//Default Constructor
 	public ScheduledCommand() {
 		command = "No Command Given";
 		date = new GregorianCalendar();
-		//month = day = year = hour = minute = 0; - default construct creates a date that matched current time
-		repeat = new GregorianCalendar(0, 0, 0, 0, 0);
+		//hour = minute = second = 0;
+		repeat = new RepeatTime(0, 0, 0, 0);
 	}
 	
 	public ScheduledCommand(GregorianCalendar aDate, String aCommand){
@@ -47,24 +47,15 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	}
 
 	@Override
-	public String toString() {
-		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
-							+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
-							":" + date.get(Calendar.MINUTE);
-
-		return "ScheduledCommand [command = " + command + ", date = " + dateString + "]";
-	}
-
-	@Override
 	public int compareTo(ScheduledCommand otherCommand) {
 		return this.getDate().compareTo(otherCommand.getDate());		
 	}
 
-	public GregorianCalendar getRepeat() {
+	public RepeatTime getRepeat() {
 		return repeat;
 	}
 
-	public void setRepeat(GregorianCalendar repeat) {
+	public void setRepeat(RepeatTime repeat) {
 		this.repeat = repeat;
 	}
 	
@@ -72,6 +63,13 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		return new ScheduledCommand(this.command, this.date, this.repeat); 
 	}  
 	
-	
+	@Override
+	public String toString() {
+		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
+							+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
+							":" + date.get(Calendar.MINUTE);
+
+		return "ScheduledCommand [command = " + command + ", date = " + dateString + "]";
+	}
 	
 }

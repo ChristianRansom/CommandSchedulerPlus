@@ -70,7 +70,7 @@ public class CommandRunnerThread implements Runnable {
 			GregorianCalendar difference = new GregorianCalendar();
 			//Calculate difference from when its scheduled run time and now
 			difference.setTimeInMillis(newDate.getTimeInMillis() - node.element.getDate().getTimeInMillis());
-			newDate.setTimeInMillis(node.element.getRepeat().getTimeInMillis() % difference.getTimeInMillis());
+			newDate.setTimeInMillis(node.element.getRepeat().getMiliseconds() % difference.getTimeInMillis());
 			System.out.println("repeate % difference: " + newDate.toString());
 			commands.insert(node.element.copy());
 		}
