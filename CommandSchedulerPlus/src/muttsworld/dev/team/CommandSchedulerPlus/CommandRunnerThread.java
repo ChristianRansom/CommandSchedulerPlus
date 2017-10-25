@@ -59,14 +59,13 @@ public class CommandRunnerThread implements Runnable {
 		runCommands(node.left);
 		runCommands(node.right);
 		execucteCommmand(node);
-
+		commands.delete(node.element);
 		//System.out.println("DEBUG: this command should be run " + node.element);
 	}
 	
 	public void execucteCommmand(TreeNode<ScheduledCommand> node){
 		
 		Bukkit.dispatchCommand(console, node.element.getCommand());
-		commands.delete(node.element);
 		if(!node.element.getRepeat().isZero()){
 			GregorianCalendar newDate = new GregorianCalendar();
 			GregorianCalendar newScheduleTime = new GregorianCalendar();

@@ -80,7 +80,7 @@ public class CommandHandler implements CommandExecutor{
 		        		case 3 : System.out.println("Enter the time from now you want the command to run"); break;
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
 		        		case 7 : System.out.println("Saving the command"); 
-		        			System.out.println("Inserting into the tree..." );
+		        			//System.out.println("Inserting into the tree..." );
 		        			synchronized(commands){
 			        			commands.insert(currentCommand);
 			        		}

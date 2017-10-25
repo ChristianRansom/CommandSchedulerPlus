@@ -245,6 +245,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
     
     public boolean delete(E element)
     {
+    	System.out.println("Deleting an element" );
         if (root == null)
             return false;
         
@@ -252,6 +253,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
         TreeNode<E> current = root;
         while(current != null)
         {
+        	System.out.println("Delete: element.compareTo(current.element) : " + (element.compareTo(current.element)));
             if (element.compareTo(current.element) < 0)
             {
                 parent = current;
@@ -264,7 +266,6 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
             }
             else break;
         }
-        
         if (current == null) return false;
         
         if (current.left == null)
@@ -419,13 +420,19 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable
             if(e.compareTo(current.element) < 0)
             {
                 current = current.left;
+                break; //exits current loop iteration
             }
             else if (e.compareTo(current.element) > 0)
             {
                 current = current.right;
+                break; //exits current loop iteration
             }
-            else
+            else if (e.compareTo(current.element) == 0) {
+            	break; //exits current loop iteration
+            }
+            else {
                 break;
+            }
         }
         return list;
     }
@@ -640,6 +647,8 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable
     
     public boolean insert(E o)
     {
+    	
+    	System.out.println("Inserting into the tree"); 
         if (root == null)
         {
             root = createNewNode(o);
@@ -648,22 +657,24 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable
         {
             parent = null;
             current = root;
-            while (current != null)
-            if (o.compareTo(current.element) < 0) 
-            {
-                parent = current;
-                current = current.left;
-                
+            while (current != null) {
+            	System.out.println("Inserting: o.compareTo(current.element) : " + (o.compareTo(current.element)));            	
+		        if (o.compareTo(current.element) < 0) 
+		        {
+		            parent = current;
+		            current = current.left;
+		            
+		        }
+		        else if (o.compareTo(current.element) > 0)
+		        {
+		            parent = current;
+		            current = current.right;
+		        }
+		        else {
+		        	System.out.println("Found duplicate node. Can't insert. Returning False");
+		            return false;
+		        }
             }
-            else if (o.compareTo(current.element) > 0)
-            {
-                parent = current;
-                current = current.right;
-            }
-            
-            else
-                return false;
-            
             if (o.compareTo(parent.element) < 0)
                 parent.left = createNewNode(o);
             else

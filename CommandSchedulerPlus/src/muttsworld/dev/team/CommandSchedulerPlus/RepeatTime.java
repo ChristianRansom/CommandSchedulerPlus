@@ -120,5 +120,17 @@ public class RepeatTime implements Serializable {
         }
 		return sb.toString();
 	}
+
+
+	public int compareTo(RepeatTime repeat) {
+		if(this.millis > repeat.millis)
+			return 1;
+		else if(this.millis > repeat.millis){
+			return -1;
+		}
+		else {
+			return 0;
+		}
+	}
 	
 }
