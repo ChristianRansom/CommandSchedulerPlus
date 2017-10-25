@@ -77,11 +77,10 @@ public class CommandHandler implements CommandExecutor{
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : System.out.println("Enter the command you wish to schedule."); break;
 		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
-		        		case 3 : System.out.println("Enter the time from now you want the command to run"); break;
+		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minute Seconds"); break;
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
 		        		case 6 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minute Seconds"); break;
 		        		case 7 : System.out.println("Saving the command"); 
-		        			//System.out.println("Inserting into the tree..." );
 		        			synchronized(commands){
 			        			commands.insert(currentCommand);
 			        		}
@@ -117,6 +116,26 @@ public class CommandHandler implements CommandExecutor{
 		        	currentCommand.setDate(gcalendarDate);
 		        	
 		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
+		        }
+	        	commandEditorOption = 0;
+	        	displayCommand(currentCommand);
+	        	break;
+	        case 3 : //handle date entry 
+	        	if(args.length == 4){ 		//TODO check for valid date like month etc. 
+	        		dayOfMonth = Integer.parseInt(args[0]); 
+	        		hourOfDay = Integer.parseInt(args[1]); 
+	        		minute = Integer.parseInt(args[2]); 
+	        		int second = Integer.parseInt(args[3]); 
+	        		
+	        		GregorianCalendar newDate = new GregorianCalendar(); //creates a date of the time now
+	        		newDate.setTimeInMillis(newDate.getTimeInMillis() 
+		        			+ (new TimeSlice(dayOfMonth, hourOfDay, minute, second).getMillis()));
+		        	currentCommand.setDate(newDate);
+		        	
+		        	System.out.println("Scheduled command relative to current time."); 
+		        	commandEditorOption = 0;
+		        	displayCommand(currentCommand);
+		        	break;
 		        }
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand);
