@@ -3,7 +3,7 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-public class RepeatTime implements Serializable {
+public class TimeSlice implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int days;
@@ -13,7 +13,7 @@ public class RepeatTime implements Serializable {
 	private long millis;
 	
 	
-	public RepeatTime(int theDays, int theHours, int theMinutes, int theSeconds) {
+	public TimeSlice(int theDays, int theHours, int theMinutes, int theSeconds) {
 		super();
 		this.days = theDays;
 		this.hours = theHours;
@@ -122,7 +122,7 @@ public class RepeatTime implements Serializable {
 	}
 
 
-	public int compareTo(RepeatTime repeat) {
+	public int compareTo(TimeSlice repeat) {
 		if(this.millis > repeat.millis)
 			return 1;
 		else if(this.millis > repeat.millis){

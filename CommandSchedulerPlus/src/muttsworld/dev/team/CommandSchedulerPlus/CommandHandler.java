@@ -63,7 +63,7 @@ public class CommandHandler implements CommandExecutor{
 			System.out.println("4: Repeating: false");
 		}
 		System.out.println("5: Player or Consol run: not implemented.");
-		System.out.println("6: Extend time till next run: not implemented.");
+		System.out.println("6: Extend time till next run. Add time to the next scheduled run.");
 		System.out.println("7: Save Command.");
 		System.out.println("8: Exit.");
 	}
@@ -79,6 +79,7 @@ public class CommandHandler implements CommandExecutor{
 		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
 		        		case 3 : System.out.println("Enter the time from now you want the command to run"); break;
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
+		        		case 6 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minute Seconds"); break;
 		        		case 7 : System.out.println("Saving the command"); 
 		        			//System.out.println("Inserting into the tree..." );
 		        			synchronized(commands){
@@ -127,13 +128,29 @@ public class CommandHandler implements CommandExecutor{
 	        		minute = Integer.parseInt(args[2]); 
 	        		int second = Integer.parseInt(args[3]); 
 		        	
-		        	currentCommand.setRepeat(new RepeatTime(dayOfMonth, hourOfDay, minute, second));
+		        	currentCommand.setRepeat(new TimeSlice(dayOfMonth, hourOfDay, minute, second));
 		        	
 		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 		        }
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand);
 	        	break;
+	        case 6 : //TODO extract out this date handling. duplicate code
+	        	if(args.length == 4){ 		//TODO check for valid date like month etc. 
+	        		dayOfMonth = Integer.parseInt(args[0]); 
+	        		hourOfDay = Integer.parseInt(args[1]); 
+	        		minute = Integer.parseInt(args[2]); 
+	        		int second = Integer.parseInt(args[3]); 
+	        		GregorianCalendar newDate = new GregorianCalendar();
+	        		newDate.setTimeInMillis(currentCommand.getDate().getTimeInMillis() 
+		        			+ (new TimeSlice(dayOfMonth, hourOfDay, minute, second).getMillis()));
+		        	currentCommand.setDate(newDate);
+		        	
+		        	System.out.println("Scheduled date extended "); 
+		        	commandEditorOption = 0;
+		        	displayCommand(currentCommand);
+		        	break;
+		        }
         }
         return true;
 
