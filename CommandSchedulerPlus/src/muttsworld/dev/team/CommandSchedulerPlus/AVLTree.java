@@ -235,8 +235,10 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 			} else
 				break;
 		}
-		if (current == null)
+		if (current == null) {
+			System.out.println("Element not found. Deletion failed. ");
 			return false;
+		}
 
 		if (current.left == null) {
 			if (parent == null)
@@ -442,7 +444,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	// two different search trees are the same
 	// contentwise
 	public void inOrder() {
-		i = 0;
+		i = 1;
 		inOrder((AVLTreeNode<E>)root);
 		System.out.println();
 	}
@@ -456,7 +458,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	}
 
 	public void preOrder() {
-		i = 0;
+		i = 1;
 		preOrder((AVLTreeNode<E>)root);
 	}
 

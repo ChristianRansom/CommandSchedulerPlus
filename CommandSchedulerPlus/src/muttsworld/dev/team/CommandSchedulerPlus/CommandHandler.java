@@ -15,7 +15,7 @@ public class CommandHandler implements CommandExecutor{
 	private final AVLTree<ScheduledCommand> commands; //the list of commands
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	private int commandEditorOption = 0;
-	private ScheduledCommand editingCommand;
+	private ScheduledCommand editingCommand = null;
 	
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
     public CommandHandler(AVLTree<ScheduledCommand> commands2) {
@@ -60,6 +60,7 @@ public class CommandHandler implements CommandExecutor{
 		editingCommand = (commands.find(commands.getSize() - Integer.parseInt(args[1]) + 1));
 		System.out.println(editingCommand);
 		currentCommand = editingCommand.copy();
+		commandEditor = true;
 		displayCommand(currentCommand);
 		return true;
 	}
@@ -102,14 +103,24 @@ public class CommandHandler implements CommandExecutor{
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
 		        		case 6 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minute Seconds"); break;
 		        		case 7 : System.out.println("Saving the command"); 
-		        			synchronized(commands){
-			        			commands.insert(currentCommand);
-			        		}
+		        			if(editingCommand == null) {
+			        			synchronized(commands){
+				        			commands.insert(currentCommand);
+				        		}
+		        			}
+		        			else{
+			        			synchronized(commands){
+			        				commands.delete(editingCommand);
+				        			commands.insert(currentCommand);
+				        		}
+			        			editingCommand = null;
+		        			}
 				        	commandEditorOption = 0;
 				        	commandEditor = false;
 		        			break;
 		    	        case 8 : 
 		    	        	System.out.println("Exiting");
+		        			editingCommand = null;
 		    	        	commandEditorOption = 0;
 		    	        	commandEditor = false;
 		        		//case 5 : System.out.println("");
