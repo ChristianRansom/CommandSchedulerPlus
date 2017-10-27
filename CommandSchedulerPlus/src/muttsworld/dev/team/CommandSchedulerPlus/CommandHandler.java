@@ -36,12 +36,24 @@ public class CommandHandler implements CommandExecutor{
 		else if(args[0].equals("listcommands") || args[0].equals("commandlist")){
 			return listCommands();
 		}
+		else if(args[0].equals("edit")){
+			return editCommand(args);
+		}
+		else if(args[0].equals("preorder")){
+			commands.preOrder();
+			return true;
+		}
 		else {
 			System.out.println("Uknown command usage");
 			return true;
 		}
 	}
 	
+	private boolean editCommand(String[] args) {
+		System.out.println("Finding command " + args[1]);
+		System.out.println(commands.find(Integer.parseInt(args[1]) - commands.getSize() -1));
+		return true;
+	}
 	private boolean createCommand(){
 		currentCommand = new ScheduledCommand();
 		commandEditor = true;

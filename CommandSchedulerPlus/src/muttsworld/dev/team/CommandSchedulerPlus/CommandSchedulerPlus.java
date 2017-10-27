@@ -46,7 +46,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 		}
     	
     	//generate default config or load in configured values
-        config.addDefault("ScheduleTimer", 60);
+        config.addDefault("ScheduleTimer", 60); //Rename Check interval
         config.options().copyDefaults(true);
         saveConfig();
         
