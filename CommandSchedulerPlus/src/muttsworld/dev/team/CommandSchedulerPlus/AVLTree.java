@@ -57,7 +57,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 	// This is similar to the update height
 	// works by setting the size of a node
 	// 1 + size of left + size of right
-	private void updateSize() {
+	public void updateSize() {
 		updateSize(root);
 	}
 
@@ -267,8 +267,8 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 				parentOfRightMost.left = rightMost.left;
 
 			balancePath(parentOfRightMost.element);
-			updateSize();
 		}
+		updateSize();
 		return true;
 	}
 
@@ -281,27 +281,29 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		return o;
 	}
 
-	public E find(int k, AVLTreeNode<E> bla) {
+	public E find(int k, AVLTreeNode<E> node) {
 
 		// key players
-		// AVLTreeNode<E> A = (AVLTreeNode<E>)(bla.left);
-		// AVLTreeNode<E> B = (AVLTreeNode<E>)(bla.right);
-
-		if (bla.left != null) {
-			System.out.print("A.size : " + bla.left.size);
-			System.out.println("k : " + k);
+		AVLTreeNode<E> A = (AVLTreeNode<E>)(node.left);
+		AVLTreeNode<E> B = (AVLTreeNode<E>)(node.right);
+		System.out.println("Finding(k) K = " + k);
+		if (A != null) {
+			System.out.print("A.size : " + A.size);
 		}
-		if (bla.left == null && k == 1) { //root.element, if A is null and k is 1;
-			return bla.element;
-		} else if (bla.left == null && k == 2) { //B.element, if A is null and k is 2;
-			return bla.right.element;
-		} else if (k <= bla.left.size) { //find(k, A), if k <= A.size;
-			return find(k, (AVLTreeNode<E>) bla.left);
+		if (A == null && k == 1) { //root.element, if A is null and k is 1;
+			System.out.println("A == null & k = 1 returning node");
+			return node.element;
+		} else if (A == null && k == 2) { //B.element, if A is null and k is 2;
+			System.out.println("A == null & k = 2 returning node");
+			return B.element;
+		} else if (k <= A.size) { //find(k, A), if k <= A.size;
+			System.out.println("K < A.size so it must be a child of A");
+			return find(k, A);
 		}
-		else if (k == (bla.left.size + 1)) { //root.element, if k = A.size + 1;
-			return bla.element;
-		} else if (k > (bla.left.size + 1)) {
-			return find(k - bla.left.size - 1, (AVLTreeNode<E>) bla.right); //find(k - A.size - 1, B), if k > A.size + 1;
+		else if (k == (A.size + 1)) { //root.element, if k = A.size + 1;
+			return node.element;
+		} else if (k > (A.size + 1)) {
+			return find(k - A.size - 1, B); //find(k - A.size - 1, B), if k > A.size + 1;
 		} else
 			return null;
 	}
@@ -538,7 +540,9 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	///////////////////////////////////////////////////////
 
 	public int getSize() {
-		return root.size;
+		System.out.println("Root " + root.element);
+		System.out.println("Root.size " + root.size);
+		return ((AVLTreeNode<E>)root).size;
 	}
 
 	public boolean isEmpty() {

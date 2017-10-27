@@ -15,6 +15,7 @@ public class CommandHandler implements CommandExecutor{
 	private final AVLTree<ScheduledCommand> commands; //the list of commands
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	private int commandEditorOption = 0;
+	private ScheduledCommand editingCommand;
 	
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
     public CommandHandler(AVLTree<ScheduledCommand> commands2) {
@@ -33,7 +34,7 @@ public class CommandHandler implements CommandExecutor{
 		else if(args[0].equals("forceupdate")){
 			return forceupdate();
 		}
-		else if(args[0].equals("listcommands") || args[0].equals("commandlist")){
+		else if(args[0].equals("listcommands") || args[0].equals("commandlist") || args[0].equals("list")){
 			return listCommands();
 		}
 		else if(args[0].equals("edit")){
@@ -41,6 +42,10 @@ public class CommandHandler implements CommandExecutor{
 		}
 		else if(args[0].equals("preorder")){
 			commands.preOrder();
+			return true;
+		}
+		else if(args[0].equals("updatesize")){
+			commands.updateSize();
 			return true;
 		}
 		else {
@@ -51,7 +56,11 @@ public class CommandHandler implements CommandExecutor{
 	
 	private boolean editCommand(String[] args) {
 		System.out.println("Finding command " + args[1]);
-		System.out.println(commands.find(Integer.parseInt(args[1]) - commands.getSize() -1));
+		System.out.println("commands.getSize(): " + commands.getSize());
+		editingCommand = (commands.find(commands.getSize() - Integer.parseInt(args[1]) + 1));
+		System.out.println(editingCommand);
+		currentCommand = editingCommand.copy();
+		displayCommand(currentCommand);
 		return true;
 	}
 	private boolean createCommand(){
