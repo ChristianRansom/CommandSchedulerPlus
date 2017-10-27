@@ -49,11 +49,11 @@ public class CommandSchedulerPlus extends JavaPlugin {
         saveConfig();
         
         //Start MainThread
-        mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000);
+        mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000, this);
         mainthread.start();
         
         //Set up the command handling class to be able to receive command events
-        this.getCommand("csp").setExecutor(new CommandHandler(commands));
+        this.getCommand("csp").setExecutor(new CommandHandler(commands, this));
         
     }
 

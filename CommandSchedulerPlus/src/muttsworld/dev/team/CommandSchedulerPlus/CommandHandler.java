@@ -5,9 +5,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 
 public class CommandHandler implements CommandExecutor{
@@ -16,10 +18,13 @@ public class CommandHandler implements CommandExecutor{
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
 	private int commandEditorOption = 0;
 	private ScheduledCommand editingCommand = null;
-	
+	public CommandSchedulerPlus plugin;
+	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
-    public CommandHandler(AVLTree<ScheduledCommand> commands2) {
+    public CommandHandler(AVLTree<ScheduledCommand> commands2, CommandSchedulerPlus commandSchedulerPlus) {
     	commands = commands2;
+    	plugin = commandSchedulerPlus;
 	}
     //<code for later> if (sender instanceof Player) { Player player = (Player) sender;
     //Called when a command registered to the plugin in the plugin.yml is entered
@@ -33,6 +38,9 @@ public class CommandHandler implements CommandExecutor{
 		}
 		else if(args[0].equals("forceupdate")){
 			return forceupdate();
+		}
+		else if(args[0].equals("forcerun")){
+			return forceRun(args);
 		}
 		else if(args[0].equals("listcommands") || args[0].equals("commandlist") || args[0].equals("list")){
 			return listCommands();
@@ -61,6 +69,13 @@ public class CommandHandler implements CommandExecutor{
 		}
 	}
 	
+	private boolean forceRun(String[] args) {
+		//System.out.println("Finding command " + args[1]);
+		synchronized(commands) {
+			Bukkit.dispatchCommand(console, commands.find(Integer.parseInt(args[1])).getCommand());
+		}
+		return true;
+	}
 	private boolean deleteCommand(String[] args) {
 		System.out.println("Finding command " + args[1]);
 		synchronized(commands) {
@@ -229,7 +244,7 @@ public class CommandHandler implements CommandExecutor{
 	}
 
 	private boolean forceupdate() {
-		CommandRunnerThread thread = new CommandRunnerThread(commands);
+		CommandRunnerThread thread = new CommandRunnerThread(commands, plugin);
 		thread.start();
 		return true;
 	}

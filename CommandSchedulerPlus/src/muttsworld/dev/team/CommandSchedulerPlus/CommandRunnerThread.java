@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import muttsworld.dev.team.CommandSchedulerPlus.BST.TreeNode;
 
@@ -13,10 +14,12 @@ public class CommandRunnerThread implements Runnable {
 	protected Thread t;
 	public AVLTree<ScheduledCommand> commands;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+	public CommandSchedulerPlus plugin;
+
 	
-	
-	public CommandRunnerThread(AVLTree<ScheduledCommand> commands2) {
+	public CommandRunnerThread(AVLTree<ScheduledCommand> commands2, CommandSchedulerPlus commandSchedulerPlus) {
 		commands = commands2;
+		plugin = commandSchedulerPlus;
 	}
 	
 	@Override
@@ -64,7 +67,8 @@ public class CommandRunnerThread implements Runnable {
 	}
 	
 	public void execucteCommmand(TreeNode<ScheduledCommand> node){
-		
+		Player player = plugin.getServer().getPlayer("spartagon123");
+
 		Bukkit.dispatchCommand(console, node.element.getCommand());
 		if(!node.element.getRepeat().isZero()){
 			GregorianCalendar newDate = new GregorianCalendar();

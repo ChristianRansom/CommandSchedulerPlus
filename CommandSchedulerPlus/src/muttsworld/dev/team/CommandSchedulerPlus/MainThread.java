@@ -6,8 +6,8 @@ public class MainThread extends CommandRunnerThread {
 	private volatile boolean running = true;
 
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
-	public MainThread(AVLTree<ScheduledCommand> commands2, long aSleepTime) {
-		super(commands2);
+	public MainThread(AVLTree<ScheduledCommand> commands2, long aSleepTime, CommandSchedulerPlus commandSchedulerPlus) {
+		super(commands2, commandSchedulerPlus);
 		sleepTime = aSleepTime;
 	}
 
