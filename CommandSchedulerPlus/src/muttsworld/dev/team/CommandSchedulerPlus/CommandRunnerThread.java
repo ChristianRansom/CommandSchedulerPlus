@@ -1,6 +1,7 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import org.bukkit.Bukkit;
@@ -67,9 +68,14 @@ public class CommandRunnerThread implements Runnable {
 	}
 	
 	public void execucteCommmand(TreeNode<ScheduledCommand> node){
-		Player player = plugin.getServer().getPlayer("spartagon123");
-
-		Bukkit.dispatchCommand(console, node.element.getCommand());
+		//Player player = plugin.getServer().getPlayer("spartagon123");
+		//ArrayList<String> commandStrings = new ArrayList<String>();
+		String[] commandStrings = node.element.getCommand().split("[/]+");
+		System.out.println(commandStrings.length + " commands found");
+		for(String aCommand : commandStrings){
+			System.out.println("Running: " + aCommand);
+			Bukkit.dispatchCommand(console, aCommand);
+		}
 		if(!node.element.getRepeat().isZero()){
 			GregorianCalendar newDate = new GregorianCalendar();
 			GregorianCalendar newScheduleTime = new GregorianCalendar();

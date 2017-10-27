@@ -20,17 +20,22 @@ public class CommandHandler implements CommandExecutor{
 	private ScheduledCommand editingCommand = null;
 	public CommandSchedulerPlus plugin;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+	private String[] commandGroup = null;
+	private boolean groupCommandEditor = false;
+	private int groupCommandEditorOption = 0;
 
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
     public CommandHandler(AVLTree<ScheduledCommand> commands2, CommandSchedulerPlus commandSchedulerPlus) {
     	commands = commands2;
     	plugin = commandSchedulerPlus;
 	}
-    //<code for later> if (sender instanceof Player) { Player player = (Player) sender;
     //Called when a command registered to the plugin in the plugin.yml is entered
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(commandEditor){
+		if(groupCommandEditor){
+			return createCommandGroup(args);
+		}
+		else if(commandEditor){
 			return commandEditor(args);
 		}
 		else if(args[0].equals("create")){
@@ -69,11 +74,57 @@ public class CommandHandler implements CommandExecutor{
 		}
 	}
 	
+	private boolean createCommandGroup(String[] args) {
+		switch(groupCommandEditorOption) {
+	        case 0 :
+	        	groupCommandEditorOption = Integer.parseInt(args[0]);
+	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
+		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
+		        		case 1 : System.out.println("Enter the command you want to add to the group."); break;
+		        		case 2 : System.out.println("Enter the number of where you want to insert a command."); break;
+		        		case 3 : System.out.println("Enter the number of the command you want to delete."); break;
+		        		case 4 : System.out.println("Cleared all the commands"); 
+		        			//Clears the commands....
+		        			break;
+		        		case 5 : System.out.println("Command Group Saved"); 
+		        			if(commandGroup == null) {
+			        			System.out.println("No commands entered... Exiting");
+		        			}
+		        			else{
+			        			currentCommand.setCommand(String.join("/", Arrays.copyOfRange(commandGroup, 0, args.length)));
+		        			}
+		        			groupCommandEditorOption = 0;
+				        	commandEditor = false;
+		        			break;
+		        	}
+	        	}
+	        	else{
+		    		System.out.println("Enter an option from 1 to 5");
+	        	}
+	        	break; //Breaks from outer switch case
+	        case 1 : //handle new command being added
+	        	break;
+	        case 2 :
+	        	break;
+	        case 3 :
+	        	break;
+		}
+        	
+		return false;
+	}
 	private boolean forceRun(String[] args) {
+		
 		//System.out.println("Finding command " + args[1]);
 		synchronized(commands) {
-			Bukkit.dispatchCommand(console, commands.find(Integer.parseInt(args[1])).getCommand());
+			commandGroup = commands.find(Integer.parseInt(args[1])).getCommand().split("[/]+");
+			System.out.println(commandGroup.length + " commands found");
+			for(String aCommand : commandGroup) {
+				System.out.println("Running: " + aCommand);
+				Bukkit.dispatchCommand(console, aCommand);
+			}
 		}
+		
+		
 		return true;
 	}
 	private boolean deleteCommand(String[] args) {
@@ -126,7 +177,7 @@ public class CommandHandler implements CommandExecutor{
 	        	commandEditorOption = Integer.parseInt(args[0]);
 	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
-		        		case 1 : System.out.println("Enter the command you wish to schedule."); break;
+		        		case 1 : System.out.println("Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands"); break;
 		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
 		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minute Seconds"); break;
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
@@ -160,10 +211,16 @@ public class CommandHandler implements CommandExecutor{
 	        	}
 	        	break;
 	        case 1 : //handle new command being added
-				String command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
-				currentCommand.setCommand(command);
-	        	commandEditorOption = 0;
-	        	displayCommand(currentCommand);
+	        	if(args[0].equals("commandgroup")){
+	        		groupCommandEditor = true;
+	        		displayCommandEditor(commandGroup);
+	        	}
+	        	else {
+					String command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
+					currentCommand.setCommand(command);
+		        	commandEditorOption = 0;
+		        	displayCommand(currentCommand);
+	        	}
 				break; 
 	        case 2 : //handle date entry 
 		        if(args.length == 5){ 		//TODO check for valid date like month etc. 
@@ -236,6 +293,16 @@ public class CommandHandler implements CommandExecutor{
 
 	}
 
+	private void displayCommandEditor(String[] commandGroup2) {
+		System.out.println("Creating a group of commands. Enter the number of the field you wish to edit.");
+		System.out.println("Note: A command group ensures that the commands in it will be run in order");
+		System.out.println("1: Add a command. ");
+		System.out.println("2: Insert a command. ");
+		System.out.println("3: Delete a command. ");
+		System.out.println("4: Save command group.");
+		System.out.println("5: Exit.");
+	}
+	
 	private boolean listCommands() {
 		synchronized(commands){
 			commands.inOrder();
