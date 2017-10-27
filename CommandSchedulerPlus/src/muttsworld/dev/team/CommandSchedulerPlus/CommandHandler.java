@@ -51,6 +51,10 @@ public class CommandHandler implements CommandExecutor{
 			commands.updateSize();
 			return true;
 		}
+		else if(args[0].equals("time")){
+			System.out.print(displayDate(new GregorianCalendar()));
+			return true;
+		}
 		else {
 			System.out.println("Uknown command usage");
 			return true;

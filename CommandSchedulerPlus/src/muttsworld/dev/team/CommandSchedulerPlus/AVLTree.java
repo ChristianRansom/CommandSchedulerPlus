@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;
 
 public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	public AVLTree() {

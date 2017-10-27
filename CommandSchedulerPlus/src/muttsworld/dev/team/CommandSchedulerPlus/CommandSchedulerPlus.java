@@ -28,8 +28,6 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	@Override
     public void onEnable() {
     	
-    	
-    	
     	// ***** Load command list from file ******
     	try {
 			// read object from file
