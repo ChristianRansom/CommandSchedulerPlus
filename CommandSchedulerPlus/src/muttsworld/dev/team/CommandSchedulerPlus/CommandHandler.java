@@ -40,6 +40,9 @@ public class CommandHandler implements CommandExecutor{
 		else if(args[0].equals("edit")){
 			return editCommand(args);
 		}
+		else if(args[0].equals("delete")){
+			return deleteCommand(args);
+		}
 		else if(args[0].equals("preorder")){
 			commands.preOrder();
 			return true;
@@ -54,10 +57,17 @@ public class CommandHandler implements CommandExecutor{
 		}
 	}
 	
+	private boolean deleteCommand(String[] args) {
+		System.out.println("Finding command " + args[1]);
+		synchronized(commands) {
+			commands.delete(commands.find(Integer.parseInt(args[1])));
+		}
+		return true; 
+	}
 	private boolean editCommand(String[] args) {
 		System.out.println("Finding command " + args[1]);
 		System.out.println("commands.getSize(): " + commands.getSize());
-		editingCommand = (commands.find(commands.getSize() - Integer.parseInt(args[1]) + 1));
+		editingCommand = (commands.find(Integer.parseInt(args[1])));
 		System.out.println(editingCommand);
 		currentCommand = editingCommand.copy();
 		commandEditor = true;
