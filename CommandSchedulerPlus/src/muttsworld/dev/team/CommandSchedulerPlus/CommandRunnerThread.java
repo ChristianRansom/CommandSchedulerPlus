@@ -70,8 +70,9 @@ public class CommandRunnerThread implements Runnable {
 	public void execucteCommmand(TreeNode<ScheduledCommand> node){
 		//Player player = plugin.getServer().getPlayer("spartagon123");
 		//ArrayList<String> commandStrings = new ArrayList<String>();
-		String[] commandStrings = node.element.getCommand().split("[/]+");
-		System.out.println(commandStrings.length + " commands found");
+
+		ArrayList<String> commandStrings = node.element.getCommands();
+		System.out.println(commandStrings.size() + " commands found");
 		for(String aCommand : commandStrings){
 			System.out.println("Running: " + aCommand);
 			Bukkit.dispatchCommand(console, aCommand);
@@ -82,8 +83,9 @@ public class CommandRunnerThread implements Runnable {
 			//Calculate difference from when its scheduled run time and now
 			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() % node.element.getRepeat().getMillis());
 			System.out.println("repeat % difference: " + new ScheduledCommand(newScheduleTime, "Test command").toString());
-			ScheduledCommand newCommand = node.element.copy();
+			ScheduledCommand newCommand = node.element.copy(); 
 			//reschedule for now + repeat - currenttime % repeat 
+			//TODO change this to just use subtraction... thats all thats needed I think
 			//This keeps it running according the the expected repeat time, so it doesn't shift over time due to restarts
 			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() + (node.element.getRepeat().getMiliseconds() - newScheduleTime.getTimeInMillis()));
 			newCommand.setDate(newScheduleTime);

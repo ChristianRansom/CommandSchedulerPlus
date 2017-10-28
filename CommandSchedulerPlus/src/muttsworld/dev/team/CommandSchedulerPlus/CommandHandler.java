@@ -1,5 +1,6 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -20,7 +21,7 @@ public class CommandHandler implements CommandExecutor{
 	private ScheduledCommand editingCommand = null;
 	public CommandSchedulerPlus plugin;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-	private String[] commandGroup = null;
+	private ArrayList<String> currentCommandGroup = null;
 	private boolean groupCommandEditor = false;
 	private int groupCommandEditorOption = 0;
 
@@ -75,26 +76,30 @@ public class CommandHandler implements CommandExecutor{
 	}
 	
 	private boolean createCommandGroup(String[] args) {
+		
+		String command;
 		switch(groupCommandEditorOption) {
 	        case 0 :
 	        	groupCommandEditorOption = Integer.parseInt(args[0]);
-	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
-		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
+	        	if(groupCommandEditorOption > 0 && commandEditorOption <= 8) {
+		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : System.out.println("Enter the command you want to add to the group."); break;
-		        		case 2 : System.out.println("Enter the number of where you want to insert a command."); break;
+		        		case 2 : System.out.println("Enter the number of where you want to insert a command "); break;
 		        		case 3 : System.out.println("Enter the number of the command you want to delete."); break;
 		        		case 4 : System.out.println("Cleared all the commands"); 
-		        			//Clears the commands....
+		        			currentCommandGroup.clear();
+		    	        	displayCommand(currentCommand);
 		        			break;
 		        		case 5 : System.out.println("Command Group Saved"); 
-		        			if(commandGroup == null) {
-			        			System.out.println("No commands entered... Exiting");
+		        			if(currentCommandGroup == null) {
+			        			System.out.println("No commands found in the command group... Exiting");
 		        			}
 		        			else{
-			        			currentCommand.setCommand(String.join("/", Arrays.copyOfRange(commandGroup, 0, args.length)));
+			        			currentCommand.setCommands(currentCommandGroup);
 		        			}
 		        			groupCommandEditorOption = 0;
-				        	commandEditor = false;
+				        	groupCommandEditor = false;
+				        	displayCommand(currentCommand);
 		        			break;
 		        	}
 	        	}
@@ -102,29 +107,39 @@ public class CommandHandler implements CommandExecutor{
 		    		System.out.println("Enter an option from 1 to 5");
 	        	}
 	        	break; //Breaks from outer switch case
-	        case 1 : //handle new command being added
+	        case 1 : //handle new command being added to the commmandGroup
+	        	command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
+	        	currentCommandGroup.add(command);
+				groupCommandEditorOption = 0;
+				displayCommandEditor(currentCommandGroup);
 	        	break;
 	        case 2 :
+	        	command = String.join(" ", Arrays.copyOfRange(args, 1, args.length)); //remove 'add' argument from the command
+	        	currentCommandGroup.add(Integer.parseInt(args[0]), command);
+				groupCommandEditorOption = 0;
+				displayCommandEditor(currentCommandGroup);
 	        	break;
 	        case 3 :
+	        	currentCommandGroup.remove(Integer.parseInt(args[0]));
+				groupCommandEditorOption = 0;
+				displayCommandEditor(currentCommandGroup);
 	        	break;
 		}
         	
-		return false;
+		return true;
 	}
+
 	private boolean forceRun(String[] args) {
 		
 		//System.out.println("Finding command " + args[1]);
 		synchronized(commands) {
-			commandGroup = commands.find(Integer.parseInt(args[1])).getCommand().split("[/]+");
-			System.out.println(commandGroup.length + " commands found");
-			for(String aCommand : commandGroup) {
+			currentCommandGroup = commands.find(Integer.parseInt(args[1])).getCommands();
+			System.out.println(currentCommandGroup.size() + " commands found");
+			for(String aCommand : currentCommandGroup){
 				System.out.println("Running: " + aCommand);
 				Bukkit.dispatchCommand(console, aCommand);
 			}
 		}
-		
-		
 		return true;
 	}
 	private boolean deleteCommand(String[] args) {
@@ -213,7 +228,9 @@ public class CommandHandler implements CommandExecutor{
 	        case 1 : //handle new command being added
 	        	if(args[0].equals("commandgroup")){
 	        		groupCommandEditor = true;
-	        		displayCommandEditor(commandGroup);
+	        		currentCommandGroup = currentCommand.getCommands();
+	        		//System.out.println(currentCommandGroup.size() + " commands found");
+	        		displayCommandEditor(currentCommandGroup);
 	        	}
 	        	else {
 					String command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
@@ -293,14 +310,20 @@ public class CommandHandler implements CommandExecutor{
 
 	}
 
-	private void displayCommandEditor(String[] commandGroup2) {
+	private void displayCommandEditor(ArrayList<String> commandGroup2) {
+		System.out.println("Commands:");
+		int i = 1;
+		for(String aCommand : currentCommandGroup){
+			System.out.println((i++) + " " + currentCommandGroup.get(i-1));
+		}
+		
 		System.out.println("Creating a group of commands. Enter the number of the field you wish to edit.");
 		System.out.println("Note: A command group ensures that the commands in it will be run in order");
 		System.out.println("1: Add a command. ");
 		System.out.println("2: Insert a command. ");
 		System.out.println("3: Delete a command. ");
-		System.out.println("4: Save command group.");
-		System.out.println("5: Exit.");
+		System.out.println("4: Clear all commands.");
+		System.out.println("5: Save and Exit.");
 	}
 	
 	private boolean listCommands() {

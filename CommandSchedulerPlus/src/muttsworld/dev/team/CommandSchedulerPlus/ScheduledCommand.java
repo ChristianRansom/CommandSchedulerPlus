@@ -1,41 +1,53 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class ScheduledCommand implements Serializable, Comparable<ScheduledCommand>{
+public class ScheduledCommand implements Serializable, Comparable<ScheduledCommand> {
 
 	private static final long serialVersionUID = 1L;
-	private String command;
+	private ArrayList<String> command = new ArrayList<String>();
 	private GregorianCalendar date;
-	private TimeSlice repeat; //stores a millisecond value
-	
-	public ScheduledCommand(String Acommand, GregorianCalendar Adate, TimeSlice Arepeat) {
-		this.command = Acommand;
-		this.date = Adate;
-		this.repeat = Arepeat;
-	}
+	private TimeSlice repeat; // stores a millisecond value
+	private boolean commandGroup;
 
-	//Default Constructor
+	// Default Constructor
 	public ScheduledCommand() {
-		command = "No Command Given";
+		command.add("No Command Given");
+		commandGroup = false;
 		date = new GregorianCalendar();
-		//hour = minute = second = 0;
-		repeat = new TimeSlice(0, 0, 0, 0);
-	}
-	
-	public ScheduledCommand(GregorianCalendar aDate, String aCommand){
-		command = aCommand;
-		date = aDate; 
+		repeat = new TimeSlice(0, 0, 0, 0); // hour = minute = second = 0;
 	}
 
-	public String getCommand() {
-		return command;
+	public ScheduledCommand(ArrayList<String> commandStrings, GregorianCalendar Adate, TimeSlice Arepeat) {
+		command = commandStrings; // only has one command
+		commandGroup = false;
+		date = Adate;
+		repeat = Arepeat;
 	}
 
-	public void setCommand(String aCommand) {
-		this.command = aCommand;
+	// Single command constructor
+	public ScheduledCommand(String Acommand, GregorianCalendar Adate, TimeSlice Arepeat) {
+		command.add(Acommand); // only has one command
+		commandGroup = false;
+		date = Adate;
+		repeat = Arepeat;
+	}
+
+	public ScheduledCommand(GregorianCalendar aDate, String aCommand) {
+		command.add(aCommand);
+		commandGroup = false;
+		date = aDate;
+	}
+
+	public boolean isCommandGroup() {
+		return commandGroup;
+	}
+
+	public void setCommands(boolean commandGroup) {
+		this.commandGroup = commandGroup;
 	}
 
 	public GregorianCalendar getDate() {
@@ -48,16 +60,13 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 
 	@Override
 	public int compareTo(ScheduledCommand otherCommand) {
-		if(this.getDate().compareTo(otherCommand.getDate()) != 0) {
+		if (this.getDate().compareTo(otherCommand.getDate()) != 0) {
 			return this.getDate().compareTo(otherCommand.getDate());
-		}
-		else if(this.getRepeat().compareTo(otherCommand.getRepeat()) != 0) {
+		} else if (this.getRepeat().compareTo(otherCommand.getRepeat()) != 0) {
 			return this.getRepeat().compareTo(otherCommand.getRepeat());
-		}
-		else if(this.getCommand().compareTo(otherCommand.getCommand()) != 0){
+		} else if (this.getCommand().compareTo(otherCommand.getCommand()) != 0) {
 			return this.getCommand().compareTo(otherCommand.getCommand());
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}
@@ -69,19 +78,33 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	public void setRepeat(TimeSlice repeat) {
 		this.repeat = repeat;
 	}
-	
-	public ScheduledCommand copy(){  
-		return new ScheduledCommand(this.command, this.date, this.repeat); 
-	}  
-	
+
+	public ScheduledCommand copy() {
+		return new ScheduledCommand(this.command, this.date, this.repeat);
+	}
+
+	public String getCommand() {
+		return command.get(0);
+	}
+
+	public ArrayList<String> getCommands() {
+		return command;
+	}
+
+	public void setCommand(String aCommand) {
+		command.set(0, aCommand);
+	}
+
+	public void setCommands(ArrayList<String> aCommand) {
+		command = aCommand;
+	}
+
 	@Override
 	public String toString() {
-		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
-							+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
-							":" + date.get(Calendar.MINUTE);
+		String dateString = (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DATE) + "/"
+				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE);
 
 		return "ScheduledCommand [command = " + command + ", date = " + dateString + "]";
 	}
 
-	
 }

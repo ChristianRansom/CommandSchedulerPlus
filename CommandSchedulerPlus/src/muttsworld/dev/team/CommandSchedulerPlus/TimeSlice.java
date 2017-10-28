@@ -94,7 +94,7 @@ public class TimeSlice implements Serializable {
 	}
 
 	public boolean isZero() {
-		System.out.println("Repeat millis = " + millis);
+		//System.out.println("Repeat millis = " + millis);
 		return (millis == 0);
 	}
 	
