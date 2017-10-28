@@ -84,7 +84,7 @@ public class CommandHandler implements CommandExecutor{
 	        	if(groupCommandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : System.out.println("Enter the command you want to add to the group."); break;
-		        		case 2 : System.out.println("Enter the number of where you want to insert a command "); break;
+		        		case 2 : System.out.println("Enter the number of where you want to insert a command followed by the commmand"); break;
 		        		case 3 : System.out.println("Enter the number of the command you want to delete."); break;
 		        		case 4 : System.out.println("Cleared all the commands"); 
 		        			currentCommandGroup.clear();
@@ -96,6 +96,7 @@ public class CommandHandler implements CommandExecutor{
 		        			}
 		        			else{
 			        			currentCommand.setCommands(currentCommandGroup);
+			        			currentCommand.setCommandGroup(true);
 		        			}
 		        			groupCommandEditorOption = 0;
 				        	groupCommandEditor = false;
@@ -113,14 +114,14 @@ public class CommandHandler implements CommandExecutor{
 				groupCommandEditorOption = 0;
 				displayCommandEditor(currentCommandGroup);
 	        	break;
-	        case 2 :
+	        case 2 : //handle command insert
 	        	command = String.join(" ", Arrays.copyOfRange(args, 1, args.length)); //remove 'add' argument from the command
-	        	currentCommandGroup.add(Integer.parseInt(args[0]), command);
+	        	currentCommandGroup.add(Integer.parseInt(args[0]) - 1, command);
 				groupCommandEditorOption = 0;
 				displayCommandEditor(currentCommandGroup);
 	        	break;
-	        case 3 :
-	        	currentCommandGroup.remove(Integer.parseInt(args[0]));
+	        case 3 : //handle command delete
+	        	currentCommandGroup.remove(Integer.parseInt(args[0]) - 1);
 				groupCommandEditorOption = 0;
 				displayCommandEditor(currentCommandGroup);
 	        	break;
@@ -192,8 +193,18 @@ public class CommandHandler implements CommandExecutor{
 	        	commandEditorOption = Integer.parseInt(args[0]);
 	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
-		        		case 1 : System.out.println("Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands"); break;
-		        		case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
+		        		case 1 : 
+		        			if(!currentCommand.getCommandGroup()) {
+		        				System.out.println("Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands"); break;
+		        			}
+		        			else { //duplicate code TODO
+		    	        		groupCommandEditor = true;
+		    	        		currentCommandGroup = currentCommand.getCommands();
+		    		        	commandEditorOption = 0;
+		    	        		//System.out.println(currentCommandGroup.size() + " commands found");
+		    	        		displayCommandEditor(currentCommandGroup);
+		        			}
+	        			case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
 		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minute Seconds"); break;
 		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
 		        		case 6 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minute Seconds"); break;
@@ -229,6 +240,7 @@ public class CommandHandler implements CommandExecutor{
 	        	if(args[0].equals("commandgroup")){
 	        		groupCommandEditor = true;
 	        		currentCommandGroup = currentCommand.getCommands();
+		        	commandEditorOption = 0;
 	        		//System.out.println(currentCommandGroup.size() + " commands found");
 	        		displayCommandEditor(currentCommandGroup);
 	        	}
@@ -311,14 +323,12 @@ public class CommandHandler implements CommandExecutor{
 	}
 
 	private void displayCommandEditor(ArrayList<String> commandGroup2) {
-		System.out.println("Commands:");
-		int i = 1;
-		for(String aCommand : currentCommandGroup){
-			System.out.println((i++) + " " + currentCommandGroup.get(i-1));
-		}
-		
 		System.out.println("Creating a group of commands. Enter the number of the field you wish to edit.");
 		System.out.println("Note: A command group ensures that the commands in it will be run in order");
+		System.out.println("Commands:");
+		for(int i = 0; i < currentCommandGroup.size(); i++){
+			System.out.println((i + 1) + ". " + currentCommandGroup.get(i));
+		}
 		System.out.println("1: Add a command. ");
 		System.out.println("2: Insert a command. ");
 		System.out.println("3: Delete a command. ");

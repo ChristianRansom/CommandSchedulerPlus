@@ -20,7 +20,16 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		date = new GregorianCalendar();
 		repeat = new TimeSlice(0, 0, 0, 0); // hour = minute = second = 0;
 	}
-
+	
+	//copy constructor
+	public ScheduledCommand(ArrayList<String> command2, GregorianCalendar date2, TimeSlice repeat2, boolean commandGroup2) {
+		command = command2; // only has one command
+		commandGroup = commandGroup2;
+		date = date2;
+		repeat = repeat2;
+	}
+	
+	//main constructor
 	public ScheduledCommand(ArrayList<String> commandStrings, GregorianCalendar Adate, TimeSlice Arepeat) {
 		command = commandStrings; // only has one command
 		commandGroup = false;
@@ -46,7 +55,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		return commandGroup;
 	}
 
-	public void setCommands(boolean commandGroup) {
+	public void setCommandGroup(boolean commandGroup) {
 		this.commandGroup = commandGroup;
 	}
 
@@ -80,7 +89,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	}
 
 	public ScheduledCommand copy() {
-		return new ScheduledCommand(this.command, this.date, this.repeat);
+		return new ScheduledCommand(this.command, this.date, this.repeat, this.commandGroup);
 	}
 
 	public String getCommand() {
@@ -105,6 +114,10 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE);
 
 		return "ScheduledCommand [command = " + command + ", date = " + dateString + "]";
+	}
+
+	public boolean getCommandGroup() {
+		return commandGroup;
 	}
 
 }
