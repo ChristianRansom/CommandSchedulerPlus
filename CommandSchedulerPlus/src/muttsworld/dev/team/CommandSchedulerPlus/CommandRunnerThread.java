@@ -1,19 +1,13 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
-
 import muttsworld.dev.team.CommandSchedulerPlus.BST.TreeNode;
 
 public class CommandRunnerThread implements Runnable {
 	
 	protected Thread t;
 	public AVLTree<ScheduledCommand> commands;
-	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 	public CommandSchedulerPlus plugin;
 
 	
@@ -36,7 +30,8 @@ public class CommandRunnerThread implements Runnable {
 	            System.out.println("DEBUG: There are no commands to run");
 	        }
 	        else {
-	            while (current != null){
+	        	//Finds which commands in the tree need to run
+	            while (current != null){ //TODO sometimes only some of the scheduled commands run
 	            	//if now date is greater than current node, then this node, and all left of it needs to run
 		            if (nowCommand.compareTo(current.element) > 0) {
 		            	//System.out.println("DEBUG: this command should be run " + current.element);
@@ -66,30 +61,28 @@ public class CommandRunnerThread implements Runnable {
 	}
 	
 	public void execucteCommmand(TreeNode<ScheduledCommand> node){
-		//Player player = plugin.getServer().getPlayer("spartagon123");
-		//ArrayList<String> commandStrings = new ArrayList<String>();
-
-		ArrayList<CommandWithExecutor> commandStrings = node.element.getCommands();
-		System.out.println(commandStrings.size() + " commands found");
-		for(CommandWithExecutor aCommand : commandStrings){
-			System.out.println("Running: " + aCommand);
-			Bukkit.dispatchCommand(console, aCommand.getCommandString());
-		}
+		//Executes the commands based on the executors
+		plugin.runCommand(node.element.getCommands()); 
+		//reschedule command 
 		if(!node.element.getRepeat().isZero()){
-			GregorianCalendar newDate = new GregorianCalendar();
-			GregorianCalendar newScheduleTime = new GregorianCalendar();
-			//Calculate difference from when its scheduled run time and now
-			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() % node.element.getRepeat().getMillis());
-			System.out.println("repeat % difference: " + new ScheduledCommand(newScheduleTime, "Test command").toString());
-			ScheduledCommand newCommand = node.element.copy(); 
-			//reschedule for now + repeat - currenttime % repeat 
-			//TODO change this to just use subtraction... thats all thats needed I think
-			//This keeps it running according the the expected repeat time, so it doesn't shift over time due to restarts
-			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() + (node.element.getRepeat().getMiliseconds() - newScheduleTime.getTimeInMillis()));
-			newCommand.setDate(newScheduleTime);
-			newCommand.setRepeat(node.element.getRepeat());
-			commands.insert(newCommand);
+			reschedule(node);
 		}
+	}
+	
+	public void reschedule(TreeNode<ScheduledCommand> node){
+		GregorianCalendar newDate = new GregorianCalendar();
+		GregorianCalendar newScheduleTime = new GregorianCalendar();
+		//Calculate difference from when its scheduled run time and now
+		newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() % node.element.getRepeat().getMillis());
+		System.out.println("repeat % difference: " + new ScheduledCommand(newScheduleTime, "Test command").toString());
+		ScheduledCommand newCommand = node.element.copy(); 
+		//reschedule for now + repeat - currenttime % repeat 
+		//TODO change this to just use subtraction... thats all thats needed I think
+		//This keeps it running according the the expected repeat time, so it doesn't shift over time due to restarts
+		newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() + (node.element.getRepeat().getMiliseconds() - newScheduleTime.getTimeInMillis()));
+		newCommand.setDate(newScheduleTime);
+		newCommand.setRepeat(node.element.getRepeat());
+		commands.insert(newCommand);
 	}
 
 	public void start() {

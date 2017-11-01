@@ -1,19 +1,17 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-import org.bukkit.Bukkit;
+
+//Imports needed to properly register this as a CommandExecutor to receive events
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 
 
 public class CommandHandler implements CommandExecutor{
 	private final AVLTree<ScheduledCommand> commands; //the list of commands
 	public CommandSchedulerPlus plugin;
-	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 	private CommandCreator commandCreator;
 
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its field given
@@ -72,12 +70,7 @@ public class CommandHandler implements CommandExecutor{
 		
 		//System.out.println("Finding command " + args[1]);
 		synchronized(commands) {
-			ArrayList<CommandWithExecutor> tempCommandGroup = commands.find(Integer.parseInt(args[1])).getCommands();
-			System.out.println(tempCommandGroup.size() + " commands found");
-			for(CommandWithExecutor aCommand : tempCommandGroup){
-				System.out.println("Running: " + aCommand);
-				Bukkit.dispatchCommand(console, aCommand.getCommandString());
-			}
+			plugin.runCommand(commands.find(Integer.parseInt(args[1])).getCommands());
 		}
 		return true;
 	}

@@ -8,20 +8,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 
 public class CommandSchedulerPlus extends JavaPlugin {
 	
 	private FileConfiguration config = getConfig();
 	MainThread mainthread;
-	
-	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
-	
+	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
+	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
 	
 	//This warning is thrown by the readObject... idk how the warning could possibly be avoided... 
     @SuppressWarnings("unchecked")
@@ -74,6 +77,42 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+    }
+    
+    //Code in main class so the command handler and threads can share it
+    public void runCommand(ArrayList<CommandWithExecutor> commands){
+		ArrayList<CommandWithExecutor> commandStrings = commands;
+		System.out.println(commandStrings.size() + " commands found");
+		for(CommandWithExecutor aCommand : commandStrings){
+			System.out.println("Running: " + aCommand);
+			String executor = aCommand.getExecutor();
+			
+			System.out.println("Command Executor = " + executor);
+			
+			if(executor.equalsIgnoreCase("ALLPLAYERS")){ //Runs command on each online player
+				Collection<? extends Player> allPlayers = Bukkit.getServer().getOnlinePlayers();
+				if(allPlayers.isEmpty()){
+					System.out.println("There are no players online");
+				}
+				else {
+					for(Player aPlayer : allPlayers){
+						Bukkit.dispatchCommand(aPlayer, aCommand.getCommandString());
+					}
+				}
+			}
+			else if(executor.equalsIgnoreCase("CONSOLE")){
+				Bukkit.dispatchCommand(console, aCommand.getCommandString());
+			}
+			else { //Player Specific Command
+				Player player = this.getServer().getPlayer(executor);
+				if(player != null) {
+					Bukkit.dispatchCommand(player, aCommand.getCommandString());
+				}
+				else {
+					System.out.println("Player not found");
+				}
+			}
 		}
     }
     
