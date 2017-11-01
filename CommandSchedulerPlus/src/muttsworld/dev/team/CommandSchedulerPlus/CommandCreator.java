@@ -10,73 +10,23 @@ public class CommandCreator {
 	
 	private final AVLTree<ScheduledCommand> commands; //the list of commands
 	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
-	private ScheduledCommand editingCommand = null;
+	private ScheduledCommand editingCommand = null; //Used to store state of command we're editing in case we abort the edit
 	public CommandSchedulerPlus plugin;
-	boolean commandEditor = false; //Temp value to handle multi-step creation of commands
+	boolean commandEditor = false; //Value used to handle multi-step creation of commands
+	private int commandEditorOption = 0;
 
 	//Group Command Creation Variables
-	private ArrayList<String> currentCommandGroup = null;
 	private int groupCommandEditorOption = 0;
-	private int commandEditorOption = 0;
-	boolean groupCommandEditor = false;
+	boolean groupCommandEditor = false; //Value used to handle command groups
 
 	public CommandCreator(AVLTree<ScheduledCommand> theCommands){
 		commands = theCommands;
 	}
 
-	//package visibility
-	boolean createCommandGroup(String[] args) {
-		
-		String command;
-		switch(groupCommandEditorOption) {
-	        case 0 :
-	        	groupCommandEditorOption = Integer.parseInt(args[0]);
-	        	if(groupCommandEditorOption > 0 && commandEditorOption <= 8) {
-		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
-		        		case 1 : System.out.println("Enter the command you want to add to the group."); break;
-		        		case 2 : System.out.println("Enter the number of where you want to insert a command followed by the commmand"); break;
-		        		case 3 : System.out.println("Enter the number of the command you want to delete."); break;
-		        		case 4 : System.out.println("Cleared all the commands"); 
-		        			currentCommandGroup.clear();
-		    	        	displayCommand(currentCommand);
-		        			break;
-		        		case 5 : System.out.println("Command Group Saved"); 
-		        			if(currentCommandGroup == null) {
-			        			System.out.println("No commands found in the command group... Exiting");
-		        			}
-		        			else{
-			        			currentCommand.setCommands(currentCommandGroup);
-			        			currentCommand.setCommandGroup(true);
-		        			}
-		        			groupCommandEditorOption = 0;
-				        	groupCommandEditor = false;
-				        	displayCommand(currentCommand);
-		        			break;
-		        	}
-	        	}
-	        	else{
-		    		System.out.println("Enter an option from 1 to 5");
-	        	}
-	        	break; //Breaks from outer switch case
-	        case 1 : //handle new command being added to the commmandGroup
-	        	command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
-	        	currentCommandGroup.add(command);
-				groupCommandEditorOption = 0;
-				displayCommandEditor(currentCommandGroup);
-	        	break;
-	        case 2 : //handle command insert
-	        	command = String.join(" ", Arrays.copyOfRange(args, 1, args.length)); //remove 'add' argument from the command
-	        	currentCommandGroup.add(Integer.parseInt(args[0]) - 1, command);
-				groupCommandEditorOption = 0;
-				displayCommandEditor(currentCommandGroup);
-	        	break;
-	        case 3 : //handle command delete
-	        	currentCommandGroup.remove(Integer.parseInt(args[0]) - 1);
-				groupCommandEditorOption = 0;
-				displayCommandEditor(currentCommandGroup);
-	        	break;
-		}
-	    	
+	boolean createCommand(){
+		currentCommand = new ScheduledCommand();
+		commandEditor = true;
+		displayCommand(currentCommand);
 		return true;
 	}
 
@@ -89,32 +39,6 @@ public class CommandCreator {
 		commandEditor = true;
 		displayCommand(currentCommand);
 		return true;
-	}
-
-	boolean createCommand(){
-		currentCommand = new ScheduledCommand();
-		commandEditor = true;
-		displayCommand(currentCommand);
-		return true;
-	}
-
-	void displayCommand(ScheduledCommand aCommand) {
-		GregorianCalendar now = new GregorianCalendar();
-		now.setTimeInMillis((aCommand.getDate().getTimeInMillis() - now.getTimeInMillis()));
-		System.out.println("Creating a new command. Enter the number of the field you wish to edit.");
-		System.out.println("1: Command/s to be run: " + aCommand.getCommand());
-		System.out.println("2: Date to be run: " + displayDate(aCommand.getDate()));
-		System.out.println("3: Time until run: " + simpleDate(now));
-		if(!aCommand.getRepeat().isZero()){
-			System.out.println("4: Repeating Every: " + (aCommand.getRepeat()));
-		}
-		else {
-			System.out.println("4: Repeating: false");
-		}
-		System.out.println("5: Player or Consol run: not implemented.");
-		System.out.println("6: Extend time till next run. Add time to the next scheduled run.");
-		System.out.println("7: Save Command.");
-		System.out.println("8: Exit.");
 	}
 
 	boolean commandEditor(String[] args) {
@@ -130,10 +54,9 @@ public class CommandCreator {
 		        			}
 		        			else { //duplicate code TODO
 		    	        		groupCommandEditor = true;
-		    	        		currentCommandGroup = currentCommand.getCommands();
 		    		        	commandEditorOption = 0;
 		    	        		//System.out.println(currentCommandGroup.size() + " commands found");
-		    	        		displayCommandEditor(currentCommandGroup);
+		    	        		displayCommandEditor(currentCommand.getCommands());
 		        			}
 	        			case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
 		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minute Seconds"); break;
@@ -170,15 +93,13 @@ public class CommandCreator {
 	        case 1 : //handle new command being added
 	        	if(args[0].equals("commandgroup")){
 	        		groupCommandEditor = true;
-	        		currentCommandGroup = currentCommand.getCommands();
 		        	commandEditorOption = 0;
 	        		//System.out.println(currentCommandGroup.size() + " commands found");
-	        		displayCommandEditor(currentCommandGroup);
+	        		displayCommandEditor(currentCommand.getCommands());
 	        	}
-	        	else {
-					String command = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //remove 'add' argument from the command
-					currentCommand.setCommand(command);
-		        	commandEditorOption = 0;
+	        	else { //TODO combine these lines with command group add stuff
+	        		currentCommand.setCommand(args, 0);
+	        		commandEditorOption = 0;
 		        	displayCommand(currentCommand);
 	        	}
 				break; 
@@ -250,15 +171,67 @@ public class CommandCreator {
 		        }
 	    }
 	    return true;
-	
 	}
 
-	void displayCommandEditor(ArrayList<String> commandGroup2) {
+	//package visibility
+	boolean createCommandGroup(String[] args) {
+		switch(groupCommandEditorOption) {
+	        case 0 :
+	        	groupCommandEditorOption = Integer.parseInt(args[0]);
+	        	if(groupCommandEditorOption > 0 && commandEditorOption <= 8) {
+		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
+		        		case 1 : System.out.println("Enter the command you want to add to the group."); break;
+		        		case 2 : System.out.println("Enter the number of where you want to insert a command followed by the commmand"); break;
+		        		case 3 : System.out.println("Enter the number of the command you want to delete."); break;
+		        		case 4 : System.out.println("Cleared all the commands"); 
+		        			currentCommand.getCommands().clear();
+		    	        	displayCommand(currentCommand);
+		        			break;
+		        		case 5 : System.out.println("Command Group Saved"); 
+		        			if(currentCommand.getCommands().isEmpty()) {
+			        			System.out.println("No commands found in the command group... Exiting");
+		        			}
+		        			else{
+			        			//currentCommand.setCommands(currentCommandGroup);
+			        			currentCommand.setCommandGroup(true); //TODO make sure this is in the right place.... 
+		        			}
+		        			groupCommandEditorOption = 0;
+				        	groupCommandEditor = false;
+				        	displayCommand(currentCommand);
+		        			break;
+		        	}
+	        	}
+	        	else{
+		    		System.out.println("Enter an option from 1 to 5");
+	        	}
+	        	break; //Breaks from outer switch case
+	        case 1 : //handle new command being added to the commmandGroup
+	        	currentCommand.setCommand(args, -1);
+				groupCommandEditorOption = 0;
+				displayCommandEditor(currentCommand.getCommands());
+	        	break;
+	        case 2 : //handle command insert
+	        	//remove insertion place argument argument from the command
+	        	currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
+				groupCommandEditorOption = 0;
+				displayCommandEditor(currentCommand.getCommands());
+	        	break;
+	        case 3 : //handle command delete
+	        	currentCommand.getCommands().remove(Integer.parseInt(args[0]) - 1);
+				groupCommandEditorOption = 0;
+				displayCommandEditor(currentCommand.getCommands());
+	        	break;
+		}
+	    	
+		return true;
+	}
+
+	void displayCommandEditor(ArrayList<CommandWithExecutor> arrayList) {
 		System.out.println("Creating a group of commands. Enter the number of the field you wish to edit.");
 		System.out.println("Note: A command group ensures that the commands in it will be run in order");
 		System.out.println("Commands:");
-		for(int i = 0; i < currentCommandGroup.size(); i++){
-			System.out.println((i + 1) + ". " + currentCommandGroup.get(i));
+		for(int i = 0; i < currentCommand.getCommands().size(); i++){
+			System.out.println((i + 1) + ". " + currentCommand.getCommands().get(i));
 		}
 		System.out.println("1: Add a command. ");
 		System.out.println("2: Insert a command. ");
@@ -272,6 +245,25 @@ public class CommandCreator {
 			+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
 			":" + date.get(Calendar.MINUTE);
 		return dateString;
+	}
+
+	void displayCommand(ScheduledCommand aCommand) {
+		GregorianCalendar now = new GregorianCalendar();
+		now.setTimeInMillis((aCommand.getDate().getTimeInMillis() - now.getTimeInMillis()));
+		System.out.println("Creating a new command. Enter the number of the field you wish to edit.");
+		System.out.println("1: Command/s to be run: " + aCommand.getCommand());
+		System.out.println("2: Date to be run: " + displayDate(aCommand.getDate()));
+		System.out.println("3: Time until run: " + simpleDate(now));
+		if(!aCommand.getRepeat().isZero()){
+			System.out.println("4: Repeating Every: " + (aCommand.getRepeat()));
+		}
+		else {
+			System.out.println("4: Repeating: false");
+		}
+		System.out.println("5: Player or Consol run: not implemented.");
+		System.out.println("6: Extend time till next run. Add time to the next scheduled run.");
+		System.out.println("7: Save Command.");
+		System.out.println("8: Exit.");
 	}
 
 	String simpleDate(GregorianCalendar date){

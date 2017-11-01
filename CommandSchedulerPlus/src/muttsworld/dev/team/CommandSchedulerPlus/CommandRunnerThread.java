@@ -55,7 +55,6 @@ public class CommandRunnerThread implements Runnable {
 		}
 	}
 		
-		
 	//does some magic... As we move down the tree comparing current time, when we move right, every element to the left should be run
 	public void runCommands(TreeNode<ScheduledCommand> node){
 		if(node == null) return;
@@ -70,11 +69,11 @@ public class CommandRunnerThread implements Runnable {
 		//Player player = plugin.getServer().getPlayer("spartagon123");
 		//ArrayList<String> commandStrings = new ArrayList<String>();
 
-		ArrayList<String> commandStrings = node.element.getCommands();
+		ArrayList<CommandWithExecutor> commandStrings = node.element.getCommands();
 		System.out.println(commandStrings.size() + " commands found");
-		for(String aCommand : commandStrings){
+		for(CommandWithExecutor aCommand : commandStrings){
 			System.out.println("Running: " + aCommand);
-			Bukkit.dispatchCommand(console, aCommand);
+			Bukkit.dispatchCommand(console, aCommand.getCommandString());
 		}
 		if(!node.element.getRepeat().isZero()){
 			GregorianCalendar newDate = new GregorianCalendar();

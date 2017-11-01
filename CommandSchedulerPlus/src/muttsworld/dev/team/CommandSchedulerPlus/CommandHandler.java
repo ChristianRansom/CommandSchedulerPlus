@@ -38,7 +38,7 @@ public class CommandHandler implements CommandExecutor{
 		else if(args[0].equals("forceupdate")){
 			return forceupdate();
 		}
-		else if(args[0].equals("forcerun")){
+		else if(args[0].equals("test")){
 			return forceRun(args);
 		}
 		else if(args[0].equals("listcommands") || args[0].equals("commandlist") || args[0].equals("list")){
@@ -72,11 +72,11 @@ public class CommandHandler implements CommandExecutor{
 		
 		//System.out.println("Finding command " + args[1]);
 		synchronized(commands) {
-			ArrayList<String> tempCommandGroup = commands.find(Integer.parseInt(args[1])).getCommands();
+			ArrayList<CommandWithExecutor> tempCommandGroup = commands.find(Integer.parseInt(args[1])).getCommands();
 			System.out.println(tempCommandGroup.size() + " commands found");
-			for(String aCommand : tempCommandGroup){
+			for(CommandWithExecutor aCommand : tempCommandGroup){
 				System.out.println("Running: " + aCommand);
-				Bukkit.dispatchCommand(console, aCommand);
+				Bukkit.dispatchCommand(console, aCommand.getCommandString());
 			}
 		}
 		return true;
