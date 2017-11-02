@@ -10,6 +10,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 	private static final long serialVersionUID = 1L;
 
 	public AVLTree() {
+		super();
 	}
 
 	public AVLTree(ArrayList<E> objects) {
@@ -24,13 +25,22 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 	public boolean insert(E e) {
 		// My solution seems to work well
 		// without changing insert or delete
+		System.out.println("Before Insert:");
+		preOrder();
 		boolean successful = super.insert(e);
 		if (!successful)
 			return false;
 		else {
+			//currentPath = path(e);
+			System.out.println();
+			for(TreeNode<E> node : currentPath){
+				((AVLTreeNode<E>)node).size += 1; //adds 1 to the size of each node along the insertion path
+			}
+			System.out.println("After Insert but before balancing and height update:");
+			preOrder();
 			balancePath(e);
-			System.out.println("Updating Size");
-			updateSize();
+			System.out.println("After balancing:");
+			preOrder();
 		}
 		return true;
 	}
@@ -46,28 +56,10 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 			node.height = 1 + ((AVLTreeNode<E>) (node.left)).height;
 		else
 			node.height = 1 + Math.max(((AVLTreeNode<E>) (node.right)).height, ((AVLTreeNode<E>) (node.left)).height);
-		// whenever height is updated
-		// size is updated as well
-	}
 
-	// This is the method that takes care
-	// of my issues
-	// This is similar to the update height
-	// works by setting the size of a node
-	// 1 + size of left + size of right
-	public void updateSize() {
-		updateSize(root);
-	}
-
-	public void updateSize(TreeNode<E> root) {
-		if (root == null)
-			return;
-		updateSize(root.left);
-		updateSize(root.right);
-		updateNodeSize((AVLTreeNode<E>)root);
 	}
 	
-	private void updateNodeSize(AVLTreeNode<E> node)
+	private void updateSize(AVLTreeNode<E> node)
 	{
        
 		if(node.left == null && node.right == null) 
@@ -92,6 +84,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		for (int i = path.size() - 1; i >= 0; i--) {
 			AVLTreeNode<E> A = (AVLTreeNode<E>) (path.get(i));
 			updateHeight(A);
+			
 			AVLTreeNode<E> parentOfA = (A == root) ? null : (AVLTreeNode<E>) (path.get(i - 1));
 
 			switch (balanceFactor(A)) {
@@ -124,6 +117,8 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 
 	private void balanceLL(TreeNode<E> A, TreeNode<E> parentOfA) {
 		TreeNode<E> B = A.left;
+		
+		//Promotes B
 		if (A == root) {
 			root = B;
 		} else {
@@ -132,9 +127,15 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 			} else
 				parentOfA.right = B;
 		}
+		//B.size = A.size;
 
+		//Trade Adopted Node
 		A.left = B.right;
 		B.right = A;
+		
+		updateSize((AVLTreeNode<E>) A);
+		updateSize((AVLTreeNode<E>) B);
+		
 		updateHeight((AVLTreeNode<E>) A);
 		updateHeight((AVLTreeNode<E>) B);
 
@@ -144,6 +145,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		TreeNode<E> B = A.left;
 		TreeNode<E> C = B.right;
 
+		//Promote C
 		if (A == root) {
 			root = C;
 		} else {
@@ -159,6 +161,10 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		C.left = B;
 		C.right = A;
 
+		updateSize((AVLTreeNode<E>)A);
+		updateSize((AVLTreeNode<E>)B);
+		updateSize((AVLTreeNode<E>)C);
+
 		updateHeight((AVLTreeNode<E>) A);
 		updateHeight((AVLTreeNode<E>) B);
 		updateHeight((AVLTreeNode<E>) C);
@@ -167,10 +173,10 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 	private void balanceRR(TreeNode<E> A, TreeNode<E> parentOfA) {
 		TreeNode<E> B = A.right;
 
+		//Promotes B
 		if (A == root) {
 			root = B;
 		}
-
 		else {
 			if (parentOfA.left == A) {
 				parentOfA.left = B;
@@ -179,9 +185,15 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 
 			}
 		}
+		//B.size = A.size;
 
+		//Transfers child
 		A.right = B.left;
 		B.left = A;
+		
+		updateSize((AVLTreeNode<E>) A);
+		updateSize((AVLTreeNode<E>) B);
+
 		updateHeight((AVLTreeNode<E>) A);
 		updateHeight((AVLTreeNode<E>) B);
 
@@ -191,6 +203,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		TreeNode<E> B = A.right;
 		TreeNode<E> C = B.left;
 
+		//Double Promotes C
 		if (A == root) {
 			root = C;
 		}
@@ -202,16 +215,20 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 				parentOfA.right = C;
 			}
 		}
-
+		C.size = A.size;
+		
 		A.right = C.left;
 		B.left = C.right;
 		C.left = A;
 		C.right = B;
 
+		
+		updateSize((AVLTreeNode<E>) A);
+		updateSize((AVLTreeNode<E>) B);
+		updateSize((AVLTreeNode<E>) C);
+		
 		updateHeight((AVLTreeNode<E>) A);
-
 		updateHeight((AVLTreeNode<E>) B);
-
 		updateHeight((AVLTreeNode<E>) C);
 	}
 
@@ -268,7 +285,6 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 
 			balancePath(parentOfRightMost.element);
 		}
-		updateSize();
 		return true;
 	}
 
@@ -314,6 +330,11 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		 */
 		private static final long serialVersionUID = 1L;
 		protected int height = 0;
+		/* To maintain the size of each node, for insertions, every node on the path from the 
+		 * root to the insertion the size is incremented. 
+		 * Then during balancing, the size for specific nodes values are simply swapped. 
+		 * 
+		*/
 		protected int size = 1;
 
 		public AVLTreeNode(E e) {

@@ -23,6 +23,14 @@ public class TimeSlice implements Serializable {
 	}
 
 
+	public TimeSlice(int dayOfMonth, int hourOfDay, int minute) {
+		this.days = dayOfMonth;
+		this.hours = hourOfDay;
+		this.minutes = minute; 
+		this.seconds = 0;	
+	}
+
+
 	private void updateMillis() {
 		millis = 0l;
         millis += TimeUnit.DAYS.toMillis(days);

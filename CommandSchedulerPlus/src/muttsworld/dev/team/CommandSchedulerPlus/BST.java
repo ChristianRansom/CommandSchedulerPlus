@@ -7,16 +7,16 @@ import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;
 
 class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	TreeNode<E> root, current, parent;
+	ArrayList<TreeNode<E>> currentPath;
 
 	private int i;
 
 	public BST() {
+		ArrayList<TreeNode<E>> currentPath = new ArrayList<TreeNode<E>>();
 	}
 
 	public BST(ArrayList<E> objects) {
@@ -233,15 +233,16 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	}
 
 	public boolean insert(E o) {
-
+		currentPath = new ArrayList<TreeNode<E>>();
 		System.out.println("Inserting into the tree");
 		if (root == null) {
 			root = createNewNode(o);
-		} else {
+		} 
+		else {
 			parent = null;
 			current = root;
 			while (current != null) {
-				System.out.println("Inserting: o.compareTo(current.element) : " + (o.compareTo(current.element)));
+				currentPath.add(current);
 				if (o.compareTo(current.element) < 0) {
 					parent = current;
 					current = current.left;
@@ -258,6 +259,8 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 			else
 				parent.right = createNewNode(o);
 		}
+		
+		System.out.println("CurrentPath after insert: " + currentPath);
 		return true;
 	}
 

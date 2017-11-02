@@ -43,6 +43,7 @@ public class CommandCreator {
 
 	boolean commandEditor(String[] args) {
 	    int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
+	    TimeSlice timeSlice;
 	    switch(commandEditorOption) {
 	        case 0 :
 	        	commandEditorOption = Integer.parseInt(args[0]);
@@ -58,11 +59,11 @@ public class CommandCreator {
 		    	        		//System.out.println(currentCommandGroup.size() + " commands found");
 		    	        		displayCommandEditor(currentCommand.getCommands());
 		        			}
-	        			case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hour Seconds"); break;
-		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minute Seconds"); break;
-		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minute Seconds"); break;
-		        		case 6 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minute Seconds"); break;
-		        		case 7 : System.out.println("Saving the command"); 
+	        			case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hours Minutes"); break;
+		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minutes"); break;
+		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minutes"); break;
+		        		case 5 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minutes"); break;
+		        		case 6 : System.out.println("Saving the command"); 
 		        			if(editingCommand == null) {
 			        			synchronized(commands){
 				        			commands.insert(currentCommand);
@@ -78,12 +79,11 @@ public class CommandCreator {
 				        	commandEditorOption = 0;
 				        	commandEditor = false;
 		        			break;
-		    	        case 8 : 
+		    	        case 7 : 
 		    	        	System.out.println("Exiting");
 		        			editingCommand = null;
 		    	        	commandEditorOption = 0;
 		    	        	commandEditor = false;
-		        		//case 5 : System.out.println("");
 		        	}
 	        	}
 	        	else{
@@ -103,7 +103,7 @@ public class CommandCreator {
 		        	displayCommand(currentCommand);
 	        	}
 				break; 
-	        case 2 : //handle date entry 
+	        case 2 : //handle date entry for a new command
 		        if(args.length == 5){ 		//TODO check for valid date like month etc. 
 		        	year = Integer.parseInt(args[0]); 
 		        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
@@ -119,18 +119,12 @@ public class CommandCreator {
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand);
 	        	break;
-	        case 3 : //handle date entry 
-	        	if(args.length == 4){ 		//TODO check for valid date like month etc. 
-	        		dayOfMonth = Integer.parseInt(args[0]); 
-	        		hourOfDay = Integer.parseInt(args[1]); 
-	        		minute = Integer.parseInt(args[2]); 
-	        		int second = Integer.parseInt(args[3]); 
-	        		
+	        case 3 : //Time relative from now that the command should be scheduled
+        		timeSlice = timeSliceEntry(args);
+	        	if(timeSlice != null){  
 	        		GregorianCalendar newDate = new GregorianCalendar(); //creates a date of the time now
-	        		newDate.setTimeInMillis(newDate.getTimeInMillis() 
-		        			+ (new TimeSlice(dayOfMonth, hourOfDay, minute, second).getMillis()));
+	        		newDate.setTimeInMillis(newDate.getTimeInMillis() + (timeSlice.getMillis()));
 		        	currentCommand.setDate(newDate);
-		        	
 		        	System.out.println("Scheduled command relative to current time."); 
 		        	commandEditorOption = 0;
 		        	displayCommand(currentCommand);
@@ -139,31 +133,21 @@ public class CommandCreator {
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand);
 	        	break;
-	        case 4 : 
-	        	if(args.length == 4){ 		//TODO check for valid date like month etc. 
-	        		dayOfMonth = Integer.parseInt(args[0]); 
-	        		hourOfDay = Integer.parseInt(args[1]); 
-	        		minute = Integer.parseInt(args[2]); 
-	        		int second = Integer.parseInt(args[3]); 
-		        	
-		        	currentCommand.setRepeat(new TimeSlice(dayOfMonth, hourOfDay, minute, second));
-		        	
+	        case 4 : //set repeat time for a command
+        		timeSlice = timeSliceEntry(args);
+	        	if(timeSlice != null){ 
+		        	currentCommand.setRepeat(timeSlice);
 		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
 		        }
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand);
 	        	break;
-	        case 6 : //TODO extract out this date handling. duplicate code
-	        	if(args.length == 4){ 		//TODO check for valid date like month etc. 
-	        		dayOfMonth = Integer.parseInt(args[0]); 
-	        		hourOfDay = Integer.parseInt(args[1]); 
-	        		minute = Integer.parseInt(args[2]); 
-	        		int second = Integer.parseInt(args[3]); 
+	        case 5 : //Add time to scheduled run
+	        	timeSlice = timeSliceEntry(args);
+	        	if(timeSlice != null){		
 	        		GregorianCalendar newDate = new GregorianCalendar();
-	        		newDate.setTimeInMillis(currentCommand.getDate().getTimeInMillis() 
-		        			+ (new TimeSlice(dayOfMonth, hourOfDay, minute, second).getMillis()));
+	        		newDate.setTimeInMillis(currentCommand.getDate().getTimeInMillis() + timeSlice.getMillis());
 		        	currentCommand.setDate(newDate);
-		        	
 		        	System.out.println("Scheduled date extended "); 
 		        	commandEditorOption = 0;
 		        	displayCommand(currentCommand);
@@ -171,6 +155,19 @@ public class CommandCreator {
 		        }
 	    }
 	    return true;
+	}
+	
+	public TimeSlice timeSliceEntry(String[] args){
+		if(args.length == 3){ //TODO check for valid date like month etc. 
+			int days = Integer.parseInt(args[0]); 
+			int hours = Integer.parseInt(args[1]); 
+			int minutes = Integer.parseInt(args[2]); 
+			return new TimeSlice(days, hours, minutes);
+		}
+		else {
+			System.out.println("Usage: /csp Days Hours Minutes");
+			return null;
+		}
 	}
 
 	//package visibility
@@ -192,7 +189,6 @@ public class CommandCreator {
 			        			System.out.println("No commands found in the command group... Exiting");
 		        			}
 		        			else{
-			        			//currentCommand.setCommands(currentCommandGroup);
 			        			currentCommand.setCommandGroup(true); //TODO make sure this is in the right place.... 
 		        			}
 		        			groupCommandEditorOption = 0;
@@ -260,10 +256,9 @@ public class CommandCreator {
 		else {
 			System.out.println("4: Repeating: false");
 		}
-		System.out.println("5: Player or Consol run: not implemented.");
-		System.out.println("6: Extend time till next run. Add time to the next scheduled run.");
-		System.out.println("7: Save Command.");
-		System.out.println("8: Exit.");
+		System.out.println("5: Extend time till next run. Add time to the next scheduled run.");
+		System.out.println("6: Save Command.");
+		System.out.println("7: Exit.");
 	}
 
 	String simpleDate(GregorianCalendar date){

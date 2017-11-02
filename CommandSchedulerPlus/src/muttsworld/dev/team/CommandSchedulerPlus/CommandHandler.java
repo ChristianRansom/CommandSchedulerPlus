@@ -52,11 +52,7 @@ public class CommandHandler implements CommandExecutor{
 			commands.preOrder();
 			return true;
 		}
-		else if(args[0].equals("updatesize")){
-			commands.updateSize();
-			return true;
-		}
-		else if(args[0].equals("time")){
+		else if (args[0].equals("time")){
 			System.out.print(commandCreator.displayDate(new GregorianCalendar()));
 			return true;
 		}
