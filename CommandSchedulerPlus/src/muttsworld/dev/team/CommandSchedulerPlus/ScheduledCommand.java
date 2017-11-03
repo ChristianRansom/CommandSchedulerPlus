@@ -147,7 +147,12 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	public String toString() {
 		String dateString = (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DATE) + "/"
 				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE);
-
-		return "ScheduledCommand [command = " + commands + ", date = " + dateString + "]";
+		
+		if(!commandGroup) {
+			return "Command = " + commands + ", Date = " + dateString;
+		}
+		else {
+			return "Commands = " + commands + ", Date = " + dateString;
+		}
 	}
 }

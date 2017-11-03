@@ -3,7 +3,6 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;
 
 public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializable {
 
@@ -25,22 +24,22 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 	public boolean insert(E e) {
 		// My solution seems to work well
 		// without changing insert or delete
-		System.out.println("Before Insert:");
-		preOrder();
+		//System.out.println("Before Insert:");
+		//preOrder();
 		boolean successful = super.insert(e);
 		if (!successful)
 			return false;
 		else {
 			//currentPath = path(e);
-			System.out.println();
+			//System.out.println();
 			for(TreeNode<E> node : currentPath){
 				((AVLTreeNode<E>)node).size += 1; //adds 1 to the size of each node along the insertion path
 			}
-			System.out.println("After Insert but before balancing and height update:");
-			preOrder();
+			//System.out.println("After Insert but before balancing and height update:");
+			//preOrder();
 			balancePath(e);
-			System.out.println("After balancing:");
-			preOrder();
+			//System.out.println("After balancing:");
+			//preOrder();
 		}
 		return true;
 	}
@@ -232,14 +231,14 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 	}
 
 	public boolean delete(E element) {
-		System.out.println("Deleting an element");
+		//System.out.println("Deleting an element");
 		if (root == null)
 			return false;
 
 		TreeNode<E> parent = null;
 		TreeNode<E> current = root;
 		while (current != null) {
-			System.out.println("Delete: element.compareTo(current.element) : " + (element.compareTo(current.element)));
+			//System.out.println("Delete: element.compareTo(current.element) : " + (element.compareTo(current.element)));
 			if (element.compareTo(current.element) < 0) {
 				parent = current;
 				current = current.left;
@@ -250,7 +249,7 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 				break;
 		}
 		if (current == null) {
-			System.out.println("Element not found. Deletion failed. ");
+			//System.out.println("Element not found. Deletion failed. ");
 			return false;
 		}
 
@@ -301,18 +300,18 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		// key players
 		AVLTreeNode<E> A = (AVLTreeNode<E>)(node.left);
 		AVLTreeNode<E> B = (AVLTreeNode<E>)(node.right);
-		System.out.println("Finding(k) K = " + k);
+		//System.out.println("Finding(k) K = " + k);
 		if (A != null) {
-			System.out.print("A.size : " + A.size);
+			//System.out.print("A.size : " + A.size);
 		}
 		if (A == null && k == 1) { //root.element, if A is null and k is 1;
-			System.out.println("A == null & k = 1 returning node");
+			//System.out.println("A == null & k = 1 returning node");
 			return node.element;
 		} else if (A == null && k == 2) { //B.element, if A is null and k is 2;
-			System.out.println("A == null & k = 2 returning node");
+			//System.out.println("A == null & k = 2 returning node");
 			return B.element;
 		} else if (k <= A.size) { //find(k, A), if k <= A.size;
-			System.out.println("K < A.size so it must be a child of A");
+			//System.out.println("K < A.size so it must be a child of A");
 			return find(k, A);
 		}
 		else if (k == (A.size + 1)) { //root.element, if k = A.size + 1;

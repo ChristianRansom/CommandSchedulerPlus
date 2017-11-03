@@ -3,6 +3,8 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.bukkit.command.CommandSender;
+
 import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;
 
 class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
@@ -124,31 +126,31 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	// two different search trees are the same
 	// contentwise
 	//Needed to import and cast as AVLTreeNodes to preserver proper size values
-	public void inOrder() {
+	public void inOrder(CommandSender sender,  CommandSchedulerPlus plugin) {
 		i = 1;
-		inOrder((AVLTreeNode<E>)root);
-		System.out.println();
+		inOrder((AVLTreeNode<E>)root, sender, plugin);
+		//System.out.println();
 	}
 
-	public void inOrder(AVLTreeNode<E> root) {
+	public void inOrder(AVLTreeNode<E> root, CommandSender sender, CommandSchedulerPlus plugin) {
 		if (root == null)
 			return;
-		inOrder((AVLTreeNode<E>)root.left);
-		System.out.print("" + (i++) + " size = " + root.size + " hieght = " + root.height + " | " + root.element);
-		inOrder((AVLTreeNode<E>)root.right);
+		inOrder((AVLTreeNode<E>)root.left, sender, plugin);
+		sender.sendMessage(plugin.prefix + (i++) + ". " + root.element);
+		inOrder((AVLTreeNode<E>)root.right, sender, plugin);
 	}
 
-	public void preOrder() {
+	public void preOrder(CommandSender sender, CommandSchedulerPlus plugin) {
 		i = 1;
-		preOrder((AVLTreeNode<E>)root);
+		preOrder((AVLTreeNode<E>)root, sender, plugin);
 	}
 
-	public void preOrder(AVLTreeNode<E> root) {
+	public void preOrder(AVLTreeNode<E> root, CommandSender sender, CommandSchedulerPlus plugin) {
 		if (root == null)
 			return;
-		System.out.print("" + (i++) + " size = " + root.size + " height = " + root.height + " | " + root.element);
-		preOrder((AVLTreeNode<E>)root.left);
-		preOrder((AVLTreeNode<E>)root.right);
+		sender.sendMessage(plugin.prefix + (i++) + " size = " + root.size + " height = " + root.height + " | " + root.element);
+		preOrder((AVLTreeNode<E>)root.left, sender, plugin);
+		preOrder((AVLTreeNode<E>)root.right, sender, plugin);
 	}
 
 	/////////////////////////////////////////////////////////
@@ -223,8 +225,8 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	///////////////////////////////////////////////////////
 
 	public int getSize() {
-		System.out.println("Root " + root.element);
-		System.out.println("Root.size " + root.size);
+		//System.out.println("Root " + root.element);
+		//System.out.println("Root.size " + root.size);
 		return ((AVLTreeNode<E>)root).size;
 	}
 
@@ -234,7 +236,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 
 	public boolean insert(E o) {
 		currentPath = new ArrayList<TreeNode<E>>();
-		System.out.println("Inserting into the tree");
+		//System.out.println("Inserting into the tree");
 		if (root == null) {
 			root = createNewNode(o);
 		} 
@@ -250,7 +252,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 					parent = current;
 					current = current.right;
 				} else {
-					System.out.println("Found duplicate node. Can't insert. Returning False");
+					//System.out.println("Found duplicate node. Can't insert. Returning False");
 					return false;
 				}
 			}
@@ -260,7 +262,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 				parent.right = createNewNode(o);
 		}
 		
-		System.out.println("CurrentPath after insert: " + currentPath);
+		//System.out.println("CurrentPath after insert: " + currentPath);
 		return true;
 	}
 

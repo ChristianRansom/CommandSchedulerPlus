@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.command.CommandSender;
+
 public class CommandCreator {
 	
 	private final AVLTree<ScheduledCommand> commands; //the list of commands
@@ -19,29 +21,30 @@ public class CommandCreator {
 	private int groupCommandEditorOption = 0;
 	boolean groupCommandEditor = false; //Value used to handle command groups
 
-	public CommandCreator(AVLTree<ScheduledCommand> theCommands){
+	public CommandCreator(AVLTree<ScheduledCommand> theCommands, CommandSchedulerPlus plugin2){
 		commands = theCommands;
+		plugin = plugin2;
 	}
 
-	boolean createCommand(){
+	boolean createCommand(CommandSender sender){
 		currentCommand = new ScheduledCommand();
 		commandEditor = true;
-		displayCommand(currentCommand);
+		displayCommand(currentCommand, sender);
 		return true;
 	}
 
-	boolean editCommand(String[] args) {
-		System.out.println("Finding command " + args[1]);
-		System.out.println("commands.getSize(): " + commands.getSize());
+	boolean editCommand(String[] args, CommandSender sender) {
+		//System.out.println("Finding command " + args[1]);
+		//System.out.println("commands.getSize(): " + commands.getSize());
 		editingCommand = (commands.find(Integer.parseInt(args[1])));
-		System.out.println(editingCommand);
+		//System.out.println(editingCommand);
 		currentCommand = editingCommand.copy();
 		commandEditor = true;
-		displayCommand(currentCommand);
+		displayCommand(currentCommand, sender);
 		return true;
 	}
 
-	boolean commandEditor(String[] args) {
+	boolean commandEditor(String[] args, CommandSender sender) {
 	    int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
 	    TimeSlice timeSlice;
 	    switch(commandEditorOption) {
@@ -51,18 +54,18 @@ public class CommandCreator {
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : 
 		        			if(!currentCommand.getCommandGroup()) {
-		        				System.out.println("Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands"); break;
+		        				sender.sendMessage(plugin.prefix + "Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands"); break;
 		        			}
 		        			else {
 		    	        		groupCommandEditor = true;
 		    		        	commandEditorOption = 0;
-		    	        		displayCommandEditor(currentCommand.getCommands());
+		    	        		displayCommandEditor(currentCommand.getCommands(), sender);
 		        			}
-	        			case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hours Minutes"); break;
-		        		case 3 : System.out.println("Enter the time from now you want the command to run: /csp Days Hours Minutes"); break;
-		        		case 4 : System.out.println("Enter the how often you want the command to repeat: /csp Days Hours Minutes"); break;
-		        		case 5 : System.out.println("Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minutes"); break;
-		        		case 6 : System.out.println("Saving the command"); 
+	        			case 2 : sender.sendMessage(plugin.prefix + "Enter the date and time you want the command to run. /csp Year Month Day (24)Hours Minutes"); break;
+		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the time from now you want the command to run: /csp Days Hours Minutes"); break;
+		        		case 4 : sender.sendMessage(plugin.prefix + "Enter the how often you want the command to repeat: /csp Days Hours Minutes"); break;
+		        		case 5 : sender.sendMessage(plugin.prefix + "Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minutes"); break;
+		        		case 6 : sender.sendMessage(plugin.prefix + "Saving the command"); 
 		        			if(editingCommand == null) {
 			        			synchronized(commands){
 				        			commands.insert(currentCommand);
@@ -79,14 +82,14 @@ public class CommandCreator {
 				        	commandEditor = false;
 		        			break;
 		    	        case 7 : 
-		    	        	System.out.println("Exiting");
+		    	        	sender.sendMessage(plugin.prefix + "Exiting");
 		        			editingCommand = null;
 		    	        	commandEditorOption = 0;
 		    	        	commandEditor = false;
 		        	}
 	        	}
 	        	else{
-		    		System.out.println("Enter an option from 1 to 8");
+	        		sender.sendMessage(plugin.prefix + "Enter an option from 1 to 8");
 	        	}
 	        	break;
 	        case 1 : //handle new command being added
@@ -94,12 +97,12 @@ public class CommandCreator {
 	        		groupCommandEditor = true;
 		        	commandEditorOption = 0;
 	        		//System.out.println(currentCommandGroup.size() + " commands found");
-	        		displayCommandEditor(currentCommand.getCommands());
+	        		displayCommandEditor(currentCommand.getCommands(), sender);
 	        	}
-	        	else { //TODO combine these lines with command group add stuff
+	        	else { 
 	        		currentCommand.setCommand(args, 0);
 	        		commandEditorOption = 0;
-		        	displayCommand(currentCommand);
+		        	displayCommand(currentCommand, sender);
 	        	}
 				break; 
 	        case 2 : //handle date entry for a new command
@@ -113,54 +116,54 @@ public class CommandCreator {
 		        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
 		        	currentCommand.setDate(gcalendarDate);
 		        	
-		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
+		        	sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
 		        }
 	        	commandEditorOption = 0;
-	        	displayCommand(currentCommand);
+	        	displayCommand(currentCommand, sender);
 	        	break;
 	        case 3 : //Time relative from now that the command should be scheduled
-        		timeSlice = timeSliceEntry(args);
+        		timeSlice = timeSliceEntry(args, sender);
 	        	if(timeSlice != null){  
 	        		GregorianCalendar newDate = new GregorianCalendar(); //creates a date of the time now
 	        		newDate.setTimeInMillis(newDate.getTimeInMillis() + (timeSlice.getMillis()));
 		        	currentCommand.setDate(newDate);
-		        	System.out.println("Scheduled command relative to current time."); 
+		        	sender.sendMessage(plugin.prefix + "Scheduled command relative to current time."); 
 		        	commandEditorOption = 0;
-		        	displayCommand(currentCommand);
+		        	displayCommand(currentCommand, sender);
 		        	break;
 		        }
 	        	commandEditorOption = 0;
-	        	displayCommand(currentCommand);
+	        	displayCommand(currentCommand, sender);
 	        	break;
 	        case 4 : //set repeat time for a command
-        		timeSlice = timeSliceEntry(args);
+        		timeSlice = timeSliceEntry(args, sender);
 	        	if(timeSlice != null){ 
 		        	currentCommand.setRepeat(timeSlice);
-		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
-	        		displayCommand(currentCommand);
+		        	sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
+	        		displayCommand(currentCommand, sender);
 	        		commandEditorOption = 0;
 		        }
 	        	else {
 	        		commandEditorOption = 0;
-	        		displayCommand(currentCommand);
+	        		displayCommand(currentCommand, sender);
 	        	}
 	        	break;
 	        case 5 : //Add time to scheduled run
-	        	timeSlice = timeSliceEntry(args);
+	        	timeSlice = timeSliceEntry(args, sender);
 	        	if(timeSlice != null){		
 	        		GregorianCalendar newDate = new GregorianCalendar();
 	        		newDate.setTimeInMillis(currentCommand.getDate().getTimeInMillis() + timeSlice.getMillis());
 		        	currentCommand.setDate(newDate);
-		        	System.out.println("Scheduled date extended "); 
+		        	sender.sendMessage(plugin.prefix + "Scheduled date extended "); 
 		        	commandEditorOption = 0;
-		        	displayCommand(currentCommand);
+		        	displayCommand(currentCommand, sender);
 		        	break;
 		        }
 	    }
 	    return true;
 	}
 	
-	public TimeSlice timeSliceEntry(String[] args){
+	public TimeSlice timeSliceEntry(String[] args, CommandSender sender){
 		if(args.length == 3){ //TODO check for valid date like month etc. 
 			int days = Integer.parseInt(args[0]); 
 			int hours = Integer.parseInt(args[1]); 
@@ -168,75 +171,76 @@ public class CommandCreator {
 			return new TimeSlice(days, hours, minutes);
 		}
 		else {
-			System.out.println("Usage: /csp Days Hours Minutes");
+			sender.sendMessage(plugin.prefix + "Usage: /csp Days Hours Minutes");
 			return null;
 		}
 	}
 
 	//package visibility
-	boolean createCommandGroup(String[] args) {
+	boolean createCommandGroup(String[] args, CommandSender sender) {
 		switch(groupCommandEditorOption) {
 	        case 0 :
 	        	groupCommandEditorOption = Integer.parseInt(args[0]);
 	        	if(groupCommandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
-		        		case 1 : System.out.println("Enter the command you want to add to the group."); break;
-		        		case 2 : System.out.println("Enter the number of where you want to insert a command followed by the commmand"); break;
-		        		case 3 : System.out.println("Enter the number of the command you want to delete."); break;
-		        		case 4 : System.out.println("Cleared all the commands"); 
+		        		case 1 : sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group."); break;
+		        		case 2 : sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand"); break;
+		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the number of the command you want to delete."); break;
+		        		case 4 : sender.sendMessage(plugin.prefix + "Cleared all the commands"); 
 		        			currentCommand.getCommands().clear();
-		    	        	displayCommand(currentCommand);
+		    	        	displayCommand(currentCommand, sender);
 		        			break;
-		        		case 5 : System.out.println("Command Group Saved"); 
+		        		case 5 : sender.sendMessage(plugin.prefix + "Command Group Saved"); 
 		        			if(currentCommand.getCommands().isEmpty()) {
-			        			System.out.println("No commands found in the command group... Exiting");
+		        				sender.sendMessage(plugin.prefix + "No commands found in the command group... Exiting");
 		        			}
 		        			else{
-			        			currentCommand.setCommandGroup(true); //TODO make sure this is in the right place.... 
+			        			currentCommand.setCommandGroup(true);
 		        			}
 		        			groupCommandEditorOption = 0;
 				        	groupCommandEditor = false;
-				        	displayCommand(currentCommand);
+				        	displayCommand(currentCommand, sender);
 		        			break;
 		        	}
 	        	}
 	        	else{
-		    		System.out.println("Enter an option from 1 to 5");
+	        		sender.sendMessage(plugin.prefix + "Enter an option from 1 to 5");
 	        	}
 	        	break; //Breaks from outer switch case
 	        case 1 : //handle new command being added to the commmandGroup
 	        	currentCommand.setCommand(args, -1);
 				groupCommandEditorOption = 0;
-				displayCommandEditor(currentCommand.getCommands());
+				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
 	        case 2 : //handle command insert
 	        	//remove insertion place argument argument from the command
 	        	currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
 				groupCommandEditorOption = 0;
-				displayCommandEditor(currentCommand.getCommands());
+				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
 	        case 3 : //handle command delete
 	        	currentCommand.getCommands().remove(Integer.parseInt(args[0]) - 1);
 				groupCommandEditorOption = 0;
-				displayCommandEditor(currentCommand.getCommands());
+				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
 		}
 	    	
 		return true;
 	}
 
-	void displayCommandEditor(ArrayList<CommandWithExecutor> arrayList) {
-		System.out.println("Creating a group of commands. Enter the number of the field you wish to edit.");
-		System.out.println("Note: A command group ensures that the commands in it will be run in order");
-		System.out.println("Commands:");
+	void displayCommandEditor(ArrayList<CommandWithExecutor> arrayList, CommandSender sender) {
+		sender.sendMessage(plugin.prefix + "Creating a group of commands. Enter the number of the field you wish to edit.");
+		sender.sendMessage(plugin.prefix + "Note: A command group ensures that the commands in it will be run in order");
+		sender.sendMessage(plugin.prefix + "Commands:");
 		for(int i = 0; i < currentCommand.getCommands().size(); i++){
-			System.out.println((i + 1) + ". " + currentCommand.getCommands().get(i));
+			sender.sendMessage(plugin.prefix + (i + 1) + ". " + currentCommand.getCommands().get(i));
 		}
-		System.out.println("1: Add a command. ");
-		System.out.println("2: Insert a command. ");
-		System.out.println("3: Delete a command. ");
-		System.out.println("4: Clear all commands.");
-		System.out.println("5: Save and Exit.");
+		sender.sendMessage(plugin.prefix + "---------------------------------------------------------");
+		sender.sendMessage(plugin.prefix + "1: Add a command. ");
+		sender.sendMessage(plugin.prefix + "2: Insert a command. ");
+		sender.sendMessage(plugin.prefix + "3: Delete a command. ");
+		sender.sendMessage(plugin.prefix + "4: Clear all commands.");
+		sender.sendMessage(plugin.prefix + "5: Save and Exit.");
 	}
 
 	String displayDate(GregorianCalendar date){
@@ -246,22 +250,22 @@ public class CommandCreator {
 		return dateString;
 	}
 
-	void displayCommand(ScheduledCommand aCommand) {
+	void displayCommand(ScheduledCommand aCommand, CommandSender sender) {
 		GregorianCalendar now = new GregorianCalendar();
 		now.setTimeInMillis((aCommand.getDate().getTimeInMillis() - now.getTimeInMillis()));
-		System.out.println("Creating a new command. Enter the number of the field you wish to edit.");
-		System.out.println("1: Command/s to be run: " + aCommand.getCommand());
-		System.out.println("2: Date to be run: " + displayDate(aCommand.getDate()));
-		System.out.println("3: Time until run: " + simpleDate(now));
+		sender.sendMessage(plugin.prefix + "Creating a new command. Enter the number of the field you wish to edit.");
+		sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + aCommand.getCommand());
+		sender.sendMessage(plugin.prefix + "2: Date to be run: " + displayDate(aCommand.getDate()));
+		sender.sendMessage(plugin.prefix + "3: Time until run: " + simpleDate(now));
 		if(!aCommand.getRepeat().isZero()){
-			System.out.println("4: Repeating Every: " + (aCommand.getRepeat()));
+			sender.sendMessage(plugin.prefix + "4: Repeating Every: " + (aCommand.getRepeat()));
 		}
 		else {
-			System.out.println("4: Repeating: false");
+			sender.sendMessage(plugin.prefix + "4: Repeating: false");
 		}
-		System.out.println("5: Extend time till next run. Add time to the next scheduled run.");
-		System.out.println("6: Save Command.");
-		System.out.println("7: Exit.");
+		sender.sendMessage(plugin.prefix + "5: Extend time till next run. Add time to the next scheduled run.");
+		sender.sendMessage(plugin.prefix + "6: Save Command.");
+		sender.sendMessage(plugin.prefix + "7: Exit.");
 	}
 
 	String simpleDate(GregorianCalendar date){

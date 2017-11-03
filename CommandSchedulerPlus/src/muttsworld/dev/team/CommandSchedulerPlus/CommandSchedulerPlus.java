@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -23,6 +24,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	private FileConfiguration config = getConfig();
 	MainThread mainthread;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+	public final String prefix = ChatColor.YELLOW + "[" + ChatColor.BLUE + "CSP" + ChatColor.YELLOW + "] " + ChatColor.WHITE;
 
 	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
 	
@@ -39,7 +41,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			commands = (AVLTree<ScheduledCommand>)ois.readObject();
 			ois.close();
 		} catch (FileNotFoundException e) {
-			System.out.print("No command data found. Making a new one...");
+			console.sendMessage(prefix + "No Command data file found. Making a new one...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -63,11 +65,11 @@ public class CommandSchedulerPlus extends JavaPlugin {
     @Override
     public void onDisable() {
     	
-    	System.out.println("Stopping Main Thread");
+    	console.sendMessage(prefix + "Stopping Main Thread");
     	mainthread.stopThread();
     	try {
     		
-    		System.out.println("Saving commands");
+    		console.sendMessage(prefix + "Saving commands");
 			// write object to file
 			FileOutputStream fos = new FileOutputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -84,15 +86,15 @@ public class CommandSchedulerPlus extends JavaPlugin {
     public void runCommand(ArrayList<CommandWithExecutor> commands){
 		ArrayList<CommandWithExecutor> commandStrings = commands;
 		for(CommandWithExecutor aCommand : commandStrings){
-			System.out.println("Running: " + aCommand);
+			//System.out.println("Running: " + aCommand);
 			String executor = aCommand.getExecutor();
 			
-			System.out.println("Command Executor = " + executor);
+			//System.out.println("Command Executor = " + executor);
 			
 			if(executor.equalsIgnoreCase("ALLPLAYERS")){ //Runs command on each online player
 				Collection<? extends Player> allPlayers = Bukkit.getServer().getOnlinePlayers();
 				if(allPlayers.isEmpty()){
-					System.out.println("There are no players online");
+					//System.out.println("There are no players online");
 				}
 				else {
 					for(Player aPlayer : allPlayers){
@@ -109,7 +111,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 					Bukkit.dispatchCommand(player, aCommand.getCommandString());
 				}
 				else {
-					System.out.println("Player not found");
+					console.sendMessage(prefix + "Player not found");
 				}
 			}
 		}
