@@ -28,6 +28,7 @@ public class TimeSlice implements Serializable {
 		this.hours = hourOfDay;
 		this.minutes = minute; 
 		this.seconds = 0;	
+		updateMillis();
 	}
 
 

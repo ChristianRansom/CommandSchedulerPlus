@@ -53,10 +53,9 @@ public class CommandCreator {
 		        			if(!currentCommand.getCommandGroup()) {
 		        				System.out.println("Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands"); break;
 		        			}
-		        			else { //duplicate code TODO
+		        			else {
 		    	        		groupCommandEditor = true;
 		    		        	commandEditorOption = 0;
-		    	        		//System.out.println(currentCommandGroup.size() + " commands found");
 		    	        		displayCommandEditor(currentCommand.getCommands());
 		        			}
 	        			case 2 : System.out.println("Enter the date and time you want the command to run. /csp Year Month Day (24)Hours Minutes"); break;
@@ -138,9 +137,13 @@ public class CommandCreator {
 	        	if(timeSlice != null){ 
 		        	currentCommand.setRepeat(timeSlice);
 		        	System.out.println("Date Succesfully entered. Command added to be scheduled.");
+	        		displayCommand(currentCommand);
+	        		commandEditorOption = 0;
 		        }
-	        	commandEditorOption = 0;
-	        	displayCommand(currentCommand);
+	        	else {
+	        		commandEditorOption = 0;
+	        		displayCommand(currentCommand);
+	        	}
 	        	break;
 	        case 5 : //Add time to scheduled run
 	        	timeSlice = timeSliceEntry(args);

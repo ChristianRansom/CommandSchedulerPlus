@@ -20,8 +20,7 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 
 	@Override
 	public int compareTo(CommandWithExecutor o) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.commandString.compareTo(o.commandString);
 	}
 
 	public String getCommandString() {
@@ -41,7 +40,6 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 	}
 	
 	public String toString(){
-		
 		if(executor.equalsIgnoreCase("CONSOLE")){
 			return commandString;
 		}

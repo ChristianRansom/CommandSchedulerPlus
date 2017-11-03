@@ -102,10 +102,10 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	public int compareTo(ScheduledCommand otherCommand) {
 		if (this.getDate().compareTo(otherCommand.getDate()) != 0) {
 			return this.getDate().compareTo(otherCommand.getDate());
-		} else if (this.getRepeat().compareTo(otherCommand.getRepeat()) != 0) {
-			return this.getRepeat().compareTo(otherCommand.getRepeat());
 		} else if (this.getCommand().compareTo(otherCommand.getCommand()) != 0) {
 			return this.getCommand().compareTo(otherCommand.getCommand());
+		} else if (this.getRepeat().compareTo(otherCommand.getRepeat()) != 0) {
+			return this.getRepeat().compareTo(otherCommand.getRepeat());
 		} else {
 			return 0;
 		}

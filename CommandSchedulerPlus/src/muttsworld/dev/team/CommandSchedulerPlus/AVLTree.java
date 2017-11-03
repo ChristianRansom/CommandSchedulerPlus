@@ -222,7 +222,6 @@ public class AVLTree<E extends Comparable<E>> extends BST<E> implements Serializ
 		C.left = A;
 		C.right = B;
 
-		
 		updateSize((AVLTreeNode<E>) A);
 		updateSize((AVLTreeNode<E>) B);
 		updateSize((AVLTreeNode<E>) C);
