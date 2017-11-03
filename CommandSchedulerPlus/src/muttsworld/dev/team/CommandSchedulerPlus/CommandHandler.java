@@ -30,6 +30,9 @@ public class CommandHandler implements CommandExecutor{
 		else if(commandCreator.commandEditor){
 			return commandCreator.commandEditor(args);
 		}
+		else if(args[0].equals("help")){
+			return helpInfo();
+		}
 		else if(args[0].equals("create")){
 			return commandCreator.createCommand();
 		}
@@ -48,7 +51,7 @@ public class CommandHandler implements CommandExecutor{
 		else if(args[0].equals("delete")){
 			return deleteCommand(args);
 		}
-		else if(args[0].equals("preorder")){
+		else if(args[0].equals("preorder")){ //secret debugging command
 			commands.preOrder();
 			return true;
 		}
@@ -62,6 +65,16 @@ public class CommandHandler implements CommandExecutor{
 		}
 	}
 	
+	private boolean helpInfo() {
+		System.out.println("/csp create");
+		System.out.println("/csp delete <number>");
+		System.out.println("/csp edit <number>");
+		System.out.println("/csp time");
+		System.out.println("/csp test <number>");
+		System.out.println("/csp list");
+		System.out.println("/csp forceupdate");
+		return true;
+	}
 	private boolean forceRun(String[] args) {
 		
 		//System.out.println("Finding command " + args[1]);
