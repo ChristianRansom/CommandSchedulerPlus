@@ -34,6 +34,10 @@ public class CommandCreator {
 	}
 
 	boolean editCommand(String[] args, CommandSender sender) {
+		if(args.length < 2){
+			sender.sendMessage(plugin.prefix + "Usage: /csp edit <number>");
+			return true;
+		}
 		//System.out.println("Finding command " + args[1]);
 		//System.out.println("commands.getSize(): " + commands.getSize());
 		editingCommand = (commands.find(Integer.parseInt(args[1])));
@@ -47,8 +51,13 @@ public class CommandCreator {
 	boolean commandEditor(String[] args, CommandSender sender) {
 	    int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
 	    TimeSlice timeSlice;
+	    
 	    switch(commandEditorOption) {
 	        case 0 :
+	    		if(args.length < 1){
+	        		displayCommandEditor(currentCommand.getCommands(), sender);
+	    			return true;
+	    		}
 	        	commandEditorOption = Integer.parseInt(args[0]);
 	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
@@ -90,19 +99,25 @@ public class CommandCreator {
 	        	}
 	        	else{
 	        		sender.sendMessage(plugin.prefix + "Enter an option from 1 to 8");
+    	        	commandEditorOption = 0;
 	        	}
 	        	break;
 	        case 1 : //handle new command being added
-	        	if(args[0].equals("commandgroup")){
-	        		groupCommandEditor = true;
-		        	commandEditorOption = 0;
-	        		//System.out.println(currentCommandGroup.size() + " commands found");
-	        		displayCommandEditor(currentCommand.getCommands(), sender);
+	        	if(!(args.length < 1)){
+		        	if(args[0].equals("commandgroup")){
+		        		groupCommandEditor = true;
+			        	commandEditorOption = 0;
+		        		//System.out.println(currentCommandGroup.size() + " commands found");
+		        		displayCommandEditor(currentCommand.getCommands(), sender);
+		        	}
+		        	else { 
+		        		currentCommand.setCommand(args, 0);
+		        		commandEditorOption = 0;
+			        	displayCommand(currentCommand, sender);
+		        	}
 	        	}
-	        	else { 
-	        		currentCommand.setCommand(args, 0);
-	        		commandEditorOption = 0;
-		        	displayCommand(currentCommand, sender);
+	        	else {
+	        		sender.sendMessage(plugin.prefix + "Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands");
 	        	}
 				break; 
 	        case 2 : //handle date entry for a new command
@@ -180,8 +195,12 @@ public class CommandCreator {
 	boolean createCommandGroup(String[] args, CommandSender sender) {
 		switch(groupCommandEditorOption) {
 	        case 0 :
+	    		if(args.length < 1){
+	    			displayCommandEditor(currentCommand.getCommands(), sender);
+	    			return true;
+	    		}
 	        	groupCommandEditorOption = Integer.parseInt(args[0]);
-	        	if(groupCommandEditorOption > 0 && commandEditorOption <= 8) {
+	        	if(groupCommandEditorOption > 0 && groupCommandEditorOption <= 5) {
 		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group."); break;
 		        		case 2 : sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand"); break;
@@ -205,22 +224,46 @@ public class CommandCreator {
 	        	}
 	        	else{
 	        		sender.sendMessage(plugin.prefix + "Enter an option from 1 to 5");
+        			groupCommandEditorOption = 0;
 	        	}
 	        	break; //Breaks from outer switch case
 	        case 1 : //handle new command being added to the commmandGroup
-	        	currentCommand.setCommand(args, -1);
-				groupCommandEditorOption = 0;
+	        	if(args.length < 1){
+	        		sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group.");
+	        		return true;
+	        	}
+	        	else {
+		        	currentCommand.setCommand(args, -1);
+					groupCommandEditorOption = 0;
+	        	}
 				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
 	        case 2 : //handle command insert
-	        	//remove insertion place argument argument from the command
-	        	currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
-				groupCommandEditorOption = 0;
+	        	if(args.length < 2){
+	        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
+	        		return true;
+	        	}
+	        	else {
+	        		//remove insertion place argument argument from the command
+	        		if(Integer.parseInt(args[0]) >= currentCommand.getCommands().size() && Integer.parseInt(args[0]) > 0) {
+		        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
+		        		groupCommandEditorOption = 0;
+	        		}
+	        		else {
+		        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
+	        		}
+	        	}
 				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
 	        case 3 : //handle command delete
-	        	currentCommand.getCommands().remove(Integer.parseInt(args[0]) - 1);
-				groupCommandEditorOption = 0;
+	        	if(args.length < 1){
+	        		sender.sendMessage(plugin.prefix + "Enter the number of the command you want to delete.");
+	        		return true;
+	        	}
+	        	else {
+		        	currentCommand.getCommands().remove(Integer.parseInt(args[0]) - 1);
+					groupCommandEditorOption = 0;
+	        	}
 				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
 		}

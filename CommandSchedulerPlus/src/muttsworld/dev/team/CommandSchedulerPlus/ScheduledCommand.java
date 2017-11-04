@@ -16,7 +16,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	
 	// Default Constructor
 	public ScheduledCommand() {
-		commands.add(new CommandWithExecutor("No Command Given"));
+		commands.add(new CommandWithExecutor("say this is an example command"));
 		commandGroup = false;
 		date = new GregorianCalendar();
 		repeat = new TimeSlice(0, 0, 0, 0); // hour = minute = second = 0;

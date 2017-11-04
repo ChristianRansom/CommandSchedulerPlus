@@ -27,14 +27,18 @@ public class CommandHandler implements CommandExecutor{
 	@Override
     public boolean onCommand(CommandSender aSender, Command cmd, String label, String[] args) {
 		sender = aSender;
-		if(args.length < 1){
-			return helpInfo();
+		if(!sender.hasPermission("csp.admin")){
+			sender.sendMessage(plugin.prefix + "You do not have permission to perform this command!");
+			return true;
 		}
-		else if(commandCreator.groupCommandEditor){ 
+		if(commandCreator.groupCommandEditor){ 
 			return commandCreator.createCommandGroup(args, sender);
 		}
 		else if(commandCreator.commandEditor){
 			return commandCreator.commandEditor(args, sender);
+		}
+		else if(args.length < 1){
+			return helpInfo();
 		}
 		else if(args[0].equals("help")){
 			return helpInfo();
@@ -66,7 +70,7 @@ public class CommandHandler implements CommandExecutor{
 			return true;
 		}
 		else {
-			sender.sendMessage(plugin.prefix + "Uknown command usage");
+			sender.sendMessage(plugin.prefix + "Uknown command usage. /csp help");
 			return true;
 		}
 	}
@@ -84,12 +88,20 @@ public class CommandHandler implements CommandExecutor{
 		return true;
 	}
 	private boolean forceRun(String[] args) {
+		if(args.length < 2){
+			sender.sendMessage(plugin.prefix + "Usage: /csp test <number>");
+			return true;
+		}
 		synchronized(commands) {
 			plugin.runCommand(commands.find(Integer.parseInt(args[1])).getCommands());
 		}
 		return true;
 	}
 	private boolean deleteCommand(String[] args) {
+		if(args.length < 2){
+			sender.sendMessage(plugin.prefix + "Usage: /csp delete <number>");
+			return true;
+		}
 		synchronized(commands) {
 			ScheduledCommand deleted = commands.find(Integer.parseInt(args[1]));
 			if(commands.delete(deleted)){
