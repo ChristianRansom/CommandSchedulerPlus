@@ -27,7 +27,7 @@ public class CommandHandler implements CommandExecutor{
 	@Override
     public boolean onCommand(CommandSender aSender, Command cmd, String label, String[] args) {
 		sender = aSender;
-		if(!sender.hasPermission("csp.admin")){
+		if(!sender.hasPermission("csp.admin")){ //I don't need this here. bukkit blocks it before this is even reached. 
 			sender.sendMessage(plugin.prefix + "You do not have permission to perform this command!");
 			return true;
 		}

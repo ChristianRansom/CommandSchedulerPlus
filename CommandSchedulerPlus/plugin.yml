@@ -1,7 +1,13 @@
 name: CommandSchedulerPlus
-main: muttsworld.dev.team.CommandSchedulerPlus.CommandSchedulerPlus
 version: 1.0
+description: A Minecraft plugin that schedules long term commands.
+author: Christian Ransom
+
+main: muttsworld.dev.team.CommandSchedulerPlus.CommandSchedulerPlus
+
 commands:
   csp:
     description: Main Command
-    usage: /cps <args> 
+    usage: /cps help
+    aliases: [commandschedulerplus]
+    permission: csp.admin
