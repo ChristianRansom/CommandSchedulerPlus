@@ -40,7 +40,9 @@ public class CommandCreator {
 		}
 		//System.out.println("Finding command " + args[1]);
 		//System.out.println("commands.getSize(): " + commands.getSize());
-		editingCommand = (commands.find(Integer.parseInt(args[1])));
+		synchronized(commands) {
+			editingCommand = (commands.find(Integer.parseInt(args[1])));
+		}
 		//System.out.println(editingCommand);
 		currentCommand = editingCommand.copy();
 		commandEditor = true;

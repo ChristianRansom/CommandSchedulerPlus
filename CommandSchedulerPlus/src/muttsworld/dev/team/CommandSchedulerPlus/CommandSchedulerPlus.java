@@ -38,7 +38,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			// read object from file
 			FileInputStream fis = new FileInputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			commands = (AVLTree<ScheduledCommand>)ois.readObject();
+			commands = (AVLTree<ScheduledCommand>)ois.readObject(); //initialization of commands doesn't need to be synched
 			ois.close();
 		} catch (FileNotFoundException e) {
 			console.sendMessage(prefix + "No Command data file found. Making a new one...");
@@ -73,7 +73,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			// write object to file
 			FileOutputStream fos = new FileOutputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(commands);
+			oos.writeObject(commands); //threads already stopped. Doens't need to be synched
 			oos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

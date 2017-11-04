@@ -92,7 +92,9 @@ public class CommandRunnerThread implements Runnable {
 		newCommand.setDate(newScheduleTime);
 		newCommand.setRepeat(command.getRepeat());
 		//System.out.println("Reschedule Inserting " + newCommand);
-		commands.insert(newCommand);
+		synchronized(commands) {
+			commands.insert(newCommand);
+		}
 	}
 
 	public void start() {

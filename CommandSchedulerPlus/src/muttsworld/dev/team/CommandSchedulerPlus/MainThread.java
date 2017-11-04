@@ -1,7 +1,7 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;//used on plugin prefix
+import org.bukkit.ChatColor; //used on plugin prefix
 import org.bukkit.command.ConsoleCommandSender;
 
 public class MainThread extends CommandRunnerThread {

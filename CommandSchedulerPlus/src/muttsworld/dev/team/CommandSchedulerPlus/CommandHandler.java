@@ -15,7 +15,6 @@ public class CommandHandler implements CommandExecutor{
 	public CommandSchedulerPlus plugin;
 	private CommandCreator commandCreator;
 	private CommandSender sender;
-	
 
 	//Main Constructor - No default Constructor since I want to ensure the thread is created with its fields given
     public CommandHandler(AVLTree<ScheduledCommand> commands2, CommandSchedulerPlus commandSchedulerPlus) {
@@ -62,7 +61,9 @@ public class CommandHandler implements CommandExecutor{
 			return deleteCommand(args);
 		}
 		else if(args[0].equals("preorder")){ //secret debugging command
-			commands.preOrder(sender, plugin);
+			synchronized(commands) {
+				commands.preOrder(sender, plugin);
+			}
 			return true;
 		}
 		else if (args[0].equals("time")){
