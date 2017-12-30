@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor; //used on plugin prefix
 import org.bukkit.command.ConsoleCommandSender;
 
+@SuppressWarnings("unused")
 public class MainThread extends CommandRunnerThread {
 	
 	private long sleepTime;
@@ -33,5 +34,9 @@ public class MainThread extends CommandRunnerThread {
 	
 	public void stopThread(){
 		running = false;
+	}
+
+	public void setSleepTime(long time) {
+		sleepTime = time;
 	}
 }

@@ -60,7 +60,13 @@ public class CommandCreator {
 	        		displayCommandEditor(currentCommand.getCommands(), sender);
 	    			return true;
 	    		}
-	        	commandEditorOption = Integer.parseInt(args[0]);
+	    		if(!args[0].equals("")){
+	    			commandEditorOption = Integer.parseInt(args[0]);
+	    		}
+	    		else {
+	        		displayCommandEditor(currentCommand.getCommands(), sender);
+	    			return true;
+	    		}
 	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : 
@@ -201,7 +207,13 @@ public class CommandCreator {
 	    			displayCommandEditor(currentCommand.getCommands(), sender);
 	    			return true;
 	    		}
-	        	groupCommandEditorOption = Integer.parseInt(args[0]);
+	    		if(!args[0].equals("")){
+	    			groupCommandEditorOption = Integer.parseInt(args[0]);
+	    		}
+	    		else {
+	    			displayCommandEditor(currentCommand.getCommands(), sender);
+	    			return true;
+	    		}
 	        	if(groupCommandEditorOption > 0 && groupCommandEditorOption <= 5) {
 		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group."); break;
@@ -247,12 +259,18 @@ public class CommandCreator {
 	        	}
 	        	else {
 	        		//remove insertion place argument argument from the command
-	        		if(Integer.parseInt(args[0]) >= currentCommand.getCommands().size() && Integer.parseInt(args[0]) > 0) {
-		        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
-		        		groupCommandEditorOption = 0;
+	        		if(args[0].equals("")){
+		        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
 	        		}
 	        		else {
-		        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
+	        			int temp = Integer.parseInt(args[0]);
+		        		if(temp >= currentCommand.getCommands().size() && temp > 0) {
+			        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
+			        		groupCommandEditorOption = 0;
+		        		}
+		        		else {
+			        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
+		        		}
 	        		}
 	        	}
 				displayCommandEditor(currentCommand.getCommands(), sender);

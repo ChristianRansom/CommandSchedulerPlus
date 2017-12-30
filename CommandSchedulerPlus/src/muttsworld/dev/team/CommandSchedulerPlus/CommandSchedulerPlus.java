@@ -1,7 +1,5 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,7 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandSchedulerPlus extends JavaPlugin {
 	
-	private FileConfiguration config = getConfig();
+	//FileConfiguration config = this.getConfig();
 	MainThread mainthread;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 	public final String prefix = ChatColor.YELLOW + "[" + ChatColor.BLUE + "CSP" + ChatColor.YELLOW + "] " + ChatColor.WHITE;
@@ -48,13 +46,17 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			e.printStackTrace();
 		}
     	
-    	//generate default config or load in configured values
-        config.addDefault("ScheduleTimer", 60); //Rename Check interval
-        config.options().copyDefaults(true);
+        this.getConfig().addDefault("CheckInterval", 600); 
         saveConfig();
+        mainthread = new MainThread(commands, (long)this.getConfig().getDouble("CheckInterval") * 1000, this);
         
+        //Changes the new 'default' values to current values
+        //config.options().copyDefaults(true);
+
+        reloadMyConfig();
+
+  
         //Start MainThread
-        mainthread = new MainThread(commands, (long)config.getDouble("ScheduleTimer") * 1000, this);
         mainthread.start();
         
         //Set up the command handling class to be able to receive command events
@@ -88,9 +90,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 		for(CommandWithExecutor aCommand : commandStrings){
 			//System.out.println("Running: " + aCommand);
 			String executor = aCommand.getExecutor();
-			
 			//System.out.println("Command Executor = " + executor);
-			
 			if(executor.equalsIgnoreCase("ALLPLAYERS")){ //Runs command on each online player
 				Collection<? extends Player> allPlayers = Bukkit.getServer().getOnlinePlayers();
 				if(allPlayers.isEmpty()){
@@ -116,6 +116,12 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			}
 		}
     }
+
+	public void reloadMyConfig() {
+    	//generate default config or load in configured values
+		this.reloadConfig(); //TODO fix this crap
+        mainthread.setSleepTime((long)this.getConfig().getDouble("CheckInterval") * 1000);
+	}
     
 
 }

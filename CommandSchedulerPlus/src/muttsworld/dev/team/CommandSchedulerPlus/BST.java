@@ -18,7 +18,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	private int i;
 
 	public BST() {
-		ArrayList<TreeNode<E>> currentPath = new ArrayList<TreeNode<E>>();
+		//ArrayList<TreeNode<E>> currentPath = new ArrayList<TreeNode<E>>();
 	}
 
 	public BST(ArrayList<E> objects) {

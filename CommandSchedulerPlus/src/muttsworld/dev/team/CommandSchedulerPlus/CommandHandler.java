@@ -38,9 +38,13 @@ public class CommandHandler implements CommandExecutor{
 		}
 		else if(args.length < 1){
 			return helpInfo();
-		}
+		}	
 		else if(args[0].equals("help")){
 			return helpInfo();
+		}
+		else if(args[0].equals("interval")){
+			sender.sendMessage(plugin.prefix + (long)plugin.getConfig().getDouble("CheckInterval"));
+			return true;
 		}
 		else if(args[0].equals("create")){
 			return commandCreator.createCommand(sender);
@@ -68,6 +72,11 @@ public class CommandHandler implements CommandExecutor{
 		}
 		else if (args[0].equals("time")){
 			sender.sendMessage(plugin.prefix + commandCreator.displayDate(new GregorianCalendar()));
+			return true;
+		}
+		else if(args[0].equals("reload")){
+			sender.sendMessage(plugin.prefix + "Reloading CommandSchedulerPlus");
+			plugin.reloadMyConfig();
 			return true;
 		}
 		else {
