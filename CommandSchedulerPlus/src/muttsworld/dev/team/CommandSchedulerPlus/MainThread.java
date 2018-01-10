@@ -28,7 +28,7 @@ public class MainThread extends CommandRunnerThread {
 				console.sendMessage(plugin.prefix + "Thread interrupted.");
 			}
 	
-			console.sendMessage(plugin.prefix + "Thread exiting.");
+			//console.sendMessage(plugin.prefix + "Thread exiting.");
 		}
 	}
 	

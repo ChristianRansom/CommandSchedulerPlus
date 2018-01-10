@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.bukkit.ChatColor;
+
 public class ScheduledCommand implements Serializable, Comparable<ScheduledCommand> {
 
 	private static final long serialVersionUID = 1L;
@@ -72,7 +74,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 			anExecutor = "CONSOLE";
 		}
 		
-		//If its a simple add command
+		//If its a simple add command adds to end of list
 		if(index == -1){
 			commands.add(new CommandWithExecutor(aCommand, anExecutor));
 		}
@@ -149,10 +151,14 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE);
 		
 		if(!commandGroup) {
-			return "Command = " + commands + ", Date = " + dateString;
+			return "Command = " + ChatColor.GREEN + "/" + commands.get(0) + ChatColor.WHITE + ", Date = " + dateString;
 		}
 		else {
-			return "Commands = " + commands + ", Date = " + dateString;
+			String multiCommand = "";
+			for(CommandWithExecutor aCommand : commands){
+				multiCommand += ChatColor.GREEN + " /" + aCommand;
+			}
+			return "Commands = " + multiCommand + ChatColor.WHITE +  ", Date = " + dateString;
 		}
 	}
 }

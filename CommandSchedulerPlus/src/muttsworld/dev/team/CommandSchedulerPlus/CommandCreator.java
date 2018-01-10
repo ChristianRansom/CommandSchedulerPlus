@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class CommandCreator {
@@ -35,11 +36,20 @@ public class CommandCreator {
 
 	boolean editCommand(String[] args, CommandSender sender) {
 		if(args.length < 2){
-			sender.sendMessage(plugin.prefix + "Usage: /csp edit <number>");
+			sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN + "/csp edit <number>");
 			return true;
 		}
 		//System.out.println("Finding command " + args[1]);
 		//System.out.println("commands.getSize(): " + commands.getSize());
+		
+	    try
+	    {
+	    	Integer.parseInt(args[1]);
+	    } catch (NumberFormatException ex)
+	    {
+			sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN + "/csp edit <number>");
+	        return true;
+	    }
 		synchronized(commands) {
 			editingCommand = (commands.find(Integer.parseInt(args[1])));
 		}
@@ -78,10 +88,10 @@ public class CommandCreator {
 		    		        	commandEditorOption = 0;
 		    	        		displayCommandEditor(currentCommand.getCommands(), sender);
 		        			}
-	        			case 2 : sender.sendMessage(plugin.prefix + "Enter the date and time you want the command to run. /csp Year Month Day (24)Hours Minutes"); break;
-		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the time from now you want the command to run: /csp Days Hours Minutes"); break;
-		        		case 4 : sender.sendMessage(plugin.prefix + "Enter the how often you want the command to repeat: /csp Days Hours Minutes"); break;
-		        		case 5 : sender.sendMessage(plugin.prefix + "Enter how much time to add to delay when the command is scheduled: /csp Days Hours Minutes"); break;
+	        			case 2 : sender.sendMessage(plugin.prefix + "Enter the date and time you want the command to run: " + ChatColor.GREEN + "/csp Year Month Day (24)Hours Minutes"); break;
+		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the time from now you want the command to run: " + ChatColor.GREEN + "/csp Days Hours Minutes"); break;
+		        		case 4 : sender.sendMessage(plugin.prefix + "Enter the how often you want the command to repeat: " + ChatColor.GREEN + "/csp Days Hours Minutes"); break;
+		        		case 5 : sender.sendMessage(plugin.prefix + "Enter how much time to add to delay when the command is scheduled: " + ChatColor.GREEN + "/csp Days Hours Minutes"); break;
 		        		case 6 : sender.sendMessage(plugin.prefix + "Saving the command"); 
 		        			if(editingCommand == null) {
 			        			synchronized(commands){
@@ -119,27 +129,42 @@ public class CommandCreator {
 		        		displayCommandEditor(currentCommand.getCommands(), sender);
 		        	}
 		        	else { 
-		        		currentCommand.setCommand(args, 0);
+		        		//System.out.println("args 1 " + args[0]);
+		        		//System.out.println("charat0 " + (args[0].charAt(0)));
+		        		removeSlash(args);
+		    			currentCommand.setCommand(args, 0);
 		        		commandEditorOption = 0;
 			        	displayCommand(currentCommand, sender);
 		        	}
 	        	}
 	        	else {
-	        		sender.sendMessage(plugin.prefix + "Enter the command you wish to schedule, or type 'commandgroup' to add multiple commands");
+	        		sender.sendMessage(plugin.prefix + "Enter the command you wish to schedule, or enter " + ChatColor.GREEN + "/csp commandgroup " + ChatColor.WHITE + "to add multiple commands");
 	        	}
 				break; 
 	        case 2 : //handle date entry for a new command
 		        if(args.length == 5){ 		//TODO check for valid date like month etc. 
-		        	year = Integer.parseInt(args[0]); 
-		        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
-		        	dayOfMonth = Integer.parseInt(args[2]); 
-		        	hourOfDay = Integer.parseInt(args[3]); 
-		        	minute = Integer.parseInt(args[4]); 
+		            try
+		            {
+			        	year = Integer.parseInt(args[0]); 
+			        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
+			        	dayOfMonth = Integer.parseInt(args[2]); 
+			        	hourOfDay = Integer.parseInt(args[3]); 
+			        	minute = Integer.parseInt(args[4]); 
+		            } 
+		            catch (NumberFormatException ex)
+		            {
+						sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN + "/csp Months Days Hours Minutes");
+		                return true;
+		            }
+
 		        	
 		        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
 		        	currentCommand.setDate(gcalendarDate);
 		        	
 		        	sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
+		        }
+		        else {
+					sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN + "/csp Months Days Hours Minutes");
 		        }
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand, sender);
@@ -185,16 +210,34 @@ public class CommandCreator {
 	    }
 	    return true;
 	}
+
+	private void removeSlash(String[] args) {
+		if((args[0].charAt(0)) == '/'){
+			//System.out.println("The commands started with a /. Removing it for storage");
+			StringBuilder sb = new StringBuilder(args[0]);
+			sb.deleteCharAt(0);
+			String finalCommand = sb.toString();
+			args[0] = finalCommand;
+		}
+	}
 	
 	public TimeSlice timeSliceEntry(String[] args, CommandSender sender){
 		if(args.length == 3){ //TODO check for valid date like month etc. 
-			int days = Integer.parseInt(args[0]); 
-			int hours = Integer.parseInt(args[1]); 
-			int minutes = Integer.parseInt(args[2]); 
-			return new TimeSlice(days, hours, minutes);
+		    try
+		    {
+				int days = Integer.parseInt(args[0]); 
+				int hours = Integer.parseInt(args[1]); 
+				int minutes = Integer.parseInt(args[2]); 
+				return new TimeSlice(days, hours, minutes);
+		    } catch (NumberFormatException ex)
+		    {
+				sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN + "/csp Days Hours Minutes");
+		        return null;
+		    }
+
 		}
 		else {
-			sender.sendMessage(plugin.prefix + "Usage: /csp Days Hours Minutes");
+			sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN + "/csp Days Hours Minutes");
 			return null;
 		}
 	}
@@ -208,7 +251,14 @@ public class CommandCreator {
 	    			return true;
 	    		}
 	    		if(!args[0].equals("")){
-	    			groupCommandEditorOption = Integer.parseInt(args[0]);
+	    		    try
+	    		    {
+		    			groupCommandEditorOption = Integer.parseInt(args[0]);
+	    		    } catch (NumberFormatException ex)
+	    		    {
+	    		    	displayCommandEditor(currentCommand.getCommands(), sender);
+	    		    	return false;
+	    		    }
 	    		}
 	    		else {
 	    			displayCommandEditor(currentCommand.getCommands(), sender);
@@ -243,10 +293,11 @@ public class CommandCreator {
 	        	break; //Breaks from outer switch case
 	        case 1 : //handle new command being added to the commmandGroup
 	        	if(args.length < 1){
-	        		sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group.");
+	        	 	sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group.");
 	        		return true;
 	        	}
 	        	else {
+	        		removeSlash(args);
 		        	currentCommand.setCommand(args, -1);
 					groupCommandEditorOption = 0;
 	        	}
@@ -263,8 +314,22 @@ public class CommandCreator {
 		        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
 	        		}
 	        		else {
-	        			int temp = Integer.parseInt(args[0]);
+	        			int temp;
+	        		    try
+	        		    {
+	        		    	temp = Integer.parseInt(args[0]);
+	        		    } catch (NumberFormatException ex)
+	        		    {
+			        		sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
+	        		        return true;
+	        		    }
 		        		if(temp >= currentCommand.getCommands().size() && temp > 0) {
+		        			if((args[1].charAt(0)) == '/'){
+		        				StringBuilder sb = new StringBuilder(args[1]);
+		        				sb.deleteCharAt(0);
+		        				String finalCommand = sb.toString();
+		        				args[1] = finalCommand;
+		        			}
 			        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
 			        		groupCommandEditorOption = 0;
 		        		}
@@ -281,6 +346,15 @@ public class CommandCreator {
 	        		return true;
 	        	}
 	        	else {
+	        		int temp;
+	        		 try
+	        		    {
+	        			 	temp = Integer.parseInt(args[0]);
+	        		    } catch (NumberFormatException ex)
+	        		    {
+	    	        		sender.sendMessage(plugin.prefix + "Enter the number of the command you want to delete.");
+	        		        return true;
+	        		    }
 		        	currentCommand.getCommands().remove(Integer.parseInt(args[0]) - 1);
 					groupCommandEditorOption = 0;
 	        	}
@@ -292,11 +366,11 @@ public class CommandCreator {
 	}
 
 	void displayCommandEditor(ArrayList<CommandWithExecutor> arrayList, CommandSender sender) {
-		sender.sendMessage(plugin.prefix + "Creating a group of commands. Enter the number of the field you wish to edit.");
+		sender.sendMessage(plugin.prefix + "Command Editor. Enter the number of the field you wish to edit.");
 		sender.sendMessage(plugin.prefix + "Note: A command group ensures that the commands in it will be run in order");
 		sender.sendMessage(plugin.prefix + "Commands:");
 		for(int i = 0; i < currentCommand.getCommands().size(); i++){
-			sender.sendMessage(plugin.prefix + (i + 1) + ". " + currentCommand.getCommands().get(i));
+			sender.sendMessage(plugin.prefix + (i + 1) + ". " + ChatColor.GREEN + " /" + currentCommand.getCommands().get(i));
 		}
 		sender.sendMessage(plugin.prefix + "---------------------------------------------------------");
 		sender.sendMessage(plugin.prefix + "1: Add a command. ");
@@ -316,15 +390,15 @@ public class CommandCreator {
 	void displayCommand(ScheduledCommand aCommand, CommandSender sender) {
 		GregorianCalendar now = new GregorianCalendar();
 		now.setTimeInMillis((aCommand.getDate().getTimeInMillis() - now.getTimeInMillis()));
-		sender.sendMessage(plugin.prefix + "Creating a new command. Enter the number of the field you wish to edit.");
-		sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + aCommand.getCommand());
-		sender.sendMessage(plugin.prefix + "2: Date to be run: " + displayDate(aCommand.getDate()));
-		sender.sendMessage(plugin.prefix + "3: Time until run: " + simpleDate(now));
+		sender.sendMessage(plugin.prefix + "Creating a new command. Use " + ChatColor.GREEN + "/csp <#>" +  ChatColor.WHITE + " to selction an option");
+		sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + ChatColor.GREEN + "/" + aCommand.getCommand());
+		sender.sendMessage(plugin.prefix + "2: Date to be run: " + ChatColor.YELLOW + displayDate(aCommand.getDate()));
+		sender.sendMessage(plugin.prefix + "3: Time until run: " + ChatColor.YELLOW + simpleDate(now));
 		if(!aCommand.getRepeat().isZero()){
-			sender.sendMessage(plugin.prefix + "4: Repeating Every: " + (aCommand.getRepeat()));
+			sender.sendMessage(plugin.prefix + "4: Repeating Every: " + ChatColor.YELLOW + (aCommand.getRepeat()));
 		}
 		else {
-			sender.sendMessage(plugin.prefix + "4: Repeating: false");
+			sender.sendMessage(plugin.prefix + "4: Repeating: " + ChatColor.YELLOW + "False");
 		}
 		sender.sendMessage(plugin.prefix + "5: Extend time till next run. Add time to the next scheduled run.");
 		sender.sendMessage(plugin.prefix + "6: Save Command.");

@@ -12,6 +12,7 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,6 +31,8 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	@Override
     public void onEnable() {
     	
+    	//FileConfiguration config = this.getConfig();
+    	
     	// ***** Load command list from file ******
     	try {
 			// read object from file
@@ -46,7 +49,9 @@ public class CommandSchedulerPlus extends JavaPlugin {
 		}
     	
         this.getConfig().addDefault("CheckInterval", 600); 
+        this.getConfig().options().copyDefaults(true);
         saveConfig();
+        
         mainthread = new MainThread(commands, (long)this.getConfig().getDouble("CheckInterval") * 1000, this);
         
         //Changes the new 'default' values to current values

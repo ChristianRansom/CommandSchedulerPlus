@@ -3,6 +3,7 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;
@@ -136,7 +137,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 		if (root == null)
 			return;
 		inOrder((AVLTreeNode<E>)root.left, sender, plugin);
-		sender.sendMessage(plugin.prefix + (i++) + ". " + root.element);
+		sender.sendMessage(plugin.prefix + (i++) + ". " + root.element.toString());
 		inOrder((AVLTreeNode<E>)root.right, sender, plugin);
 	}
 
@@ -231,7 +232,7 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	}
 
 	public boolean isEmpty() {
-		return root.size == 0;
+		return root == null;
 	}
 
 	public boolean insert(E o) {
