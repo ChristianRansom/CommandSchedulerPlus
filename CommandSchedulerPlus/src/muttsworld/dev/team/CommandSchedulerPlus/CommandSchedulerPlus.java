@@ -23,6 +23,8 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	MainThread mainthread;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 	public final String prefix = ChatColor.YELLOW + "[" + ChatColor.BLUE + "CSP" + ChatColor.YELLOW + "] " + ChatColor.WHITE;
+	public final String error = "" + ChatColor.GOLD;
+	public final String command = "" + ChatColor.GREEN;
 
 	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
 	

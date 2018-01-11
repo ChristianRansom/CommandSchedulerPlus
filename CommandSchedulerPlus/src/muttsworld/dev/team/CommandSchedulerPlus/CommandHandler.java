@@ -49,7 +49,7 @@ public class CommandHandler implements CommandExecutor{
 		else if(args[0].equals("create")){
 			return commandCreator.createCommand(sender);
 		}
-		else if(args[0].equals("forceupdate")){
+		else if(args[0].equals("forceupdate") || args[0].equals("forcecheck")){
 			return forceupdate();
 		}
 		else if(args[0].equals("test")){
@@ -80,7 +80,7 @@ public class CommandHandler implements CommandExecutor{
 			return true;
 		}
 		else {
-			sender.sendMessage(plugin.prefix + "Uknown command usage. /csp help");
+			sender.sendMessage(plugin.prefix + plugin.error + "Uknown command. Usage: " + plugin.command + "/csp help");
 			return true;
 		}
 	}
@@ -88,18 +88,18 @@ public class CommandHandler implements CommandExecutor{
 	private boolean helpInfo() {
 		sender.sendMessage(ChatColor.YELLOW + "-------- " + ChatColor.BLUE + 
 				"Command Scheduler Plus " + ChatColor.YELLOW + "--------");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp create");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp delete <number>");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp edit <number>");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp time");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp test <number>");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp list");
-		sender.sendMessage(plugin.prefix + ChatColor.GREEN + "/csp forceupdate");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp create");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp delete <number>");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp edit <number>");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp time");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp test <number>");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp list");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp forceupdate");
 		return true;
 	}
 	private boolean forceRun(String[] args) {
 		if(args.length < 2){
-			sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN +  "/csp test <number>");
+			sender.sendMessage(plugin.prefix + plugin.command + "Usage: " + plugin.command +  "/csp test <number>");
 			return true;
 		}
 		synchronized(commands) {
@@ -109,7 +109,7 @@ public class CommandHandler implements CommandExecutor{
 	}
 	private boolean deleteCommand(String[] args) {
 		if(args.length < 2){
-			sender.sendMessage(plugin.prefix + "Usage: " + ChatColor.GREEN +  "/csp delete <number>");
+			sender.sendMessage(plugin.prefix + plugin.command + "Usage: " + plugin.command +  "/csp delete <number>");
 			return true;
 		}
 		synchronized(commands) {
@@ -125,7 +125,7 @@ public class CommandHandler implements CommandExecutor{
 		sender.sendMessage(plugin.prefix + "--------- Command List ---------");
 		synchronized(commands){
 			if(commands.isEmpty()){
-				sender.sendMessage(plugin.prefix + "There are no commands");
+				sender.sendMessage(plugin.prefix + plugin.command + "There are no commands");
 			}
 			commands.inOrder(sender, plugin);
 		}

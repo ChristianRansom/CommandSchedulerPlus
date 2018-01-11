@@ -156,9 +156,9 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		else {
 			String multiCommand = "";
 			for(CommandWithExecutor aCommand : commands){
-				multiCommand += ChatColor.GREEN + " /" + aCommand;
+				multiCommand += ChatColor.GREEN + "/" + aCommand + " ";
 			}
-			return "Commands = " + multiCommand + ChatColor.WHITE +  ", Date = " + dateString;
+			return "Commands = " + multiCommand + ChatColor.WHITE +  "| Date = " + dateString;
 		}
 	}
 }
