@@ -60,6 +60,8 @@ public class CommandRunnerThread implements Runnable {
             //commands.preOrder();
 			executeCommand(command);
 		}
+		commandsToRun.clear();
+		commandsToDelete.clear();
 	}
 		
 	//does some magic... As we move down the tree comparing current time, when we move right, every element to the left should be run
