@@ -38,7 +38,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
     	// ***** Load command list from file ******
     	try {
 			// read object from file
-			FileInputStream fis = new FileInputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
+			FileInputStream fis = new FileInputStream(this.getDataFolder() + "/CommandSchedulerPlus.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			commands = (AVLTree<ScheduledCommand>)ois.readObject(); //initialization of commands doesn't need to be synched
 			ois.close();
@@ -79,7 +79,8 @@ public class CommandSchedulerPlus extends JavaPlugin {
     		
     		console.sendMessage(prefix + "Saving commands");
 			// write object to file
-			FileOutputStream fos = new FileOutputStream("C:\\Users\\Christian Ransom\\Desktop\\1.12.2_Server\\plugins\\CommandSchedulerPlus\\CommandSchedulerPlus.ser");
+    		System.out.println(this.getDataFolder());
+			FileOutputStream fos = new FileOutputStream(this.getDataFolder() + "/CommandSchedulerPlus.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(commands); //threads already stopped. Doens't need to be synched
 			oos.close();

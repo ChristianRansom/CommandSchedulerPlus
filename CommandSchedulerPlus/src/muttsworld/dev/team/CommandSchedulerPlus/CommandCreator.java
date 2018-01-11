@@ -104,7 +104,7 @@ public class CommandCreator {
 		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the time from now you want the command to run: " + plugin.command + "/csp Days Hours Minutes"); break;
 		        		case 4 : sender.sendMessage(plugin.prefix + "Enter the how often you want the command to repeat: " + plugin.command + "/csp Days Hours Minutes"); break;
 		        		case 5 : sender.sendMessage(plugin.prefix + "Enter how much time to add to delay when the command is scheduled: " + plugin.command + "/csp Days Hours Minutes"); break;
-		        		case 6 : sender.sendMessage(plugin.prefix + "Saving the command"); 
+		        		case 6 : 
 		        			if(editingCommand == null) {
 			        			synchronized(commands){
 				        			commands.insert(currentCommand);
@@ -119,6 +119,7 @@ public class CommandCreator {
 		        			}
 				        	commandEditorOption = 0;
 				        	commandEditor = false;
+				        	sender.sendMessage(plugin.prefix + "Command Saved. Exiting the editor"); 
 		        			break;
 		    	        case 7 : 
 		    	        	sender.sendMessage(plugin.prefix + "Exiting");
@@ -261,7 +262,7 @@ public class CommandCreator {
 	        case 0 :
 	    		if(args.length < 1){
 	    			displayCommandEditor(currentCommand.getCommands(), sender);
-	    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <#>" +  plugin.error + " to selection an option");
+	    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <number>" +  plugin.error + " to selection an option");
 	    			return true;
 	    		}
 	    		if(!args[0].equals("")){
@@ -270,21 +271,21 @@ public class CommandCreator {
 		    			groupCommandEditorOption = Integer.parseInt(args[0]);
 	    		    } catch (NumberFormatException ex)
 	    		    {
-	    		    	displayCommandEditor(currentCommand.getCommands(), sender);
-		    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <#>" +  plugin.error + " to selection an option");
+	    		    	displayCommandEditor(currentCommand.getComnmands(), sender);
+		    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <number>" +  plugin.error + " to selection an option");
 	    		    	return true;
 	    		    }
 	    		}
 	    		else {
 	    			displayCommandEditor(currentCommand.getCommands(), sender);
-	    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <#>" +  plugin.error + " to selection an option");
+	    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <number>" +  plugin.error + " to selection an option");
 	    			return true;
 	    		}
 	        	if(groupCommandEditorOption > 0 && groupCommandEditorOption <= 5) {
 		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group."); break;
 		        		case 2 : sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
-		        				 	sender.sendMessage(plugin.prefix + plugin.command + "/csp <#> <command>"); break;
+		        				 	sender.sendMessage(plugin.prefix + plugin.command + "/csp <number> <command>"); break;
 		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the number of the command you want to delete."); break;
 		        		case 4 : sender.sendMessage(plugin.prefix + "Cleared all the commands"); 
 		        			currentCommand.getCommands().clear();
@@ -333,7 +334,7 @@ public class CommandCreator {
 	        		}
 	        		else {
 	        			int temp;
-	        		    try //TODO extract this safe number check
+	        		    try //extract this safe number check
 	        		    {
 	        		    	temp = Integer.parseInt(args[0]); 
 	        		    } catch (NumberFormatException ex)
@@ -387,7 +388,7 @@ public class CommandCreator {
 	private boolean commandGroupInsertError(CommandSender sender) {
 		showCommandGroup(sender);
 		sender.sendMessage(plugin.prefix + plugin.error + "Enter the number of the command you want to replace followed by the command you want to enter.");
-		sender.sendMessage(plugin.prefix + plugin.command + "/csp <#> <command>");
+		sender.sendMessage(plugin.prefix + plugin.command + "/csp <number> <command>");
 		return true;
 	}
 
@@ -415,7 +416,13 @@ public class CommandCreator {
 	String displayDate(GregorianCalendar date){
 		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
 			+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
-			":" + date.get(Calendar.MINUTE);
+			":";
+		if(date.get(Calendar.MINUTE) < 10){
+			dateString += ("0" + date.get(Calendar.MINUTE));
+		}
+		else {
+			dateString += date.get(Calendar.MINUTE);
+		}
 		return dateString;
 	}
 
@@ -426,7 +433,7 @@ public class CommandCreator {
 		sender.sendMessage(plugin.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + 
 				"------------------------Command Editor------------------------"); 
 		sender.sendMessage(plugin.prefix + "Enter the number of the field you wish to edit.");
-		sender.sendMessage(plugin.prefix + "Creating a new command. Use " + plugin.command + "/csp <#>" +  ChatColor.WHITE + " to selection an option");
+		sender.sendMessage(plugin.prefix + "Creating a new command. Use " + plugin.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
 		sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + plugin.command + "/" + aCommand.getCommand());
 		sender.sendMessage(plugin.prefix + "2: Date to be run: " + ChatColor.YELLOW + displayDate(aCommand.getDate()));
 		sender.sendMessage(plugin.prefix + "3: Time until run: " + ChatColor.YELLOW + simpleDate(now));
