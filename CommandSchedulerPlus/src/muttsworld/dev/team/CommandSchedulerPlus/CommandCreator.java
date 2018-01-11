@@ -119,7 +119,7 @@ public class CommandCreator {
 		        			}
 				        	commandEditorOption = 0;
 				        	commandEditor = false;
-				        	sender.sendMessage(plugin.prefix + "Command Saved. Exiting the editor"); 
+				        	sender.sendMessage(plugin.prefix + "Command Saved. Exiting the editor."); 
 		        			break;
 		    	        case 7 : 
 		    	        	sender.sendMessage(plugin.prefix + "Exiting");
@@ -271,7 +271,7 @@ public class CommandCreator {
 		    			groupCommandEditorOption = Integer.parseInt(args[0]);
 	    		    } catch (NumberFormatException ex)
 	    		    {
-	    		    	displayCommandEditor(currentCommand.getComnmands(), sender);
+	    		    	displayCommandEditor(currentCommand.getCommands(), sender);
 		    			sender.sendMessage(plugin.prefix + plugin.error + " Use " + plugin.command + "/csp <number>" +  plugin.error + " to selection an option");
 	    		    	return true;
 	    		    }
@@ -402,7 +402,7 @@ public class CommandCreator {
 	void displayCommandEditor(ArrayList<CommandWithExecutor> arrayList, CommandSender sender) {
 		sender.sendMessage("");
 		sender.sendMessage(plugin.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + 
-				"------------------------Command Group------------------------"); 
+				"---------Command Group---------"); 
 		sender.sendMessage(plugin.prefix + "Enter the number of the field you wish to edit.");
 		showCommandGroup(sender);
 		sender.sendMessage(plugin.prefix + "---------------------------------------------------------");
@@ -431,7 +431,7 @@ public class CommandCreator {
 		now.setTimeInMillis((aCommand.getDate().getTimeInMillis() - now.getTimeInMillis()));
 		sender.sendMessage("");
 		sender.sendMessage(plugin.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + 
-				"------------------------Command Editor------------------------"); 
+				"-----------Command Editor-----------"); 
 		sender.sendMessage(plugin.prefix + "Enter the number of the field you wish to edit.");
 		sender.sendMessage(plugin.prefix + "Creating a new command. Use " + plugin.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
 		sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + plugin.command + "/" + aCommand.getCommand());
@@ -444,8 +444,8 @@ public class CommandCreator {
 			sender.sendMessage(plugin.prefix + "4: Repeating: " + ChatColor.YELLOW + "False");
 		}
 		sender.sendMessage(plugin.prefix + "5: Extend time till next run. Add time to the next scheduled run.");
-		sender.sendMessage(plugin.prefix + "6: Save Command.");
-		sender.sendMessage(plugin.prefix + "7: Exit.");
+		sender.sendMessage(plugin.prefix + "6: Save and exit.");
+		sender.sendMessage(plugin.prefix + "7: Exit without saving.");
 	}
 
 	String simpleDate(GregorianCalendar date){
