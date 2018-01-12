@@ -51,7 +51,14 @@ public class CommandCreator {
 	        return true;
 	    }
 		synchronized(commands) {
-			editingCommand = (commands.find(Integer.parseInt(args[1])));
+			if(Integer.parseInt(args[1]) <= commands.getSize() && Integer.parseInt(args[1]) > 0){
+				editingCommand = (commands.find(Integer.parseInt(args[1])));
+			}
+			else {
+				sender.sendMessage(plugin.prefix + plugin.error + "There is no command with that number. Use " 
+						+ plugin.command + "/csp list " + plugin.error + "to see the commands.");
+				return true;
+			}
 		}
 		//System.out.println(editingCommand);
 		currentCommand = editingCommand.copy();
@@ -67,7 +74,8 @@ public class CommandCreator {
 	    switch(commandEditorOption) {
 	        case 0 :
 	    		if(args.length < 1){
-	        		displayCommandEditor(currentCommand.getCommands(), sender);
+	    			displayCommand(currentCommand, sender);
+					sender.sendMessage(plugin.prefix + plugin.error + "Enter an option from 1 to 7.");
 	    			return true;
 	    		}
 	    		if(!args[0].equals("")){
@@ -77,7 +85,7 @@ public class CommandCreator {
 		            } 
 		            catch (NumberFormatException ex)
 		            {
-		        		displayCommandEditor(currentCommand.getCommands(), sender);
+		    			displayCommand(currentCommand, sender);
 						sender.sendMessage(plugin.prefix + plugin.error + "Enter an option from 1 to 7.");
 		                return true;
 		            }
@@ -289,11 +297,15 @@ public class CommandCreator {
 		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the number of the command you want to delete."); break;
 		        		case 4 : sender.sendMessage(plugin.prefix + "Cleared all the commands"); 
 		        			currentCommand.getCommands().clear();
-		    	        	displayCommand(currentCommand, sender);
+		    				displayCommandEditor(currentCommand.getCommands(), sender);
+		        			groupCommandEditorOption = 0;
 		        			break;
 		        		case 5 : sender.sendMessage(plugin.prefix + "Command Group Saved"); 
 		        			if(currentCommand.getCommands().isEmpty()) {
-		        				sender.sendMessage(plugin.prefix + plugin.error + "No commands found in the command group... Exiting");
+						sender.sendMessage(
+								plugin.prefix + plugin.error + "No commands found in the command group. Adding a default command");
+								String defaultCommand[] = {"this", "is", "an", "example", "command"};
+								currentCommand.setCommand(defaultCommand, -1);
 		        			}
 		        			else{
 			        			currentCommand.setCommandGroup(true);
@@ -358,10 +370,10 @@ public class CommandCreator {
 	        	}
 				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
-	        case 3 : //handle command delete
+	        case 3 : //handle command delete //TODO fix error when deleting all the command
 	        	if(args.length < 1){
 	        		showCommandGroup(sender);
-	        		sender.sendMessage(plugin.prefix + plugin.error + "Enter the number of the command you want to delete.");
+	        		sender.sendMessage(plugin.prefix + plugin.error + "Enter the number of the command you want to delete from the command group.");
 	        		return true;
 	        	}
 	        	else {
@@ -397,15 +409,15 @@ public class CommandCreator {
 		for(int i = 0; i < currentCommand.getCommands().size(); i++){
 			sender.sendMessage(plugin.prefix + (i + 1) + ". " + plugin.command + "/" + currentCommand.getCommands().get(i));
 		}
+		sender.sendMessage(plugin.prefix + "------------------------------------");
 	}
 
 	void displayCommandEditor(ArrayList<CommandWithExecutor> arrayList, CommandSender sender) {
 		sender.sendMessage("");
 		sender.sendMessage(plugin.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + 
 				"---------Command Group---------"); 
-		sender.sendMessage(plugin.prefix + "Enter the number of the field you wish to edit.");
+		sender.sendMessage(plugin.prefix + "Use " + plugin.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
 		showCommandGroup(sender);
-		sender.sendMessage(plugin.prefix + "---------------------------------------------------------");
 		sender.sendMessage(plugin.prefix + "1: Add a command. ");
 		sender.sendMessage(plugin.prefix + "2: Replace a command. ");
 		sender.sendMessage(plugin.prefix + "3: Delete a command. ");
@@ -432,9 +444,13 @@ public class CommandCreator {
 		sender.sendMessage("");
 		sender.sendMessage(plugin.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + 
 				"-----------Command Editor-----------"); 
-		sender.sendMessage(plugin.prefix + "Enter the number of the field you wish to edit.");
 		sender.sendMessage(plugin.prefix + "Creating a new command. Use " + plugin.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
-		sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + plugin.command + "/" + aCommand.getCommand());
+		if(aCommand.isCommandGroup()){
+			showCommandGroup(sender);
+		}
+		else {
+			sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + plugin.command + "/" + aCommand.getCommand());
+		}
 		sender.sendMessage(plugin.prefix + "2: Date to be run: " + ChatColor.YELLOW + displayDate(aCommand.getDate()));
 		sender.sendMessage(plugin.prefix + "3: Time until run: " + ChatColor.YELLOW + simpleDate(now));
 		if(!aCommand.getRepeat().isZero()){

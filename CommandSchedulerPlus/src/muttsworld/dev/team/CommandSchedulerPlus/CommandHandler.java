@@ -125,7 +125,7 @@ public class CommandHandler implements CommandExecutor{
 		sender.sendMessage(plugin.prefix + "--------- Command List ---------");
 		synchronized(commands){
 			if(commands.isEmpty()){
-				sender.sendMessage(plugin.prefix + plugin.command + "There are no commands");
+				sender.sendMessage(plugin.prefix + plugin.error + "There are no commands");
 			}
 			commands.inOrder(sender, plugin);
 		}
