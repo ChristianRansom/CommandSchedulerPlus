@@ -61,15 +61,18 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		
 		//CONSOLE running is default. The option to make it console run is left out because of that. 
 		if(args[0].equalsIgnoreCase("ALLPLAYERS")){
+			removeSlash(args, 1);
 			aCommand = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 			anExecutor = "ALLPLAYERS";
 		}
 		else if(args[0].equalsIgnoreCase("PLAYER")){ 
+			removeSlash(args, 2);
 			aCommand = String.join(" ", Arrays.copyOfRange(args, 2, args.length)); //Second argument is player name eg. PLAYER spartagon123 say hi
 			anExecutor = args[1];
-			System.out.println("Warning: Player commands will only work if the player is online when the command runs");
+			//System.out.println("Warning: Player commands will only work if the player is online when the command runs");
 		}
 		else { 
+			removeSlash(args, 0);
 			aCommand = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //Default commands that are console run
 			anExecutor = "CONSOLE";
 		}
@@ -145,20 +148,42 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		return commandGroup;
 	}
 
+	private void removeSlash(String[] args, int location) {
+		if((args[location].charAt(0)) == '/'){
+			//System.out.println("The commands started with a /. Removing it for storage");
+			StringBuilder sb = new StringBuilder(args[location]);
+			sb.deleteCharAt(0);
+			String finalCommand = sb.toString();
+			args[location] = finalCommand;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		String dateString = (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DATE) + "/"
 				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE);
 		
 		if(!commandGroup) {
-			return "Command = " + ChatColor.GREEN + "/" + commands.get(0) + ChatColor.WHITE + ", Date = " + dateString;
+			if(commands.get(0).getExecutor() != "CONSOLE") {
+				return "Command = " + ChatColor.GREEN + commands.get(0).getExecutor() + 
+						": /" + commands.get(0).getCommandString() + ChatColor.WHITE + ", Date = " + dateString;
+			}
+			else {
+				return "Command = " + ChatColor.GREEN + "/" + commands.get(0) + ChatColor.WHITE + ", Date = " + dateString;
+			}
 		}
 		else {
-			String multiCommand = "";
+			String multiCommand = "Commands = ";
 			for(CommandWithExecutor aCommand : commands){
-				multiCommand += ChatColor.GREEN + "/" + aCommand + " ";
+				if(aCommand.getExecutor() != "CONSOLE") {
+					multiCommand += ChatColor.GREEN + aCommand.getExecutor() + 
+							": /" + aCommand.getCommandString() +  ChatColor.WHITE + " | ";
+				}
+				else {
+					multiCommand += ChatColor.GREEN + "/" + aCommand + ChatColor.WHITE + " | ";
+				}
 			}
-			return "Commands = " + multiCommand + ChatColor.WHITE +  "| Date = " + dateString;
+			return multiCommand + ChatColor.WHITE +  "Date = " + dateString;
 		}
 	}
 }

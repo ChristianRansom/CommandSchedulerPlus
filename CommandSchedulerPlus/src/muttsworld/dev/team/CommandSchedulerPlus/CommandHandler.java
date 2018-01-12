@@ -112,10 +112,18 @@ public class CommandHandler implements CommandExecutor{
 			sender.sendMessage(plugin.prefix + plugin.command + "Usage: " + plugin.command +  "/csp delete <number>");
 			return true;
 		}
-		synchronized(commands) {
-			ScheduledCommand deleted = commands.find(Integer.parseInt(args[1]));
-			if(commands.delete(deleted)){
-				sender.sendMessage(plugin.prefix + deleted + " was deleted.");
+		synchronized(commands) { //TODO Remove redundant parses throughout the project
+			if(Integer.parseInt(args[1]) <= commands.getSize() && Integer.parseInt(args[1]) > 0){
+				ScheduledCommand deleted = commands.find(Integer.parseInt(args[1]));
+				if(commands.delete(deleted)){
+					sender.sendMessage(plugin.prefix + deleted + " was deleted.");
+					return true;
+				}
+			}
+			else {
+				sender.sendMessage(plugin.prefix + plugin.error + "There is no command with that number. Use " 
+						+ plugin.command + "/csp list " + plugin.error + "to see the commands.");
+				return true;
 			}
 		}
 		return true; 
@@ -124,7 +132,7 @@ public class CommandHandler implements CommandExecutor{
 	private boolean listCommands() {
 		sender.sendMessage(plugin.prefix + "--------- Command List ---------");
 		synchronized(commands){
-			if(commands.isEmpty()){
+			if(commands.isEmpty()){	
 				sender.sendMessage(plugin.prefix + plugin.error + "There are no commands");
 			}
 			commands.inOrder(sender, plugin);

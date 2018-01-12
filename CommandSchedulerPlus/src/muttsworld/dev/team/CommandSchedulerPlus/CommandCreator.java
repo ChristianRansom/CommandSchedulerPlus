@@ -152,7 +152,6 @@ public class CommandCreator {
 		        	else { 
 		        		//System.out.println("args 1 " + args[0]);
 		        		//System.out.println("charat0 " + (args[0].charAt(0)));
-		        		removeSlash(args);
 		    			currentCommand.setCommand(args, 0);
 		        		commandEditorOption = 0;
 			        	displayCommand(currentCommand, sender);
@@ -164,7 +163,7 @@ public class CommandCreator {
 	        	}
 				break; 
 	        case 2 : //handle date entry for a new command
-		        if(args.length == 5){ 		//TODO check for valid date like month etc. 
+		        if(args.length == 5){ 
 		            try
 		            {
 			        	year = Integer.parseInt(args[0]); 
@@ -175,7 +174,8 @@ public class CommandCreator {
 		            } 
 		            catch (NumberFormatException ex)
 		            {
-						sender.sendMessage(plugin.prefix + plugin.error + "Usage: " + plugin.command + "/csp Months Days Hours Minutes");
+						sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Months Days Hours Minutes "
+								+ plugin.error + "to set date and time you want the command to run.");
 		                return true;
 		            }
 
@@ -186,7 +186,9 @@ public class CommandCreator {
 		        	sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
 		        }
 		        else {
-					sender.sendMessage(plugin.prefix + plugin.error + "Usage: " + plugin.command + "/csp Months Days Hours Minutes");
+					sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Months Days Hours Minutes "
+							+ plugin.error + "to set date and time you want the command to run.");
+					return true;
 		        }
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand, sender);
@@ -200,8 +202,12 @@ public class CommandCreator {
 		        	sender.sendMessage(plugin.prefix + "Scheduled command relative to current time."); 
 		        	commandEditorOption = 0;
 		        	displayCommand(currentCommand, sender);
-		        	break;
 		        }
+	        	else {
+					sender.sendMessage(plugin.prefix + plugin.error +  "Use " + plugin.command + "/csp Days Hours Minutes " +
+							plugin.error + "to Scheduled the command relative to current the time.");
+	        		return true;
+	        	}
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand, sender);
 	        	break;
@@ -214,8 +220,8 @@ public class CommandCreator {
 	        		commandEditorOption = 0;
 		        }
 	        	else {
-	        		commandEditorOption = 0;
-	        		displayCommand(currentCommand, sender);
+					sender.sendMessage(plugin.prefix + plugin.error +  "Usage: " + plugin.command + "/csp Days Hours Minutes");
+	        		return true;
 	        	}
 	        	break;
 	        case 5 : //Add time to scheduled run
@@ -232,19 +238,9 @@ public class CommandCreator {
 	    }
 	    return true;
 	}
-
-	private void removeSlash(String[] args) {
-		if((args[0].charAt(0)) == '/'){
-			//System.out.println("The commands started with a /. Removing it for storage");
-			StringBuilder sb = new StringBuilder(args[0]);
-			sb.deleteCharAt(0);
-			String finalCommand = sb.toString();
-			args[0] = finalCommand;
-		}
-	}
 	
 	public TimeSlice timeSliceEntry(String[] args, CommandSender sender){
-		if(args.length == 3){ //TODO check for valid date like month etc. 
+		if(args.length == 3){ 
 		    try
 		    {
 				int days = Integer.parseInt(args[0]); 
@@ -253,13 +249,11 @@ public class CommandCreator {
 				return new TimeSlice(days, hours, minutes);
 		    } catch (NumberFormatException ex)
 		    {
-				sender.sendMessage(plugin.prefix + plugin.error +  "Usage: " + plugin.command + "/csp Days Hours Minutes");
 		        return null;
 		    }
 
 		}
 		else {
-			sender.sendMessage(plugin.prefix + plugin.error +  "Usage: " + plugin.command + "/csp Days Hours Minutes");
 			return null;
 		}
 	}
@@ -292,7 +286,8 @@ public class CommandCreator {
 	        	if(groupCommandEditorOption > 0 && groupCommandEditorOption <= 5) {
 		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : sender.sendMessage(plugin.prefix + "Enter the command you want to add to the group."); break;
-		        		case 2 : sender.sendMessage(plugin.prefix + "Enter the number of where you want to insert a command followed by the commmand");
+		        		case 2 : showCommandGroup(sender);
+		        					sender.sendMessage(plugin.prefix + "Enter the number of command you want to replace followed by the commmand");
 		        				 	sender.sendMessage(plugin.prefix + plugin.command + "/csp <number> <command>"); break;
 		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the number of the command you want to delete."); break;
 		        		case 4 : sender.sendMessage(plugin.prefix + "Cleared all the commands"); 
@@ -329,7 +324,6 @@ public class CommandCreator {
 	        		return true;
 	        	}
 	        	else {
-	        		removeSlash(args);
 		        	currentCommand.setCommand(args, -1);
 					groupCommandEditorOption = 0;
 	        	}
@@ -353,14 +347,14 @@ public class CommandCreator {
 	        		    {
 			        		return commandGroupInsertError(sender);
 	        		    }
-		        		if(temp - 1 < currentCommand.getCommands().size() && temp - 1 >= 0) {//TODO this is broken
+		        		if(temp - 1 < currentCommand.getCommands().size() && temp - 1 >= 0) {
 		        			if((args[1].charAt(0)) == '/'){
 		        				StringBuilder sb = new StringBuilder(args[1]);
 		        				sb.deleteCharAt(0);
 		        				String finalCommand = sb.toString();
 		        				args[1] = finalCommand;
 		        			}
-			        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0])); 
+			        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0]) - 1); 
 			        		groupCommandEditorOption = 0;
 		        		}
 		        		else {
@@ -370,7 +364,7 @@ public class CommandCreator {
 	        	}
 				displayCommandEditor(currentCommand.getCommands(), sender);
 	        	break;
-	        case 3 : //handle command delete //TODO fix error when deleting all the command
+	        case 3 : //handle command delete 
 	        	if(args.length < 1){
 	        		showCommandGroup(sender);
 	        		sender.sendMessage(plugin.prefix + plugin.error + "Enter the number of the command you want to delete from the command group.");

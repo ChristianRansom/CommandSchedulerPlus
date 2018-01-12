@@ -102,6 +102,8 @@ public class CommandSchedulerPlus extends JavaPlugin {
 				Collection<? extends Player> allPlayers = Bukkit.getServer().getOnlinePlayers();
 				if(allPlayers.isEmpty()){
 					//System.out.println("There are no players online");
+					
+					console.sendMessage(prefix + error + "There are no players online. ");
 				}
 				else {
 					for(Player aPlayer : allPlayers){
@@ -118,7 +120,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 					Bukkit.dispatchCommand(player, aCommand.getCommandString());
 				}
 				else {
-					console.sendMessage(prefix + "Player not found");
+					console.sendMessage(prefix + error +  "Player not found. ");
 				}
 			}
 		}
@@ -126,7 +128,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 
 	public void reloadMyConfig() {
     	//generate default config or load in configured values
-		this.reloadConfig(); //TODO fix this crap
+		this.reloadConfig(); //This is in a separate method so it can be called by other classes
         mainthread.setSleepTime((long)this.getConfig().getDouble("CheckInterval") * 1000);
 	}
     
