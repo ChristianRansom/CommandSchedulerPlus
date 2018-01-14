@@ -84,16 +84,25 @@ public class CommandRunnerThread implements Runnable {
 	public void reschedule(ScheduledCommand command){
 		GregorianCalendar newDate = new GregorianCalendar();
 		GregorianCalendar newScheduleTime = new GregorianCalendar();
-		//Calculate difference from when its scheduled run time and now
-		newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() % command.getRepeat().getMillis());
-		//System.out.println("repeat % difference: " + new ScheduledCommand(newScheduleTime, "Test command").toString());
+		
+		//if(scheduled time + repate > now)
+		if((command.getDate().getTimeInMillis() + command.getRepeat().getMillis()) > newDate.getTimeInMillis()){
+		    //newschedule = scheduledtime + repeat
+			newScheduleTime.setTimeInMillis(command.getDate().getTimeInMillis() + command.getRepeat().getMillis());
+		}
+		else {
+			//newschedule = now + ((now - oldschedule) % repat)
+			newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() + 
+					((newDate.getTimeInMillis() - command.getDate().getTimeInMillis()) %  command.getRepeat().getMillis()));
+		}
 		ScheduledCommand newCommand = command.copy(); 
-		//reschedule for now + repeat - currenttime % repeat 
 		//This keeps it running according the the expected repeat time, so it doesn't shift over time due to restarts
-		newScheduleTime.setTimeInMillis(newDate.getTimeInMillis() + (command.getRepeat().getMiliseconds() - newScheduleTime.getTimeInMillis()));
+		
 		newCommand.setDate(newScheduleTime);
 		newCommand.setRepeat(command.getRepeat());
 		//System.out.println("Reschedule Inserting " + newCommand);
+		
+		
 		synchronized(commands) {
 			commands.insert(newCommand);
 		}

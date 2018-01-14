@@ -160,8 +160,14 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	
 	@Override
 	public String toString() {
-		String dateString = (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DATE) + "/"
-				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":" + date.get(Calendar.MINUTE);
+		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
+				+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":";
+		if(date.get(Calendar.MINUTE) < 10){
+			dateString += ("0" + date.get(Calendar.MINUTE));
+		}
+		else {
+			dateString += date.get(Calendar.MINUTE);
+		}
 		
 		if(!commandGroup) {
 			if(commands.get(0).getExecutor() != "CONSOLE") {

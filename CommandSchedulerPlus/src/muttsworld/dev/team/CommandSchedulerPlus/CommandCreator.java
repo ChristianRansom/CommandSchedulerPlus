@@ -174,7 +174,7 @@ public class CommandCreator {
 		            } 
 		            catch (NumberFormatException ex)
 		            {
-						sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Months Days Hours Minutes "
+						sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Year Months Days Hours Minutes "
 								+ plugin.error + "to set date and time you want the command to run.");
 		                return true;
 		            }
@@ -401,7 +401,7 @@ public class CommandCreator {
 	private void showCommandGroup(CommandSender sender) {
 		sender.sendMessage(plugin.prefix + "Commands:");
 		for(int i = 0; i < currentCommand.getCommands().size(); i++){
-			sender.sendMessage(plugin.prefix + (i + 1) + ". " + plugin.command + "/" + currentCommand.getCommands().get(i));
+			sender.sendMessage(plugin.prefix + "    " + (i + 1) + ". " + plugin.command + "/" + currentCommand.getCommands().get(i));
 		}
 		sender.sendMessage(plugin.prefix + "------------------------------------");
 	}
@@ -441,6 +441,7 @@ public class CommandCreator {
 		sender.sendMessage(plugin.prefix + "Creating a new command. Use " + plugin.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
 		if(aCommand.isCommandGroup()){
 			showCommandGroup(sender);
+			sender.sendMessage(plugin.prefix + "1: Edit Commands");
 		}
 		else {
 			sender.sendMessage(plugin.prefix + "1: Command/s to be run: " + plugin.command + "/" + aCommand.getCommand());
@@ -453,7 +454,7 @@ public class CommandCreator {
 		else {
 			sender.sendMessage(plugin.prefix + "4: Repeating: " + ChatColor.YELLOW + "False");
 		}
-		sender.sendMessage(plugin.prefix + "5: Extend time till next run. Add time to the next scheduled run.");
+		sender.sendMessage(plugin.prefix + "5: Extend time till next scheduled execution.");
 		sender.sendMessage(plugin.prefix + "6: Save and exit.");
 		sender.sendMessage(plugin.prefix + "7: Exit without saving.");
 	}

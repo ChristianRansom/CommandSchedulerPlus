@@ -87,7 +87,7 @@ public class CommandHandler implements CommandExecutor{
 	
 	private boolean helpInfo() {
 		sender.sendMessage(ChatColor.YELLOW + "-------- " + ChatColor.BLUE + 
-				"Command Scheduler Plus " + ChatColor.YELLOW + "--------");
+				"Command Scheduler Plus " + ChatColor.YELLOW + "--------"); //TODO update this with help tips and all commands
 		sender.sendMessage(plugin.prefix + plugin.command + "/csp create");
 		sender.sendMessage(plugin.prefix + plugin.command + "/csp delete <number>");
 		sender.sendMessage(plugin.prefix + plugin.command + "/csp edit <number>");
@@ -112,7 +112,7 @@ public class CommandHandler implements CommandExecutor{
 			sender.sendMessage(plugin.prefix + plugin.command + "Usage: " + plugin.command +  "/csp delete <number>");
 			return true;
 		}
-		synchronized(commands) { //TODO Remove redundant parses throughout the project
+		synchronized(commands) {  //TODO Remove redundant parses throughout the project
 			if(Integer.parseInt(args[1]) <= commands.getSize() && Integer.parseInt(args[1]) > 0){
 				ScheduledCommand deleted = commands.find(Integer.parseInt(args[1]));
 				if(commands.delete(deleted)){
