@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="CommandSchedulerPlus" default="makejar" basedir=".">
     <target name="makejar" description="Create a jar for the project">
-        <jar destfile="../../Desktop/1.12.2_Server/Plugins/${ant.project.name}.jar">
+        <jar destfile="C:\Users\Christian Ransom\Desktop\1.12.2_Server\plugins\${ant.project.name}.jar">
             <fileset dir="bin"></fileset>
             <fileset file="plugin.yml"></fileset>
         </jar>

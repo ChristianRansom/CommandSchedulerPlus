@@ -47,7 +47,12 @@ public class CommandHandler implements CommandExecutor{
 			return true;
 		}
 		else if(args[0].equals("create")){
-			return commandCreator.createCommand(sender);
+			if(args.length > 1){
+				return commandCreator.quickCreate(args);
+			}
+			else {
+				return commandCreator.createCommand(sender);
+			}
 		}
 		else if(args[0].equals("forceupdate") || args[0].equals("forcecheck")){
 			return forceupdate();

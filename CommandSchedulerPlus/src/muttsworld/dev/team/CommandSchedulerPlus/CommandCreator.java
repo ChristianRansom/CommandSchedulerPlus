@@ -481,6 +481,40 @@ public class CommandCreator {
 	}
 
 	
+
+	boolean quickCreate(String[] args) {
+		String commandString = "";
+		String repeatString = "";
+		String dateString = "";
+		char optionChar = 'x';
+		
+		
+		for(int i = 1; i < args.length; i++){
+			System.out.println("args[i]" + args[i]);
+			if(args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
+				optionChar = args[i].charAt(2);
+			}
+			System.out.println("optionChar " + optionChar);
+			switch(optionChar){
+			case 'c': 
+				commandString += args[i];
+				break;
+			case 'r':
+				repeatString += args[i];
+				break;
+			case 'd': 
+				dateString += args[i];
+				break;
+			}
+			
+			
+			
+			//ScheduledCommand aCommand = new ScheduledCommand(commandString, repeatString, dateString);
+			
+		}
+		return true;
+	}
+	
 	
 	
 }
