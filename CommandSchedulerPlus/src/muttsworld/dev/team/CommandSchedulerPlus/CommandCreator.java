@@ -68,9 +68,7 @@ public class CommandCreator {
 	}
 
 	boolean commandEditor(String[] args, CommandSender sender) {
-	    int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
-	    TimeSlice timeSlice;
-	    
+	    TimeSlice timeSlice;	    
 	    switch(commandEditorOption) {
 	        case 0 :
 	    		if(args.length < 1){
@@ -112,7 +110,7 @@ public class CommandCreator {
 		        		case 3 : sender.sendMessage(plugin.prefix + "Enter the time from now you want the command to run: " + plugin.command + "/csp Days Hours Minutes"); break;
 		        		case 4 : sender.sendMessage(plugin.prefix + "Enter the how often you want the command to repeat: " + plugin.command + "/csp Days Hours Minutes"); break;
 		        		case 5 : sender.sendMessage(plugin.prefix + "Enter how much time to add to delay when the command is scheduled: " + plugin.command + "/csp Days Hours Minutes"); break;
-		        		case 6 : 
+		        		case 6 :  //Saving Command
 		        			if(editingCommand == null) {
 			        			synchronized(commands){
 				        			commands.insert(currentCommand);
@@ -163,38 +161,23 @@ public class CommandCreator {
 	        	}
 				break; 
 	        case 2 : //handle date entry for a new command
-		        if(args.length == 5){ 
-		            try
-		            {
-			        	year = Integer.parseInt(args[0]); 
-			        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
-			        	dayOfMonth = Integer.parseInt(args[2]); 
-			        	hourOfDay = Integer.parseInt(args[3]); 
-			        	minute = Integer.parseInt(args[4]); 
-		            } 
-		            catch (NumberFormatException ex)
-		            {
-						sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Year Months Days Hours Minutes "
-								+ plugin.error + "to set date and time you want the command to run.");
-		                return true;
-		            }
-
-		        	
-		        	GregorianCalendar gcalendarDate = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-		        	currentCommand.setDate(gcalendarDate);
-		        	
-		        	sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
-		        }
-		        else {
-					sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Months Days Hours Minutes "
+		        
+        	
+	        	GregorianCalendar gcalendarDate = dateEntry(args, sender);
+	        	if(gcalendarDate == null) {
+	        		sender.sendMessage(plugin.prefix + plugin.error + "Use " + plugin.command + "/csp Year Months Days Hours Minutes "
 							+ plugin.error + "to set date and time you want the command to run.");
-					return true;
-		        }
+	        	}
+	        	else {
+	        		currentCommand.setDate(gcalendarDate);
+	        		sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
+	        	}
+		        
 	        	commandEditorOption = 0;
 	        	displayCommand(currentCommand, sender);
 	        	break;
 	        case 3 : //Time relative from now that the command should be scheduled
-        		timeSlice = timeSliceEntry(args, sender);
+        		timeSlice = timeSliceEntry(args);
 	        	if(timeSlice != null){  
 	        		GregorianCalendar newDate = new GregorianCalendar(); //creates a date of the time now
 	        		newDate.setTimeInMillis(newDate.getTimeInMillis() + (timeSlice.getMillis()));
@@ -212,7 +195,7 @@ public class CommandCreator {
 	        	displayCommand(currentCommand, sender);
 	        	break;
 	        case 4 : //set repeat time for a command
-        		timeSlice = timeSliceEntry(args, sender);
+        		timeSlice = timeSliceEntry(args);
 	        	if(timeSlice != null){ 
 		        	currentCommand.setRepeat(timeSlice);
 		        	sender.sendMessage(plugin.prefix + "Date Succesfully entered. Command added to be scheduled.");
@@ -225,7 +208,7 @@ public class CommandCreator {
 	        	}
 	        	break;
 	        case 5 : //Add time to scheduled run
-	        	timeSlice = timeSliceEntry(args, sender);
+	        	timeSlice = timeSliceEntry(args);
 	        	if(timeSlice != null){		
 	        		GregorianCalendar newDate = new GregorianCalendar();
 	        		newDate.setTimeInMillis(currentCommand.getDate().getTimeInMillis() + timeSlice.getMillis());
@@ -239,7 +222,7 @@ public class CommandCreator {
 	    return true;
 	}
 	
-	public TimeSlice timeSliceEntry(String[] args, CommandSender sender){
+	public TimeSlice timeSliceEntry(String[] args){
 		if(args.length == 3){ 
 		    try
 		    {
@@ -259,7 +242,7 @@ public class CommandCreator {
 	}
 
 	//package visibility
-	boolean createCommandGroup(String[] args, CommandSender sender) {
+	boolean commandGroupEditor(String[] args, CommandSender sender) {
 		switch(groupCommandEditorOption) {
 	        case 0 :
 	    		if(args.length < 1){
@@ -482,7 +465,7 @@ public class CommandCreator {
 
 	
 
-	boolean quickCreate(String[] args) {
+	boolean quickCreate(String[] args, CommandSender sender) {
 		String commandString = "";
 		String repeatString = "";
 		String dateString = "";
@@ -494,25 +477,68 @@ public class CommandCreator {
 			if(args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
 				optionChar = args[i].charAt(2);
 			}
+			else {
 			System.out.println("optionChar " + optionChar);
-			switch(optionChar){
-			case 'c': 
-				commandString += args[i];
-				break;
-			case 'r':
-				repeatString += args[i];
-				break;
-			case 'd': 
-				dateString += args[i];
-				break;
+				switch(optionChar){
+				case 'c': 
+					commandString += args[i] + " ";
+					break;
+				case 'r':
+					repeatString += args[i] + " ";
+					break;
+				case 'd': 
+					dateString += args[i] + " ";
+					break;
+				}
 			}
-			
-			
-			
-			//ScheduledCommand aCommand = new ScheduledCommand(commandString, repeatString, dateString);
-			
+		}
+		System.out.println("CommandString " + commandString);
+
+		System.out.println("RepeatString " + repeatString);
+		TimeSlice repeatSlice = timeSliceEntry(repeatString.split(" "));
+		System.out.println("repeatSlice" + repeatString);
+		if(repeatSlice == null) {
+			sender.sendMessage(plugin.prefix + plugin.error + "Invalid repeat value. Repeat format: Days Hours Minutes. ");
+			return true;
+    	}
+		
+		GregorianCalendar dateEntry = dateEntry(dateString.split(" "), sender);
+		System.out.println("dateEntry " + dateString);
+		if(dateEntry == null) {
+			sender.sendMessage(plugin.prefix + plugin.error + "Invalid date. Date format: Year Months Days Hours Minutes. ");
+			return true;
+    	}
+		ScheduledCommand aCommand = new ScheduledCommand(commandString, dateEntry, repeatSlice);
+		System.out.println("Adding this command: ");
+		displayCommand(aCommand, sender);
+		synchronized(commands){
+			commands.insert(aCommand);
 		}
 		return true;
+	}
+	
+	GregorianCalendar dateEntry(String[] args, CommandSender sender){
+	    int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
+
+		if(args.length == 5){ 
+            try
+            {
+	        	year = Integer.parseInt(args[0]); 
+	        	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
+	        	dayOfMonth = Integer.parseInt(args[2]); 
+	        	hourOfDay = Integer.parseInt(args[3]); 
+	        	minute = Integer.parseInt(args[4]); 
+            } 
+            catch (NumberFormatException ex)
+            {
+                return null;
+            }
+		}
+		else {
+			return null;
+		}
+        return new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
+
 	}
 	
 	

@@ -41,8 +41,8 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	}
 
 	// Single command constructor
-	public ScheduledCommand(String Acommand, GregorianCalendar Adate, TimeSlice Arepeat) {
-		commands.add(new CommandWithExecutor("Acommand")); // only has one command
+	public ScheduledCommand(String aCommand, GregorianCalendar Adate, TimeSlice Arepeat) {
+		commands.add(new CommandWithExecutor(aCommand)); // only has one command
 		commandGroup = false;
 		date = Adate;
 		repeat = Arepeat;

@@ -31,7 +31,7 @@ public class CommandHandler implements CommandExecutor{
 			return true;
 		}
 		if(commandCreator.groupCommandEditor){ 
-			return commandCreator.createCommandGroup(args, sender);
+			return commandCreator.commandGroupEditor(args, sender);
 		}
 		else if(commandCreator.commandEditor){
 			return commandCreator.commandEditor(args, sender);
@@ -48,7 +48,7 @@ public class CommandHandler implements CommandExecutor{
 		}
 		else if(args[0].equals("create")){
 			if(args.length > 1){
-				return commandCreator.quickCreate(args);
+				return commandCreator.quickCreate(args, sender);
 			}
 			else {
 				return commandCreator.createCommand(sender);
