@@ -1,7 +1,5 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -9,29 +7,24 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CommandCreator {
+public final class CommandCreator {
 	
-	private final AVLTree<ScheduledCommand> commands; //the list of commands
-	private ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
-	private ScheduledCommand editingCommand = null; //Used to store state of command we're editing in case we abort the edit
-	boolean commandEditor = false; //Value used to handle multi-step creation of commands
-	private int commandEditorOption = 0;
+	static ScheduledCommand currentCommand; //Used to hold variables while creating and adding a new command
+	static ScheduledCommand editingCommand = null; //Used to store state of command we're editing in case we abort the edit
+	static boolean commandEditor = false; //Value used to handle multi-step creation of commands
+	private static int commandEditorOption = 0;
 
-	//Group Command Creation Variables
-	private int groupCommandEditorOption = 0;
-	boolean groupCommandEditor = false; //Value used to handle command groups
-
-	public CommandCreator(AVLTree<ScheduledCommand> theCommands){
+/*	public CommandCreator(AVLTree<ScheduledCommand> theCommands){
 		commands = theCommands;
-	}
+	}*/
 
-	void createCommand(CommandSender sender){
+	static void createCommand(CommandSender sender){
 		currentCommand = new ScheduledCommand();
 		commandEditor = true;
 		displayCommandMenu(currentCommand, sender);
 	}
 
-	void editCommand(String[] args, CommandSender sender) {
+	static void editCommand(String[] args, CommandSender sender, AVLTree<ScheduledCommand> commands) {
 		if(args.length < 2){
 			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Usage: " + PluginMessages.command + "/csp edit <number>");
 			return;
@@ -63,7 +56,7 @@ public class CommandCreator {
 		displayCommandMenu(currentCommand, sender);
 	}
 
-	void commandEditor(String[] args, CommandSender sender) {
+	static void commandEditor(String[] args, CommandSender sender, AVLTree<ScheduledCommand> commands) {
 	    TimeSlice timeSlice;	    
 	    switch(commandEditorOption) {
 	        case 0 :
@@ -86,7 +79,7 @@ public class CommandCreator {
 	    			
 	    		}
 	    		else {
-	        		displayCommandGroupMenu(currentCommand.getCommands(), sender);
+	    			GroupCommandEditor.displayCommandGroupMenu(currentCommand.getCommands(), sender);
 	    			return;
 	    		}
 	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
@@ -97,9 +90,8 @@ public class CommandCreator {
 		        						PluginMessages.command + "/csp commandgroup " + ChatColor.WHITE + "to add multiple commands");		
 		        			}
 		        			else {
-		    	        		groupCommandEditor = true;
 		    		        	commandEditorOption = 0;
-		    	        		displayCommandGroupMenu(currentCommand.getCommands(), sender);
+		    		        	GroupCommandEditor.displayCommandGroupMenu(currentCommand.getCommands(), sender);
 		        			}
 		        			break;
 	        			case 2 : sender.sendMessage(PluginMessages.prefix + "Enter the date and time you want the command to run: " + PluginMessages.command + "/csp Year Month Day (24)Hours Minutes"); break;
@@ -138,10 +130,9 @@ public class CommandCreator {
 	        case 1 : //handle new command being added
 	        	if(!(args.length < 1)){
 		        	if(args[0].equals("commandgroup")){
-		        		groupCommandEditor = true;
 			        	commandEditorOption = 0;
 		        		//System.out.println(currentCommandGroup.size() + " commands found");
-		        		displayCommandGroupMenu(currentCommand.getCommands(), sender);
+		        		GroupCommandEditor.displayCommandGroupMenu(currentCommand.getCommands(), sender);
 		        	}
 		        	else { 
 		        		//System.out.println("args 1 " + args[0]);
@@ -217,7 +208,7 @@ public class CommandCreator {
 	    }
 	}
 	
-	TimeSlice timeSliceEntry(String[] args){
+	static TimeSlice timeSliceEntry(String[] args){
 		if(args.length == 3){ 
 		    try
 		    {
@@ -236,147 +227,7 @@ public class CommandCreator {
 		}
 	}
 
-	//package visibility
-	void commandGroupEditor(String[] args, CommandSender sender) {
-		switch(groupCommandEditorOption) {
-	        case 0 :
-	    		if(args.length < 1){
-	    			displayCommandGroupMenu(currentCommand.getCommands(), sender);
-	    			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + " Use " + PluginMessages.command + "/csp <number>" +  PluginMessages.error + " to selection an option");
-	    			return;
-	    		}
-	    		if(!args[0].equals("")){
-	    		    try
-	    		    {
-		    			groupCommandEditorOption = Integer.parseInt(args[0]);
-	    		    } catch (NumberFormatException ex)
-	    		    {
-	    		    	displayCommandGroupMenu(currentCommand.getCommands(), sender);
-		    			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + " Use " + PluginMessages.command + "/csp <number>" +  PluginMessages.error + " to selection an option");
-	    		    	return;
-	    		    }
-	    		}
-	    		else {
-	    			displayCommandGroupMenu(currentCommand.getCommands(), sender);
-	    			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + " Use " + PluginMessages.command + "/csp <number>" +  PluginMessages.error + " to selection an option");
-	    			return;
-	    		}
-	        	if(groupCommandEditorOption > 0 && groupCommandEditorOption <= 5) {
-		        	switch(groupCommandEditorOption){ //Should move all messages here for maintainability 
-		        		case 1 : sender.sendMessage(PluginMessages.prefix + "Enter the command you want to add to the group."); break;
-		        		case 2 : showCommandGroup(sender);
-		        					sender.sendMessage(PluginMessages.prefix + "Enter the number of command you want to replace followed by the commmand");
-		        				 	sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp <number> <command>"); break;
-		        		case 3 : sender.sendMessage(PluginMessages.prefix + "Enter the number of the command you want to delete."); break;
-		        		case 4 : sender.sendMessage(PluginMessages.prefix + "Cleared all the commands"); 
-		        			currentCommand.getCommands().clear();
-		    				displayCommandGroupMenu(currentCommand.getCommands(), sender);
-		        			groupCommandEditorOption = 0;
-		        			break;
-		        		case 5 : sender.sendMessage(PluginMessages.prefix + "Command Group Saved"); 
-		        			if(currentCommand.getCommands().isEmpty()) {
-						sender.sendMessage(
-								PluginMessages.prefix + PluginMessages.error + "No commands found in the command group. Adding a default command");
-								String defaultCommand[] = {"this", "is", "an", "example", "command"};
-								currentCommand.setCommand(defaultCommand, -1);
-		        			}
-		        			else{
-			        			currentCommand.setCommandGroup(true);
-		        			}
-		        			groupCommandEditorOption = 0;
-				        	groupCommandEditor = false;
-				        	displayCommandMenu(currentCommand, sender);
-		        			break;
-		        	}
-	        	}
-	        	else{
-		        	displayCommandMenu(currentCommand, sender);
-	        		sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter an option from 1 to 5");
-        			groupCommandEditorOption = 0;
-	        	}
-	        	break; //Breaks from outer switch case
-	        case 1 : //handle new command being added to the commmandGroup
-	        	if(args.length < 1){
-	        		showCommandGroup(sender);
-	        	 	sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter the command you want to add to the group.");
-	        		return;
-	        	}
-	        	else {
-		        	currentCommand.setCommand(args, -1);
-					groupCommandEditorOption = 0;
-	        	}
-				displayCommandGroupMenu(currentCommand.getCommands(), sender);
-	        	break;
-	        case 2 : //handle command replace
-	        	if(args.length < 2){
-	        	commandGroupInsertError(sender);
-	        	}
-	        	else {
-	        		//remove replace place argument argument from the command
-	        		if(args[0].equals("")){
-		        		commandGroupInsertError(sender);
-		        		return;
-	        		}
-	        		else {
-	        			int temp;
-	        		    try //extract this safe number check
-	        		    {
-	        		    	temp = Integer.parseInt(args[0]); 
-	        		    } catch (NumberFormatException ex)
-	        		    {
-			        		commandGroupInsertError(sender);
-			        		return;
-	        		    }
-		        		if(temp - 1 < currentCommand.getCommands().size() && temp - 1 >= 0) {
-		        			if((args[1].charAt(0)) == '/'){
-		        				StringBuilder sb = new StringBuilder(args[1]);
-		        				sb.deleteCharAt(0);
-		        				String finalCommand = sb.toString();
-		        				args[1] = finalCommand;
-		        			}
-			        		currentCommand.setCommand(Arrays.copyOfRange(args, 1, args.length), Integer.parseInt(args[0]) - 1); 
-			        		groupCommandEditorOption = 0;
-		        		}
-		        		else {
-			        		commandGroupInsertError(sender);
-			        		return;
-		        		}
-	        		}
-	        	}
-				displayCommandGroupMenu(currentCommand.getCommands(), sender);
-	        	break;
-	        case 3 : //handle command delete 
-	        	if(args.length < 1){
-	        		showCommandGroup(sender);
-	        		sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter the number of the command you want to delete from the command group.");
-	        		return;
-	        	}
-	        	else {
-	        		 int temp;
-	        		 try
-	        		    {
-	        			 	temp = Integer.parseInt(args[0]);
-	        		    } catch (NumberFormatException ex)
-	        		    {
-	    	        		showCommandGroup(sender);
-	    	        		sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter the number of the command you want to delete.");
-	        		        return;
-	        		    }
-		        	currentCommand.getCommands().remove(Integer.parseInt(args[0]) - 1);
-					groupCommandEditorOption = 0;
-	        	}
-				displayCommandGroupMenu(currentCommand.getCommands(), sender);
-	        	break;
-		}
-	}
-
-	private void commandGroupInsertError(CommandSender sender) {
-		showCommandGroup(sender);
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter the number of the command you want to replace followed by the command you want to enter.");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp <number> <command>");
-	}
-
-	private void showCommandGroup(CommandSender sender) {
+	static void showCommandGroup(CommandSender sender) {
 		sender.sendMessage(PluginMessages.prefix + "Commands:");
 		for(int i = 0; i < currentCommand.getCommands().size(); i++){
 			sender.sendMessage(PluginMessages.prefix + "    " + (i + 1) + ". " + PluginMessages.command + "/" + currentCommand.getCommands().get(i));
@@ -384,21 +235,10 @@ public class CommandCreator {
 		sender.sendMessage(PluginMessages.prefix + "------------------------------------");
 	}
 
-	void displayCommandGroupMenu(ArrayList<CommandWithExecutor> arrayList, CommandSender sender) {
-		sender.sendMessage("");
-		sender.sendMessage(PluginMessages.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + 
-				"---------Command Group---------"); 
-		sender.sendMessage(PluginMessages.prefix + "Use " + PluginMessages.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
-		showCommandGroup(sender);
-		sender.sendMessage(PluginMessages.prefix + "1: Add a command. ");
-		sender.sendMessage(PluginMessages.prefix + "2: Replace a command. ");
-		sender.sendMessage(PluginMessages.prefix + "3: Delete a command. ");
-		sender.sendMessage(PluginMessages.prefix + "4: Clear all commands.");
-		sender.sendMessage(PluginMessages.prefix + "5: Save and Exit.");
-	}
+	
 
 	//displays a date in a proper da
-	String displayDate(GregorianCalendar date){
+	static String displayDate(GregorianCalendar date){
 		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
 			+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) +
 			":";
@@ -412,7 +252,7 @@ public class CommandCreator {
 	}
 
 	//shows a minimum number of pieces of info to  show a time slice
-	String simpleDate(GregorianCalendar date){
+	static String simpleDate(GregorianCalendar date){
 		long millis = date.getTimeInMillis();
 		long days = TimeUnit.MILLISECONDS.toDays(millis);
 	    millis -= TimeUnit.DAYS.toMillis(days);
@@ -432,8 +272,8 @@ public class CommandCreator {
 	    //sb.append(" Seconds");
 	    return(sb.toString());
 	}
-
-	void displayCommandMenu(ScheduledCommand aCommand, CommandSender sender) {
+	
+	static void displayCommandMenu(ScheduledCommand aCommand, CommandSender sender) {
 		GregorianCalendar now = new GregorianCalendar();
 		now.setTimeInMillis((aCommand.getDate().getTimeInMillis() - now.getTimeInMillis()));
 		sender.sendMessage("");
@@ -459,8 +299,8 @@ public class CommandCreator {
 		sender.sendMessage(PluginMessages.prefix + "6: Save and exit.");
 		sender.sendMessage(PluginMessages.prefix + "7: Exit without saving.");
 	}
-
-	void quickCreate(String[] args, CommandSender sender) {
+	
+	static void quickCreate(String[] args, CommandSender sender, AVLTree<ScheduledCommand> commands) {
 		String commandString = "";
 		String repeatString = "";
 		String dateString = "";
@@ -512,7 +352,7 @@ public class CommandCreator {
 		return;
 	}
 	
-	GregorianCalendar dateEntry(String[] args, CommandSender sender){
+	static GregorianCalendar dateEntry(String[] args, CommandSender sender){
 	    int year = 0, month = 0, dayOfMonth = 0, hourOfDay = 0, minute = 0;
 
 		if(args.length != 5){ 

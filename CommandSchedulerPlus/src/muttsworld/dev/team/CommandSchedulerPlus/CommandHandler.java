@@ -12,15 +12,13 @@ import org.bukkit.command.CommandSender;
 public class CommandHandler implements CommandExecutor {
 	private final AVLTree<ScheduledCommand> commands; // the list of commands
 	public CommandSchedulerPlus plugin;
-	private CommandCreator commandCreator;
 	private CommandSender sender;
 
-	// Main Constructor - No default Constructor since I want to ensure the
+	// Main Constructor - No default Construct	or since I want to ensure the
 	// thread is created with its fields given
 	public CommandHandler(AVLTree<ScheduledCommand> commands2, CommandSchedulerPlus commandSchedulerPlus) {
 		commands = commands2;
 		plugin = commandSchedulerPlus;
-		commandCreator = new CommandCreator(commands);
 	}
 
 	// Called when a command registered to the plugin in the plugin.yml is
@@ -33,10 +31,10 @@ public class CommandHandler implements CommandExecutor {
 													// this is even reached.
 			sender.sendMessage(PluginMessages.prefix + "You do not have permission to perform this command!");
 		}
-		else if (commandCreator.groupCommandEditor) {
-			commandCreator.commandGroupEditor(args, sender);
-		} else if (commandCreator.commandEditor) {
-			commandCreator.commandEditor(args, sender);
+		else if (GroupCommandEditor.groupCommandEditor) {
+			GroupCommandEditor.commandGroupEditor(args, sender);
+		} else if (CommandCreator.commandEditor) {
+			CommandCreator.commandEditor(args, sender, commands);
 		} else if (args.length < 1) {
 			helpInfo();
 		} else if (args[0].equals("help")) {
@@ -45,9 +43,9 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(PluginMessages.prefix + (long) plugin.getConfig().getDouble("CheckInterval"));			
 		} else if (args[0].equals("create")) {
 			if (args.length > 1) {
-				commandCreator.quickCreate(args, sender);
+				CommandCreator.quickCreate(args, sender, commands);
 			} else {
-				commandCreator.createCommand(sender);
+				CommandCreator.createCommand(sender);
 			}
 		} else if (args[0].equals("forceupdate") || args[0].equals("forcecheck")) {
 			forceupdate();
@@ -56,7 +54,7 @@ public class CommandHandler implements CommandExecutor {
 		} else if (args[0].equals("listcommands") || args[0].equals("commandlist") || args[0].equals("list")) {
 			listCommands();
 		} else if (args[0].equals("edit")) {
-			commandCreator.editCommand(args, sender);
+			CommandCreator.editCommand(args, sender, commands);
 		} else if (args[0].equals("delete")) {
 			deleteCommand(args);
 		} else if (args[0].equals("preorder")) { // secret debugging command
@@ -64,7 +62,7 @@ public class CommandHandler implements CommandExecutor {
 				commands.preOrder(sender);
 			}
 		} else if (args[0].equals("time")) {
-			sender.sendMessage(PluginMessages.prefix + commandCreator.displayDate(new GregorianCalendar()));
+			sender.sendMessage(PluginMessages.prefix + CommandCreator.displayDate(new GregorianCalendar()));
 		} else if (args[0].equals("reload")) {
 			sender.sendMessage(PluginMessages.prefix + "Reloading CommandSchedulerPlus");
 			plugin.reloadMyConfig();
@@ -78,13 +76,24 @@ public class CommandHandler implements CommandExecutor {
 		sender.sendMessage(ChatColor.YELLOW + "-------- " + ChatColor.BLUE + "Command Scheduler Plus "
 				+ ChatColor.YELLOW + "--------"); // TODO update this with help
 													// tips and all commands
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp create");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp delete <number>");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp edit <number>");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp time");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp test <number>");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp list");
-		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp forceupdate");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp list " + PluginMessages.info + "- Shows all the commands that are scheduled. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp create " + PluginMessages.info + "- Creates a new command and opens the command editor. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp edit <number> " + PluginMessages.info + "- Opens a command from the command list in the command editor. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp delete <number> " + PluginMessages.info + "- Deletes a command from /csp list. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp interval " + PluginMessages.info + "- Shows how often the plugin checks (in seconds) what commands need to be run. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp time " + PluginMessages.info + "- Shows the current server time that the plugin uses. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp forcecheck <number> " + PluginMessages.info + "- Forces the plugin to check if any commands need to be run before its automated check. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp test <number> " + PluginMessages.info + "- Tests a command from the scheduled list. ");
+		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
+				+ "/csp reload " + PluginMessages.info + "- Reloads the configuration file if you've made changes. ");
 	}
 
 	private void forceRun(String[] args) {
