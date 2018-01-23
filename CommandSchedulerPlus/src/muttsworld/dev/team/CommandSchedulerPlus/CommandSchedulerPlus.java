@@ -76,7 +76,6 @@ public class CommandSchedulerPlus extends JavaPlugin {
     	console.sendMessage(prefix + "Stopping Main Thread");
     	mainthread.stopThread();
     	try {
-    		
     		console.sendMessage(prefix + "Saving commands");
 			// write object to file
     		System.out.println(this.getDataFolder());
