@@ -22,10 +22,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 	//FileConfiguration config = this.getConfig();
 	MainThread mainthread;
 	private ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-	public final String prefix = ChatColor.YELLOW + "[" + ChatColor.BLUE + "CSP" + ChatColor.YELLOW + "] " + ChatColor.WHITE;
-	public final String error = "" + ChatColor.GOLD;
-	public final String command = "" + ChatColor.GREEN;
-
+	
 	AVLTree<ScheduledCommand> commands = new AVLTree<ScheduledCommand>();
 	
 	//This warning is thrown by the readObject... idk how the warning could possibly be avoided... 
@@ -43,7 +40,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			commands = (AVLTree<ScheduledCommand>)ois.readObject(); //initialization of commands doesn't need to be synched
 			ois.close();
 		} catch (FileNotFoundException e) {
-			console.sendMessage(prefix + "No Command data file found. Making a new one...");
+			console.sendMessage(PluginMessages.prefix + "No Command data file found. Making a new one...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -73,10 +70,10 @@ public class CommandSchedulerPlus extends JavaPlugin {
     @Override
     public void onDisable() {
     	
-    	console.sendMessage(prefix + "Stopping Main Thread");
+    	console.sendMessage(PluginMessages.prefix + "Stopping Main Thread");
     	mainthread.stopThread();
     	try {
-    		console.sendMessage(prefix + "Saving commands");
+    		console.sendMessage(PluginMessages.prefix + "Saving commands");
 			// write object to file
     		System.out.println(this.getDataFolder());
 			FileOutputStream fos = new FileOutputStream(this.getDataFolder() + "/CommandSchedulerPlus.ser");
@@ -102,7 +99,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 				if(allPlayers.isEmpty()){
 					//System.out.println("There are no players online");
 					
-					console.sendMessage(prefix + error + "There are no players online. ");
+					console.sendMessage(PluginMessages.prefix + PluginMessages.error + "There are no players online. ");
 				}
 				else {
 					for(Player aPlayer : allPlayers){
@@ -119,7 +116,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
 					Bukkit.dispatchCommand(player, aCommand.getCommandString());
 				}
 				else {
-					console.sendMessage(prefix + error +  "Player not found. ");
+					console.sendMessage(PluginMessages.prefix + PluginMessages.error +  "Player not found. ");
 				}
 			}
 		}

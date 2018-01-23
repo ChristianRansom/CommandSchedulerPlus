@@ -25,7 +25,7 @@ public class MainThread extends CommandRunnerThread {
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
-				console.sendMessage(plugin.prefix + "Thread interrupted.");
+				console.sendMessage(PluginMessages.prefix + "Thread interrupted.");
 			}
 	
 			//console.sendMessage(plugin.prefix + "Thread exiting.");

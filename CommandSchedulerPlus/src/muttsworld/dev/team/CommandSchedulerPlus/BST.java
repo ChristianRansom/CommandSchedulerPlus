@@ -10,7 +10,6 @@ import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;
 
 class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 
-
 	private static final long serialVersionUID = 1L;
 
 	TreeNode<E> root, current, parent;
@@ -127,31 +126,32 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 	// two different search trees are the same
 	// contentwise
 	//Needed to import and cast as AVLTreeNodes to preserver proper size values
-	public void inOrder(CommandSender sender,  CommandSchedulerPlus plugin) {
+	public void inOrder(CommandSender sender) {
 		i = 1;
-		inOrder((AVLTreeNode<E>)root, sender, plugin);
+		inOrder((AVLTreeNode<E>)root, sender);
 		//System.out.println();
 	}
 
-	public void inOrder(AVLTreeNode<E> root, CommandSender sender, CommandSchedulerPlus plugin) {
+	//TODO create a method that returns an array... this class should only be the data structure...
+	public void inOrder(AVLTreeNode<E> root, CommandSender sender) {
 		if (root == null)
 			return;
-		inOrder((AVLTreeNode<E>)root.left, sender, plugin);
-		sender.sendMessage(plugin.prefix + (i++) + ". " + root.element.toString());
-		inOrder((AVLTreeNode<E>)root.right, sender, plugin);
+		inOrder((AVLTreeNode<E>)root.left, sender);
+		sender.sendMessage(PluginMessages.prefix + (i++) + ". " + root.element.toString());
+		inOrder((AVLTreeNode<E>)root.right, sender);
 	}
 
-	public void preOrder(CommandSender sender, CommandSchedulerPlus plugin) {
+	public void preOrder(CommandSender sender) {
 		i = 1;
-		preOrder((AVLTreeNode<E>)root, sender, plugin);
+		preOrder((AVLTreeNode<E>)root, sender);
 	}
 
-	public void preOrder(AVLTreeNode<E> root, CommandSender sender, CommandSchedulerPlus plugin) {
+	public void preOrder(AVLTreeNode<E> root, CommandSender sender) {
 		if (root == null)
 			return;
-		sender.sendMessage(plugin.prefix + (i++) + " size = " + root.size + " height = " + root.height + " | " + root.element);
-		preOrder((AVLTreeNode<E>)root.left, sender, plugin);
-		preOrder((AVLTreeNode<E>)root.right, sender, plugin);
+		sender.sendMessage(PluginMessages.prefix + (i++) + " size = " + root.size + " height = " + root.height + " | " + root.element);
+		preOrder((AVLTreeNode<E>)root.left, sender);
+		preOrder((AVLTreeNode<E>)root.right, sender);
 	}
 
 	/////////////////////////////////////////////////////////
