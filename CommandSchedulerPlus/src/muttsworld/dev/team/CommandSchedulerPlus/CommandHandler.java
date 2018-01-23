@@ -72,10 +72,9 @@ public class CommandHandler implements CommandExecutor {
 		return true;
 	}
 
-	private void helpInfo() {
+	private void helpInfo() {// /csp help
 		sender.sendMessage(ChatColor.YELLOW + "-------- " + ChatColor.BLUE + "Command Scheduler Plus "
-				+ ChatColor.YELLOW + "--------"); // TODO update this with help
-													// tips and all commands
+				+ ChatColor.YELLOW + "--------");
 		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 
 				+ "/csp list " + PluginMessages.info + "- Shows all the commands that are scheduled. ");
 		sender.sendMessage(PluginMessages.prefix + PluginMessages.command 

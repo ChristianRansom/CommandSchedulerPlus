@@ -1,9 +1,12 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -25,21 +28,11 @@ public final class CommandCreator {
 	}
 
 	static void editCommand(String[] args, CommandSender sender, AVLTree<ScheduledCommand> commands) {
-		if(args.length < 2){
+		if(args.length < 2 || !NumberUtils.isNumber(args[1])){
 			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Usage: " + PluginMessages.command + "/csp edit <number>");
 			return;
 		}
-		//System.out.println("Finding command " + args[1]);
-		//System.out.println("commands.getSize(): " + commands.getSize());
-		
-	    try
-	    {
-	    	Integer.parseInt(args[1]);
-	    } catch (NumberFormatException ex)
-	    {
-			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Usage: " + PluginMessages.command + "/csp edit <number>");
-	        return;
-	    }
+    	Integer.parseInt(args[1]);
 		synchronized(commands) {
 			if(Integer.parseInt(args[1]) <= commands.getSize() && Integer.parseInt(args[1]) > 0){
 				editingCommand = (commands.find(Integer.parseInt(args[1])));
@@ -60,28 +53,12 @@ public final class CommandCreator {
 	    TimeSlice timeSlice;	    
 	    switch(commandEditorOption) {
 	        case 0 :
-	    		if(args.length < 1){
+	    		if(args.length < 1 || !NumberUtils.isNumber(args[0])){
 	    			displayCommandMenu(currentCommand, sender);
 					sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter an option from 1 to 7.");
 	    			return;
 	    		}
-	    		if(!args[0].equals("")){
-		            try
-		            {
-		    			commandEditorOption = Integer.parseInt(args[0]);
-		            } 
-		            catch (NumberFormatException ex)
-		            {
-		    			displayCommandMenu(currentCommand, sender);
-						sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Enter an option from 1 to 7.");
-		                return;
-		            }
-	    			
-	    		}
-	    		else {
-	    			GroupCommandEditor.displayCommandGroupMenu(currentCommand.getCommands(), sender);
-	    			return;
-	    		}
+    			commandEditorOption = Integer.parseInt(args[0]);
 	        	if(commandEditorOption > 0 && commandEditorOption <= 8) {
 		        	switch(commandEditorOption){ //Should move all messages here for maintainability 
 		        		case 1 : 
@@ -148,8 +125,6 @@ public final class CommandCreator {
 	        	}
 				break; 
 	        case 2 : //handle date entry for a new command
-		        
-        	
 	        	GregorianCalendar gcalendarDate = dateEntry(args, sender);
 	        	if(gcalendarDate == null) {
 	        		sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Use " + PluginMessages.command + "/csp Year Months Days Hours Minutes "
@@ -210,17 +185,14 @@ public final class CommandCreator {
 	
 	static TimeSlice timeSliceEntry(String[] args){
 		if(args.length == 3){ 
-		    try
-		    {
+		    try {
 				int days = Integer.parseInt(args[0]); 
 				int hours = Integer.parseInt(args[1]); 
 				int minutes = Integer.parseInt(args[2]); 
 				return new TimeSlice(days, hours, minutes);
-		    } catch (NumberFormatException ex)
-		    {
+		    } catch (NumberFormatException ex) {
 		        return null;
 		    }
-
 		}
 		else {
 			return null;
@@ -234,8 +206,6 @@ public final class CommandCreator {
 		}
 		sender.sendMessage(PluginMessages.prefix + "------------------------------------");
 	}
-
-	
 
 	//displays a date in a proper da
 	static String displayDate(GregorianCalendar date){
@@ -358,22 +328,16 @@ public final class CommandCreator {
 		if(args.length != 5){ 
 			return null;
 		}
-        try
-        {
+        try {
         	year = Integer.parseInt(args[0]); 
         	month = Integer.parseInt(args[1]) - 1; //-1 since months are stored 0 to 11
         	dayOfMonth = Integer.parseInt(args[2]); 
         	hourOfDay = Integer.parseInt(args[3]); 
         	minute = Integer.parseInt(args[4]); 
         } 
-        catch (NumberFormatException ex)
-        {
+        catch (NumberFormatException ex) {
             return null;
         }
         return new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-
 	}
-	
-	
-	
 }
