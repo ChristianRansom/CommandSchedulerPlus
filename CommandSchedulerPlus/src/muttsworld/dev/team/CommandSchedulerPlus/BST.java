@@ -132,7 +132,6 @@ class BST<E extends Comparable<E>> implements Iterable<E>, Serializable {
 		//System.out.println();
 	}
 
-	//TODO create a method that returns an array... this class should only be the data structure...
 	public void inOrder(AVLTreeNode<E> root, CommandSender sender) {
 		if (root == null)
 			return;

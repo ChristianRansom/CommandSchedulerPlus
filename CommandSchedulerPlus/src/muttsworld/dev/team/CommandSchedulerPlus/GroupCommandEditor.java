@@ -11,9 +11,8 @@ public final class GroupCommandEditor {
 
 	// Group Command Creation Variables
 	private static int groupCommandEditorOption = 0;
-	static boolean groupCommandEditor = false; // Value used to handle command
-												// groups
-
+	static boolean groupCommandEditor = false; // Value used to handle command groups
+												
 	// package visibility
 	static void commandGroupEditor(String[] args, CommandSender sender) {
 		switch (groupCommandEditorOption) {

@@ -17,10 +17,6 @@ public final class CommandCreator {
 	static boolean commandEditor = false; //Value used to handle multi-step creation of commands
 	private static int commandEditorOption = 0;
 
-/*	public CommandCreator(AVLTree<ScheduledCommand> theCommands){
-		commands = theCommands;
-	}*/
-
 	static void createCommand(CommandSender sender){
 		currentCommand = new ScheduledCommand();
 		commandEditor = true;
@@ -275,44 +271,48 @@ public final class CommandCreator {
 		String repeatString = "";
 		String dateString = "";
 		char optionChar = 'x';
-		
-		
-		for(int i = 1; i < args.length; i++){
-			System.out.println("args[i]" + args[i]);
+		GregorianCalendar dateEntry;
+		for(int i = 1; i < args.length; i++){ //read in arguments starting with --
 			if(args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
 				optionChar = args[i].charAt(2);
 			}
 			else {
-			System.out.println("optionChar " + optionChar);
 				switch(optionChar){
-				case 'c': 
+				case 'c': //arg --c for command
 					commandString += args[i] + " ";
 					break;
-				case 'r':
+				case 'r': //arg --r for the repeat
 					repeatString += args[i] + " ";
 					break;
-				case 'd': 
+				case 'd': //arg --d for the date
 					dateString += args[i] + " ";
 					break;
 				}
 			}
 		}
-		System.out.println("CommandString " + commandString);
-
-		System.out.println("RepeatString " + repeatString);
-		TimeSlice repeatSlice = timeSliceEntry(repeatString.split(" "));
-		System.out.println("repeatSlice" + repeatString);
+		if(commandString.equals("")){ //set default if no command given
+			commandString = "say this is an example command";
+		}
+		if(repeatString.equals("")){  //set default if no repeat given
+			repeatString = "0 0 0";
+		}
+		TimeSlice repeatSlice = timeSliceEntry(repeatString.split(" ")); //converts string arg into timeslice
 		if(repeatSlice == null) {
 			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Invalid repeat value. Repeat format: Days Hours Minutes. ");
 			return;
     	}
+		if(dateString.equals("")){  //set default if no date given
+			dateEntry = new GregorianCalendar();
+		}
+		else {
+			dateEntry = dateEntry(dateString.split(" "), sender);
+			System.out.println("dateEntry " + dateString);
+			if(dateEntry == null) {
+				sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Invalid date. Date format: Year Months Days Hours Minutes. ");
+				return;
+	    	}
+		}
 		
-		GregorianCalendar dateEntry = dateEntry(dateString.split(" "), sender);
-		System.out.println("dateEntry " + dateString);
-		if(dateEntry == null) {
-			sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Invalid date. Date format: Year Months Days Hours Minutes. ");
-			return;
-    	}
 		ScheduledCommand aCommand = new ScheduledCommand(commandString, dateEntry, repeatSlice);
 		System.out.println("Adding this command: ");
 		displayCommandMenu(aCommand, sender);
