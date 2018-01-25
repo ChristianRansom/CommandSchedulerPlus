@@ -1,7 +1,5 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +71,8 @@ public final class CommandCreator {
 		        		case 5 : sender.sendMessage(PluginMessages.prefix + "Enter how much time to add to delay when the command is scheduled: " + PluginMessages.command + "/csp Days Hours Minutes"); break;
 		        		case 6 :  //Saving Command
 		        			if(editingCommand == null) {
+		        				//Saves the UUID in a separate thread
+		        				new CommandSaverThread(currentCommand).start();
 			        			synchronized(commands){
 				        			commands.insert(currentCommand);
 				        		}
@@ -195,14 +195,6 @@ public final class CommandCreator {
 		}
 	}
 
-	static void showCommandGroup(CommandSender sender) {
-		sender.sendMessage(PluginMessages.prefix + "Commands:");
-		for(int i = 0; i < currentCommand.getCommands().size(); i++){
-			sender.sendMessage(PluginMessages.prefix + "    " + (i + 1) + ". " + PluginMessages.command + "/" + currentCommand.getCommands().get(i));
-		}
-		sender.sendMessage(PluginMessages.prefix + "------------------------------------");
-	}
-
 	//displays a date in a proper da
 	static String displayDate(GregorianCalendar date){
 		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
@@ -247,11 +239,11 @@ public final class CommandCreator {
 				"-----------Command Editor-----------"); 
 		sender.sendMessage(PluginMessages.prefix + "Creating a new command. Use " + PluginMessages.command + "/csp <number>" +  ChatColor.WHITE + " to selection an option");
 		if(aCommand.isCommandGroup()){
-			showCommandGroup(sender);
+			GroupCommandEditor.showCommandGroup(sender);
 			sender.sendMessage(PluginMessages.prefix + "1: Edit Commands");
 		}
 		else {
-			sender.sendMessage(PluginMessages.prefix + "1: Command/s to be run: " + PluginMessages.command + "/" + aCommand.getCommand());
+			sender.sendMessage(PluginMessages.prefix + "1: Command/s to be run: " + PluginMessages.command + aCommand.getCommand());
 		}
 		sender.sendMessage(PluginMessages.prefix + "2: Date to be run: " + ChatColor.YELLOW + displayDate(aCommand.getDate()));
 		sender.sendMessage(PluginMessages.prefix + "3: Time until run: " + ChatColor.YELLOW + simpleDate(now));

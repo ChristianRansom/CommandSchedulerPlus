@@ -31,7 +31,7 @@ public final class GroupCommandEditor {
 					sender.sendMessage(PluginMessages.prefix + "Enter the command you want to add to the group.");
 					break;
 				case 2:
-					CommandCreator.showCommandGroup(sender);
+					showCommandGroup(sender);
 					sender.sendMessage(PluginMessages.prefix
 							+ "Enter the number of command you want to replace followed by the commmand");
 					sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp <number> <command>");
@@ -68,7 +68,7 @@ public final class GroupCommandEditor {
 			break; // Breaks from outer switch case
 		case 1: // handle new command being added to the commmandGroup
 			if (args.length < 1) {
-				CommandCreator.showCommandGroup(sender);
+				showCommandGroup(sender);
 				sender.sendMessage(PluginMessages.prefix + PluginMessages.error
 						+ "Enter the command you want to add to the group.");
 				return;
@@ -102,7 +102,7 @@ public final class GroupCommandEditor {
 			break;
 		case 3: // handle command delete
 			if (args.length < 1 || !NumberUtils.isNumber(args[0])) {
-				CommandCreator.showCommandGroup(sender);
+				showCommandGroup(sender);
 				sender.sendMessage(PluginMessages.prefix + PluginMessages.error
 						+ "Enter the number of the command you want to delete from the command group.");
 				return;
@@ -121,7 +121,7 @@ public final class GroupCommandEditor {
 				PluginMessages.prefix + ChatColor.BOLD + ChatColor.DARK_AQUA + "---------Command Group---------");
 		sender.sendMessage(PluginMessages.prefix + "Use " + PluginMessages.command + "/csp <number>" + ChatColor.WHITE
 				+ " to selection an option");
-		CommandCreator.showCommandGroup(sender);
+		showCommandGroup(sender);
 		sender.sendMessage(PluginMessages.prefix + "1: Add a command. ");
 		sender.sendMessage(PluginMessages.prefix + "2: Replace a command. ");
 		sender.sendMessage(PluginMessages.prefix + "3: Delete a command. ");
@@ -130,10 +130,17 @@ public final class GroupCommandEditor {
 	}
 
 	private static void commandGroupInsertError(CommandSender sender) {
-		CommandCreator.showCommandGroup(sender);
+		showCommandGroup(sender);
 		sender.sendMessage(PluginMessages.prefix + PluginMessages.error
 				+ "Enter the number of the command you want to replace followed by the command you want to enter.");
 		sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "/csp <number> <command>");
 	}
 
+	static void showCommandGroup(CommandSender sender) {
+		sender.sendMessage(PluginMessages.prefix + "Commands:");
+		for(int i = 0; i < CommandCreator.currentCommand.getCommands().size(); i++){
+			sender.sendMessage(PluginMessages.prefix + "    " + (i + 1) + ". " + PluginMessages.command + CommandCreator.currentCommand.getCommands().get(i));
+		}
+		sender.sendMessage(PluginMessages.prefix + "------------------------------------");
+	}
 }

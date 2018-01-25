@@ -15,7 +15,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	private TimeSlice repeat; // stores a millisecond value
 	private boolean commandGroup;
 	private ArrayList<CommandWithExecutor> commands = new ArrayList<CommandWithExecutor>();
-	
+
 	// Default Constructor
 	public ScheduledCommand() {
 		commands.add(new CommandWithExecutor("say this is an example command"));
@@ -23,16 +23,17 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		date = new GregorianCalendar();
 		repeat = new TimeSlice(0, 0, 0, 0); // hour = minute = second = 0;
 	}
-	
-	//copy constructor
-	public ScheduledCommand(ArrayList<CommandWithExecutor> commands2, GregorianCalendar date2, TimeSlice repeat2, boolean commandGroup2) {
+
+	// copy constructor
+	public ScheduledCommand(ArrayList<CommandWithExecutor> commands2, GregorianCalendar date2, TimeSlice repeat2,
+			boolean commandGroup2) {
 		commands = commands2; // only has one command
 		commandGroup = commandGroup2;
 		date = date2;
 		repeat = repeat2;
 	}
-	
-	//main constructor
+
+	// main constructor
 	public ScheduledCommand(ArrayList<CommandWithExecutor> commandStrings, GregorianCalendar Adate, TimeSlice Arepeat) {
 		commands = commandStrings; // only has one command
 		commandGroup = false;
@@ -48,45 +49,59 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		repeat = Arepeat;
 	}
 
-	//for non repeating commands
+	// for non repeating commands
 	public ScheduledCommand(GregorianCalendar aDate, String aCommand) {
 		commands.add(new CommandWithExecutor(aCommand));
 		commandGroup = false;
 		date = aDate;
 	}
-	//TODO  change arrays.copyofrange to O.split(" ", 2) -> more efficient
-	public void setCommand(String[] args, int index){
+
+	// TODO change arrays.copyofrange to O.split(" ", 2) -> more efficient
+	public void setCommand(String[] args, int index) {
 		String aCommand;
 		String anExecutor = "CONSOLE";
-		
-		//CONSOLE running is default. The option to make it console run is left out because of that. 
-		if(args[0].equalsIgnoreCase("ALLPLAYERS")){
+
+		// CONSOLE running is default. The option to make it console run is left
+		// out because of that.
+		if (args[0].equalsIgnoreCase("ALLPLAYERS")) {
 			removeSlash(args, 1);
 			aCommand = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 			anExecutor = "ALLPLAYERS";
-		}
-		else if(args[0].equalsIgnoreCase("PLAYER")){ 
+		} else if (args[0].equalsIgnoreCase("PLAYER")) {
 			removeSlash(args, 2);
-			aCommand = String.join(" ", Arrays.copyOfRange(args, 2, args.length)); //Second argument is player name eg. PLAYER spartagon123 say hi
+			aCommand = String.join(" ", Arrays.copyOfRange(args, 2, args.length)); // Second
+																					// argument
+																					// is
+																					// player
+																					// name
+																					// eg.
+																					// PLAYER
+																					// spartagon123
+																					// say
+																					// hi
 			anExecutor = args[1];
-			//System.out.println("Warning: Player commands will only work if the player is online when the command runs");
-		}
-		else { 
+			// System.out.println("Warning: Player commands will only work if
+			// the player is online when the command runs");
+		} else {
 			removeSlash(args, 0);
-			aCommand = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); //Default commands that are console run
+			aCommand = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); // Default
+																					// commands
+																					// that
+																					// are
+																					// console
+																					// run
 			anExecutor = "CONSOLE";
 		}
-		
-		//If its a simple add command adds to end of list
-		if(index == -1){
+
+		// If its a simple add command adds to end of list
+		if (index == -1) {
 			commands.add(new CommandWithExecutor(aCommand, anExecutor));
-		}
-		else {
+		} else {
 			commands.set(index, new CommandWithExecutor(aCommand, anExecutor));
 		}
-		
+
 	}
-	
+
 	public boolean isCommandGroup() {
 		return commandGroup;
 	}
@@ -143,53 +158,48 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	public void setCommands(ArrayList<CommandWithExecutor> aCommand) {
 		commands = aCommand;
 	}
-	
+
 	public boolean getCommandGroup() {
 		return commandGroup;
 	}
 
 	private void removeSlash(String[] args, int location) {
-		if((args[location].charAt(0)) == '/'){
-			//System.out.println("The commands started with a /. Removing it for storage");
+		if ((args[location].charAt(0)) == '/') {
+			// System.out.println("The commands started with a /. Removing it
+			// for storage");
 			StringBuilder sb = new StringBuilder(args[location]);
 			sb.deleteCharAt(0);
 			String finalCommand = sb.toString();
 			args[location] = finalCommand;
 		}
 	}
-	
-	@Override
-	public String toString() {
-		String dateString = (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.DATE) 
-				+ "/" + date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":";
-		if(date.get(Calendar.MINUTE) < 10){
-			dateString += ("0" + date.get(Calendar.MINUTE));
-		}
-		else {
-			dateString += date.get(Calendar.MINUTE);
-		}
-		
-		if(!commandGroup) {
-			if(commands.get(0).getExecutor() != "CONSOLE") {
-				return "Command = " + ChatColor.GREEN + commands.get(0).getExecutor() + 
-						": /" + commands.get(0).getCommandString() + ChatColor.WHITE + ", Date = " + dateString;
-			}
-			else {
-				return "Command = " + ChatColor.GREEN + "/" + commands.get(0) + ChatColor.WHITE + ", Date = " + dateString;
-			}
-		}
-		else {
-			String multiCommand = "Commands = ";
-			for(CommandWithExecutor aCommand : commands){
-				if(aCommand.getExecutor() != "CONSOLE") {
-					multiCommand += ChatColor.GREEN + aCommand.getExecutor() + 
-							": /" + aCommand.getCommandString() +  ChatColor.WHITE + " | ";
-				}
-				else {
-					multiCommand += ChatColor.GREEN + "/" + aCommand + ChatColor.WHITE + " | ";
-				}
-			}
-			return multiCommand + ChatColor.WHITE +  "Date = " + dateString;
+
+	public void saveUUIDs() {
+		for (CommandWithExecutor aCommand : commands) {
+			aCommand.saveExecutorUUID();
 		}
 	}
+
+	@Override
+	public String toString() {
+		String dateString = (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DATE) + "/"
+				+ date.get(Calendar.YEAR) + " " + date.get(Calendar.HOUR) + ":";
+		if (date.get(Calendar.MINUTE) < 10) {
+			dateString += ("0" + date.get(Calendar.MINUTE));
+		} else {
+			dateString += date.get(Calendar.MINUTE);
+		}
+
+		if (!commandGroup) {
+			return "Command = " + ChatColor.GREEN + commands.get(0).toString() + ChatColor.WHITE + ", Date = "
+					+ dateString;
+		} else {
+			String multiCommand = "Commands = ";
+			for (CommandWithExecutor aCommand : commands) {
+				multiCommand += ChatColor.GREEN + aCommand.toString() + " | ";
+			}
+			return multiCommand + ChatColor.WHITE + "Date = " + dateString;
+		}
+	}
+
 }

@@ -1,6 +1,6 @@
 name: CommandSchedulerPlus
-version: 2.1
-description: A Minecraft plugin that schedules long term commands.
+version: 2.2
+description: A Minecraft plugin that schedules long term commands. https://www.spigotmc.org/resources/commandschedulerplus.51991/
 author: Christian Ransom
 
 main: muttsworld.dev.team.CommandSchedulerPlus.CommandSchedulerPlus

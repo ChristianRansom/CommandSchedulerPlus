@@ -1,11 +1,13 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class CommandWithExecutor implements Serializable, Comparable<CommandWithExecutor> {
 
 	private String commandString;
 	private String executor;
+	private UUID executorUUID;
 	private static final long serialVersionUID = 1L;
 
 	public CommandWithExecutor(String aCommand) {
@@ -39,12 +41,26 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 		this.executor = executor;
 	}
 	
+	public UUID getExecutorUUID() {
+		return executorUUID;
+	}
+
+	//WARNING this method must be called from outside the main thread. This is an expensive lookup
+	public void saveExecutorUUID() {
+		if (!this.executor.equalsIgnoreCase("CONSOLE")
+				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
+			System.out.println("Saving " + this);
+			this.executorUUID = UUIDFetcher.getUUID(executor);
+		}
+	}
+	
+	@Override
 	public String toString(){
 		if(executor.equalsIgnoreCase("CONSOLE")){
-			return commandString;
+			return "/" + commandString;
 		}
 		else {
-			return executor + ": " + commandString;
+			return executor + ": /" + commandString;
 		}
 	}
 

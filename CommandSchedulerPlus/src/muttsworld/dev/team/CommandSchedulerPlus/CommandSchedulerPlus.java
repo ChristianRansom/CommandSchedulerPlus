@@ -35,7 +35,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
     	// ***** Load command list from file ******
     	try {
 			// read object from file
-			FileInputStream fis = new FileInputStream(this.getDataFolder() + "/CommandSchedulerPlus.ser");
+			FileInputStream fis = new FileInputStream(this.getDataFolder() + "/CommandSchedulerPlusV2.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			commands = (AVLTree<ScheduledCommand>)ois.readObject(); //initialization of commands doesn't need to be synched
 			ois.close();
@@ -76,7 +76,7 @@ public class CommandSchedulerPlus extends JavaPlugin {
     		console.sendMessage(PluginMessages.prefix + "Saving commands");
 			// write object to file
     		System.out.println(this.getDataFolder());
-			FileOutputStream fos = new FileOutputStream(this.getDataFolder() + "/CommandSchedulerPlus.ser");
+			FileOutputStream fos = new FileOutputStream(this.getDataFolder() + "/CommandSchedulerPlusV2.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(commands); //threads already stopped. Doens't need to be synched
 			oos.close();
@@ -111,6 +111,11 @@ public class CommandSchedulerPlus extends JavaPlugin {
 				Bukkit.dispatchCommand(console, aCommand.getCommandString());
 			}
 			else { //Player Specific Command
+				//WARNING THIS MIGHT TAKE FOREVER. HAS TO LOOK UP ONLINE IF THE NAME HAS CHANGED....
+				if (!aCommand.getExecutor().equalsIgnoreCase("CONSOLE")
+						|| !aCommand.getExecutor().equalsIgnoreCase("ALLPLAYERS")) {
+					aCommand.setExecutor(NameFetcher.getName(aCommand.getExecutorUUID())); //Updates name based on UUID
+				}
 				Player player = this.getServer().getPlayer(executor);
 				if(player != null) {
 					Bukkit.dispatchCommand(player, aCommand.getCommandString());
