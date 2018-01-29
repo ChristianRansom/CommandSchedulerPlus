@@ -2,7 +2,6 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -132,17 +131,6 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 
 	public boolean getCommandGroup() {
 		return commandGroup;
-	}
-
-	private void removeSlash(String[] args, int location) {
-		if ((args[location].charAt(0)) == '/') {
-			// System.out.println("The commands started with a /. Removing it
-			// for storage");
-			StringBuilder sb = new StringBuilder(args[location]);
-			sb.deleteCharAt(0);
-			String finalCommand = sb.toString();
-			args[location] = finalCommand;
-		}
 	}
 
 	public void saveUUIDs() {

@@ -2,6 +2,7 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.UUID;
 
 public class CommandWithExecutor implements Serializable, Comparable<CommandWithExecutor> {
@@ -10,6 +11,8 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 	private String executor;
 	private UUID executorUUID;
 	private static final long serialVersionUID = 1L;
+	 //Indexes in the command string the location of players that the user wants to protect the UUID
+	private LinkedList<Integer> playerIndexes;
 
 	//Default constructor
 	public CommandWithExecutor() {
@@ -42,13 +45,22 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 		}
 		this.commandString = aCommand;
 		this.executor = anExecutor;
+		this.playerIndexes = findPlayerIndexes(this.commandString);
 	}
 	
-/*	public CommandWithExecutor(String[] aCommand, String anExecutor) {
-		commandString = aCommand;
-		executor = anExecutor;
-	}*/
-
+	public LinkedList<Integer> findPlayerIndexes(String[] args){
+		LinkedList<Integer> playerList = new LinkedList<Integer>();
+		for(int i = 1; i < args.length; i++){ //read in arguments starting with --
+			if(!args[i].equals("") && args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
+				if(args[i].charAt(2) == 'p'){
+					playerList.add(i + 1);
+					System.out.println("Adding index " + (i + 1) + " to the playerIndexList"); 
+				}
+			}
+		}
+		return playerList;
+	}
+	
 	@Override
 	public int compareTo(CommandWithExecutor o) {
 		return String.join(" ", this.commandString).compareTo(String.join(" ", o.commandString));
@@ -87,6 +99,16 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
 			//System.out.println("Saving " + this);
 			this.executorUUID = UUIDFetcher.getUUID(executor);
+			//System.out.println("UUID is saved as " + this.executorUUID);
+		}
+	}
+	
+	public void updateUUIDCommand() {
+		if (!this.executor.equalsIgnoreCase("CONSOLE")
+				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
+			//System.out.println("Updating UUID: " + this);
+			this.executor = NameFetcher.getName(this.executorUUID);
+			//System.out.println("Name updated from UUID as " + this.executorUUID);
 		}
 	}
 	
@@ -99,5 +121,4 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 			return executor + ": /" + String.join(" ", this.commandString);
 		}
 	}
-
 }

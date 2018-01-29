@@ -267,7 +267,9 @@ public final class CommandCreator {
 		GregorianCalendar dateEntry;
 		ScheduledCommand aCommand;
 		for(int i = 1; i < args.length; i++){ //read in arguments starting with --
-			if(!args[i].equals("") && args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
+			//ignore --p (player UUID protector). Handled in the CommandWithExecutorClass
+			if(!args[i].equals("") && args[i].length() < 4 && args[i].charAt(0) == '-'
+					&& args[i].charAt(1) == '-' && args[i].charAt(2) != 'p'){
 				optionChar = args[i].charAt(2);
 			}
 			else {

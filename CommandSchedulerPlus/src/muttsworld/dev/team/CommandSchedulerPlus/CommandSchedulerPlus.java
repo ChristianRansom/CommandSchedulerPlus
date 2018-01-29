@@ -96,7 +96,6 @@ public class CommandSchedulerPlus extends JavaPlugin {
 				Collection<? extends Player> allPlayers = Bukkit.getServer().getOnlinePlayers();
 				if(allPlayers.isEmpty()){
 					//System.out.println("There are no players online");
-					
 					console.sendMessage(PluginMessages.prefix + PluginMessages.error + "There are no players online. ");
 				}
 				else {
@@ -109,18 +108,9 @@ public class CommandSchedulerPlus extends JavaPlugin {
 				Bukkit.dispatchCommand(console, aCommand.getCommandString());
 			}
 			else { //Player Specific Command
-				//WARNING THIS MIGHT TAKE FOREVER. HAS TO LOOK UP ONLINE IF THE NAME HAS CHANGED....
-				if (!aCommand.getExecutor().equalsIgnoreCase("CONSOLE")
-						|| !aCommand.getExecutor().equalsIgnoreCase("ALLPLAYERS")) {
-					aCommand.setExecutor(NameFetcher.getName(aCommand.getExecutorUUID())); //Updates name based on UUID
-				}
-				Player player = this.getServer().getPlayer(executor);
-				if(player != null) {
-					Bukkit.dispatchCommand(player, aCommand.getCommandString());
-				}
-				else {
-					console.sendMessage(PluginMessages.prefix + PluginMessages.error +  "Player not found. ");
-				}
+				//Player commands happen in a separate thread to ensure the UUID is updated before execution
+				//System.out.println("Starting UUID updater Thread");
+				new CommandUUIDUpdaterThread(aCommand, this).start();//Updates name based on UUID
 			}
 		}
     }

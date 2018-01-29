@@ -2,8 +2,6 @@ package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import muttsworld.dev.team.CommandSchedulerPlus.AVLTree.AVLTreeNode;

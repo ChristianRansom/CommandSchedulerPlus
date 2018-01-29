@@ -113,7 +113,7 @@ public class CommandHandler implements CommandExecutor {
 					+ PluginMessages.command + "/csp delete <number>");
 			return;
 		}
-		synchronized (commands) { 
+		synchronized (commands) { //TODO looks like an off by one error here
 			if (Integer.parseInt(args[1]) <= commands.getSize() && Integer.parseInt(args[1]) > 0) {
 				ScheduledCommand deleted = commands.find(Integer.parseInt(args[1]));
 				if (commands.delete(deleted)) {
