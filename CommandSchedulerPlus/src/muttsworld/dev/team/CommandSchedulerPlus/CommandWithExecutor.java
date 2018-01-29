@@ -1,36 +1,72 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class CommandWithExecutor implements Serializable, Comparable<CommandWithExecutor> {
 
-	private String commandString;
+	private String[] commandString;
 	private String executor;
 	private UUID executorUUID;
 	private static final long serialVersionUID = 1L;
 
-	public CommandWithExecutor(String aCommand) {
-		commandString = aCommand;
+	//Default constructor
+	public CommandWithExecutor() {
+		commandString = new String[] {"say", "this", "is", "an", "example", "command"};
 		executor = "CONSOLE";
 	}
-
-	public CommandWithExecutor(String aCommand, String anExecutor) {
+	
+	//main constructor
+	public CommandWithExecutor(String[] args) {
+		String[] aCommand;
+		String anExecutor = "CONSOLE";
+		// CONSOLE running is default. The option to make it console run is left
+		// out because of that.
+		if (args[0].equalsIgnoreCase("ALLPLAYERS")) {
+			removeSlash(args, 1);
+			aCommand =  Arrays.copyOfRange(args, 1, args.length);
+			anExecutor = "ALLPLAYERS";
+		} else if (args[0].equalsIgnoreCase("PLAYER")) {
+			removeSlash(args, 2);
+			//second argument is player name
+			aCommand = Arrays.copyOfRange(args, 2, args.length); 
+			anExecutor = args[1];
+			// System.out.println("Warning: Player commands will only work if
+			// the player is online when the command runs");
+		} else {
+			removeSlash(args, 0);
+			//Default commands are console run
+			aCommand = Arrays.copyOfRange(args, 0, args.length); 
+			anExecutor = "CONSOLE";
+		}
+		this.commandString = aCommand;
+		this.executor = anExecutor;
+	}
+	
+/*	public CommandWithExecutor(String[] aCommand, String anExecutor) {
 		commandString = aCommand;
 		executor = anExecutor;
-	}
+	}*/
 
 	@Override
 	public int compareTo(CommandWithExecutor o) {
-		return this.commandString.compareTo(o.commandString);
+		return String.join(" ", this.commandString).compareTo(String.join(" ", o.commandString));
 	}
 
 	public String getCommandString() {
-		return commandString;
+		return String.join(" ", this.commandString);
 	}
 
-	public void setCommandString(String commandString) {
-		this.commandString = commandString;
+	private void removeSlash(String[] args, int location) {
+		if ((args[location].charAt(0)) == '/') {
+			// System.out.println("The commands started with a /. Removing it
+			// for storage");
+			StringBuilder sb = new StringBuilder(args[location]);
+			sb.deleteCharAt(0);
+			String finalCommand = sb.toString();
+			args[location] = finalCommand;
+		}
 	}
 
 	public String getExecutor() {
@@ -49,7 +85,7 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 	public void saveExecutorUUID() {
 		if (!this.executor.equalsIgnoreCase("CONSOLE")
 				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
-			System.out.println("Saving " + this);
+			//System.out.println("Saving " + this);
 			this.executorUUID = UUIDFetcher.getUUID(executor);
 		}
 	}
@@ -57,10 +93,10 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 	@Override
 	public String toString(){
 		if(executor.equalsIgnoreCase("CONSOLE")){
-			return "/" + commandString;
+			return "/" + String.join(" ", this.commandString);
 		}
 		else {
-			return executor + ": /" + commandString;
+			return executor + ": /" + String.join(" ", this.commandString);
 		}
 	}
 

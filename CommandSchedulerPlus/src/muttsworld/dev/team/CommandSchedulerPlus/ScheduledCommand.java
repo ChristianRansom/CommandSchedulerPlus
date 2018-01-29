@@ -18,7 +18,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 
 	// Default Constructor
 	public ScheduledCommand() {
-		commands.add(new CommandWithExecutor("say this is an example command"));
+		commands.add(new CommandWithExecutor());
 		commandGroup = false;
 		date = new GregorianCalendar();
 		repeat = new TimeSlice(0, 0, 0, 0); // hour = minute = second = 0;
@@ -42,7 +42,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	}
 
 	// Single command constructor
-	public ScheduledCommand(String aCommand, GregorianCalendar Adate, TimeSlice Arepeat) {
+	public ScheduledCommand(String[] aCommand, GregorianCalendar Adate, TimeSlice Arepeat) {
 		commands.add(new CommandWithExecutor(aCommand)); // only has one command
 		commandGroup = false;
 		date = Adate;
@@ -50,56 +50,27 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 	}
 
 	// for non repeating commands
-	public ScheduledCommand(GregorianCalendar aDate, String aCommand) {
+	public ScheduledCommand(GregorianCalendar aDate, String[] aCommand) {
 		commands.add(new CommandWithExecutor(aCommand));
 		commandGroup = false;
 		date = aDate;
 	}
 
-	// TODO change arrays.copyofrange to O.split(" ", 2) -> more efficient
+	//For quick create commands without command specified
+	public ScheduledCommand(GregorianCalendar dateEntry, TimeSlice repeatSlice) {
+		commands.add(new CommandWithExecutor()); //Default constructor uses default command
+		commandGroup = false;
+		date = dateEntry;
+		repeat = repeatSlice;
+	}
+
 	public void setCommand(String[] args, int index) {
-		String aCommand;
-		String anExecutor = "CONSOLE";
-
-		// CONSOLE running is default. The option to make it console run is left
-		// out because of that.
-		if (args[0].equalsIgnoreCase("ALLPLAYERS")) {
-			removeSlash(args, 1);
-			aCommand = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-			anExecutor = "ALLPLAYERS";
-		} else if (args[0].equalsIgnoreCase("PLAYER")) {
-			removeSlash(args, 2);
-			aCommand = String.join(" ", Arrays.copyOfRange(args, 2, args.length)); // Second
-																					// argument
-																					// is
-																					// player
-																					// name
-																					// eg.
-																					// PLAYER
-																					// spartagon123
-																					// say
-																					// hi
-			anExecutor = args[1];
-			// System.out.println("Warning: Player commands will only work if
-			// the player is online when the command runs");
-		} else {
-			removeSlash(args, 0);
-			aCommand = String.join(" ", Arrays.copyOfRange(args, 0, args.length)); // Default
-																					// commands
-																					// that
-																					// are
-																					// console
-																					// run
-			anExecutor = "CONSOLE";
-		}
-
 		// If its a simple add command adds to end of list
 		if (index == -1) {
-			commands.add(new CommandWithExecutor(aCommand, anExecutor));
+			commands.add(new CommandWithExecutor(args));
 		} else {
-			commands.set(index, new CommandWithExecutor(aCommand, anExecutor));
+			commands.set(index, new CommandWithExecutor(args));
 		}
-
 	}
 
 	public boolean isCommandGroup() {
@@ -151,7 +122,7 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		return commands;
 	}
 
-	public void setCommand(String aCommand) {
+	public void setCommand(String[] aCommand) {
 		commands.set(0, new CommandWithExecutor(aCommand));
 	}
 

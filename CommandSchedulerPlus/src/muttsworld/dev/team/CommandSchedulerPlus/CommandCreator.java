@@ -1,5 +1,6 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -259,19 +260,20 @@ public final class CommandCreator {
 	}
 	
 	static void quickCreate(String[] args, CommandSender sender, AVLTree<ScheduledCommand> commands) {
-		String commandString = "";
+		ArrayList<String> commandString = new ArrayList<String>();
 		String repeatString = "";
 		String dateString = "";
 		char optionChar = 'x';
 		GregorianCalendar dateEntry;
+		ScheduledCommand aCommand;
 		for(int i = 1; i < args.length; i++){ //read in arguments starting with --
-			if(args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
+			if(!args[i].equals("") && args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
 				optionChar = args[i].charAt(2);
 			}
 			else {
 				switch(optionChar){
 				case 'c': //arg --c for command
-					commandString += args[i] + " ";
+					commandString.add(args[i]);
 					break;
 				case 'r': //arg --r for the repeat
 					repeatString += args[i] + " ";
@@ -281,9 +283,6 @@ public final class CommandCreator {
 					break;
 				}
 			}
-		}
-		if(commandString.equals("")){ //set default if no command given
-			commandString = "say this is an example command";
 		}
 		if(repeatString.equals("")){  //set default if no repeat given
 			repeatString = "0 0 0";
@@ -298,19 +297,22 @@ public final class CommandCreator {
 		}
 		else {
 			dateEntry = dateEntry(dateString.split(" "), sender);
-			System.out.println("dateEntry " + dateString);
 			if(dateEntry == null) {
 				sender.sendMessage(PluginMessages.prefix + PluginMessages.error + "Invalid date. Date format: Year Months Days Hours Minutes. ");
 				return;
 	    	}
 		}
-		
-		ScheduledCommand aCommand = new ScheduledCommand(commandString, dateEntry, repeatSlice);
-		System.out.println("Adding this command: ");
-		displayCommandMenu(aCommand, sender);
+		if(commandString.isEmpty()){ //set default if no command given
+			aCommand = new ScheduledCommand(dateEntry, repeatSlice);
+		}
+		else {
+			aCommand = new ScheduledCommand(commandString.toArray(new String[0]), dateEntry, repeatSlice);
+		}
+		new CommandSaverThread(aCommand).start();
 		synchronized(commands){
 			commands.insert(aCommand);
 		}
+		sender.sendMessage(PluginMessages.prefix + "Command created. ");
 		return;
 	}
 	
