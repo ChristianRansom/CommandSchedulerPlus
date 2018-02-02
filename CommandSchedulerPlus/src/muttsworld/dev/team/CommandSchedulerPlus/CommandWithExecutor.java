@@ -1,22 +1,34 @@
 package muttsworld.dev.team.CommandSchedulerPlus;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.naming.spi.DirStateFactory.Result;
+
+import org.bukkit.command.CommandSender;
+
+import net.md_5.bungee.api.ChatColor;
+
 import java.util.UUID;
 
 public class CommandWithExecutor implements Serializable, Comparable<CommandWithExecutor> {
 
-	private String[] commandString;
+	private ArrayList<String> commandString = new ArrayList<String>();
 	private String executor;
 	private UUID executorUUID;
 	private static final long serialVersionUID = 1L;
 	 //Indexes in the command string the location of players that the user wants to protect the UUID
-	private LinkedList<Integer> playerIndexes;
+	private Map<Integer, UUID> UUIDProtectedNames = new HashMap<Integer, UUID>();
 
 	//Default constructor
 	public CommandWithExecutor() {
-		commandString = new String[] {"say", "this", "is", "an", "example", "command"};
+		commandString = new ArrayList<String>(Arrays.asList(new String[] 
+				{"say", "this", "is", "an", "example", "command"}));
 		executor = "CONSOLE";
 	}
 	
@@ -43,33 +55,12 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 			aCommand = Arrays.copyOfRange(args, 0, args.length); 
 			anExecutor = "CONSOLE";
 		}
-		this.commandString = aCommand;
 		this.executor = anExecutor;
-		this.playerIndexes = findPlayerIndexes(this.commandString);
+		//convert array to array list
+		ArrayList<String> commandArrayList = new ArrayList<String>(Arrays.asList(aCommand));
+		this.commandString = commandArrayList;
 	}
 	
-	public LinkedList<Integer> findPlayerIndexes(String[] args){
-		LinkedList<Integer> playerList = new LinkedList<Integer>();
-		for(int i = 1; i < args.length; i++){ //read in arguments starting with --
-			if(!args[i].equals("") && args[i].length() < 4 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-'){
-				if(args[i].charAt(2) == 'p'){
-					playerList.add(i + 1);
-					System.out.println("Adding index " + (i + 1) + " to the playerIndexList"); 
-				}
-			}
-		}
-		return playerList;
-	}
-	
-	@Override
-	public int compareTo(CommandWithExecutor o) {
-		return String.join(" ", this.commandString).compareTo(String.join(" ", o.commandString));
-	}
-
-	public String getCommandString() {
-		return String.join(" ", this.commandString);
-	}
-
 	private void removeSlash(String[] args, int location) {
 		if ((args[location].charAt(0)) == '/') {
 			// System.out.println("The commands started with a /. Removing it
@@ -79,6 +70,81 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 			String finalCommand = sb.toString();
 			args[location] = finalCommand;
 		}
+	}
+	
+	//WARNING this method must be called from outside the main thread. This is an expensive lookup
+	public boolean saveExecutorUUID(CommandSender sender) {
+		if (!this.executor.equalsIgnoreCase("CONSOLE")
+				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
+			UUIDProtectedNames.put(0, ProfileUtils.lookup(executor).getId()); //TODO Surround this with try/catch
+			//this.executorUUID = UUIDFetcher.getUUID(executor);
+			//System.out.println("UUID is saved as " + this.executorUUID);
+		}
+		int i = 0;
+		//TODO check if players are online to get UUIDs before searching the mojang api. Do this in profile class
+		//TODO or even getOfflinePlayerUUID() if the player has been on the server before...
+		//TODO don't let them submit a command with a broken UUID... 
+		boolean result = true;
+		for(Iterator<String> iterator = commandString.iterator(); iterator.hasNext(); ){ //read in arguments starting with --
+			String value = iterator.next();
+			if(!value.equals("") && value.length() < 4 && value.charAt(0) == '-' && value.charAt(1) == '-'){
+				if(value.charAt(2) == 'p'){
+					iterator.remove(); //removing the --p
+					try {
+						UUIDProtectedNames.put(i, ProfileUtils.lookup(commandString.get(i)).getId());
+					}
+					catch (Exception e) {
+						sender.sendMessage(PluginMessages.prefix + PluginMessages.error 
+										+ "UUID not found for " + ChatColor.YELLOW + commandString.get(i));
+						sender.sendMessage(PluginMessages.prefix + ChatColor.YELLOW 
+								+ commandString.get(i) + ChatColor.WHITE + 
+								" has been saved without UUID protection.");
+						result =  false;
+					}
+					i--;
+				}
+			}
+			i++;
+		}
+		System.out.println(UUIDProtectedNames);
+
+		return result;
+	}
+	
+	//Uses a separate object UUIDProtectedName to store UUID and PlayerName and CommandStringIndex
+	//Instead of using a 2 dimensional array. The UUID ArrayList is mapped with the playerIndex ArrayList
+	public void updateUUIDCommand() {
+		//Mojang API throttles profiles requests for the same profile to one request per minute.
+		Iterator<Entry<Integer, UUID>> iterator = UUIDProtectedNames.entrySet().iterator();
+		while(iterator.hasNext()){ 
+			Entry<Integer, UUID> value = iterator.next();
+			//System.out.println("Updating UUID " + value.getValue());
+			//System.out.println("Key is " + value.getKey());
+			if(value.getKey() == 0) {
+				if (!this.executor.equalsIgnoreCase("CONSOLE") //if its a player run command
+						&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
+					String temp = ProfileUtils.lookup(value.getValue()).getName();
+					this.executor = temp; 
+					//System.out.println("Name from UUID is " + temp);
+					//TODO surround with try/catch or check for null...
+				}
+			}
+			else {
+				String temp = ProfileUtils.lookup(value.getValue()).getName();
+				//System.out.println("Name from UUID is " + temp);
+				commandString.set(value.getKey(), "" + temp);
+			}
+		}
+	}
+	
+
+	@Override
+	public int compareTo(CommandWithExecutor o) {
+		return String.join(" ", this.commandString).compareTo(String.join(" ", o.commandString));
+	}
+
+	public String getCommandString() {
+		return String.join(" ", this.commandString);
 	}
 
 	public String getExecutor() {
@@ -92,25 +158,6 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 	public UUID getExecutorUUID() {
 		return executorUUID;
 	}
-
-	//WARNING this method must be called from outside the main thread. This is an expensive lookup
-	public void saveExecutorUUID() {
-		if (!this.executor.equalsIgnoreCase("CONSOLE")
-				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
-			//System.out.println("Saving " + this);
-			this.executorUUID = UUIDFetcher.getUUID(executor);
-			//System.out.println("UUID is saved as " + this.executorUUID);
-		}
-	}
-	
-	public void updateUUIDCommand() {
-		if (!this.executor.equalsIgnoreCase("CONSOLE")
-				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
-			//System.out.println("Updating UUID: " + this);
-			this.executor = NameFetcher.getName(this.executorUUID);
-			//System.out.println("Name updated from UUID as " + this.executorUUID);
-		}
-	}
 	
 	@Override
 	public String toString(){
@@ -118,6 +165,7 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 			return "/" + String.join(" ", this.commandString);
 		}
 		else {
+			
 			return executor + ": /" + String.join(" ", this.commandString);
 		}
 	}

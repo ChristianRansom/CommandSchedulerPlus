@@ -67,7 +67,6 @@ public class CommandSchedulerPlus extends JavaPlugin {
 
     @Override
     public void onDisable() {
-    	
     	console.sendMessage(PluginMessages.prefix + "Stopping Main Thread");
     	mainthread.stopThread();
     	try {
@@ -86,6 +85,8 @@ public class CommandSchedulerPlus extends JavaPlugin {
     }
     
     //Code in main class so the command handler and threads can share it
+    //WARNING: this method must be run outside of the main thread
+    //TODO change this param to ScheduledCommand
     public void runCommand(ArrayList<CommandWithExecutor> commands){
 		ArrayList<CommandWithExecutor> commandStrings = commands;
 		for(CommandWithExecutor aCommand : commandStrings){
@@ -110,13 +111,21 @@ public class CommandSchedulerPlus extends JavaPlugin {
 			else { //Player Specific Command
 				//Player commands happen in a separate thread to ensure the UUID is updated before execution
 				//System.out.println("Starting UUID updater Thread");
-				new CommandUUIDUpdaterThread(aCommand, this).start();//Updates name based on UUID
+				//System.out.println("Updating the playername based on saved UUID");
+				aCommand.updateUUIDCommand(); //Ensures UUID check before command execution
+				Player player = this.getServer().getPlayer(aCommand.getExecutor());
+				if(player != null) {
+					Bukkit.dispatchCommand(player, aCommand.getCommandString());
+				}
+				else {
+					console.sendMessage(PluginMessages.prefix + PluginMessages.error +  "Player not found. ");
+				}
 			}
 		}
     }
 
 	public void reloadMyConfig() {
-    	//generate default config or load in configured values
+    	//generate default config or load in configured values 
 		this.reloadConfig(); //This is in a separate method so it can be called by other classes
         mainthread.setSleepTime((long)this.getConfig().getDouble("CheckInterval") * 1000);
 	}

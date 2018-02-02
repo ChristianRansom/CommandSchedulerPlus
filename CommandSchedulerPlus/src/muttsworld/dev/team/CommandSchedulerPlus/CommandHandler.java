@@ -102,8 +102,11 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(PluginMessages.prefix + PluginMessages.command + "Usage: " + PluginMessages.command + "/csp test <number>");
 			return;
 		}
+		
 		synchronized (commands) {
-			plugin.runCommand(commands.find(Integer.parseInt(args[1])).getCommands());
+			ScheduledCommand singleCommand = commands.find(Integer.parseInt(args[1]));
+			CommandRunnerThread thread = new CommandRunnerThread(singleCommand, plugin);
+			thread.start();
 		}
 	}
 

@@ -13,55 +13,68 @@ public class CommandRunnerThread implements Runnable {
 	public CommandSchedulerPlus plugin;
     private ArrayList<ScheduledCommand> commandsToRun = new ArrayList<ScheduledCommand>();
     private ArrayList<ScheduledCommand> commandsToDelete = new ArrayList<ScheduledCommand>();
+	private ScheduledCommand singleCommand = null;
 
+    //Multiple command constructor
 	public CommandRunnerThread(AVLTree<ScheduledCommand> commands2, CommandSchedulerPlus commandSchedulerPlus) {
 		commands = commands2;
 		plugin = commandSchedulerPlus;
 	}
 	
+	//single command constructor. Called by forcerun
+	public CommandRunnerThread(ScheduledCommand aCommand, CommandSchedulerPlus commandSchedulerPlus) {
+		singleCommand  = aCommand;
+		plugin = commandSchedulerPlus;
+	}
+	
 	@Override
 	public void run() {
-		synchronized(commands){
-			TreeNode<ScheduledCommand> current = commands.getRoot();
-			ScheduledCommand nowCommand = new ScheduledCommand(); //just holds the current time
-            //System.out.println("DEBUG: Searching for commands to run");
-			if (current == null) {
-	            //System.out.println("DEBUG: There are no commands to run");
-	        }
-	        else {
-	        	//Finds which commands in the tree need to run
-	            while (current != null){ 
-	            	//if now date is greater than current node, then this node, and all left of it needs to run
-		            if (nowCommand.compareTo(current.element) > 0) {
-		            	//System.out.println("DEBUG: this command should be run " + current.element);
-		        		commandsToRun.add(current.element);
-		        		commandsToDelete.add(current.element); 
-		                TreeNode<ScheduledCommand> temp = current.left;
-		        		current.left = null; //Cuts off left subtree 
-		        		//System.out.println("Cutting off left subtree");
-		        		addCommands(temp); //temp saves the current.left to access after we cut it off
-		                current = current.right;
-		            }
-		            else if (nowCommand.compareTo(current.element) <= 0){
-		                current = current.left;
-		            }
-		            
-	            } //End While
-	            
-	            //Delete the nodes that aren't cut off from the tree
-	            for(ScheduledCommand command : commandsToDelete){
-	            	commands.delete(command);
-	            }
-	        }
-		} //end synchronized
-		
-		for(ScheduledCommand command : commandsToRun){
-        	//System.out.println("Preorder:");
-            //commands.preOrder();
-			executeCommand(command);
+		if(singleCommand != null){
+			plugin.runCommand(singleCommand.getCommands()); 
 		}
-		commandsToRun.clear();
-		commandsToDelete.clear();
+		else {
+			synchronized(commands){
+				TreeNode<ScheduledCommand> current = commands.getRoot();
+				ScheduledCommand nowCommand = new ScheduledCommand(); //just holds the current time
+	            //System.out.println("DEBUG: Searching for commands to run");
+				if (current == null) {
+		            //System.out.println("DEBUG: There are no commands to run");
+		        }
+		        else {
+		        	//Finds which commands in the tree need to run
+		            while (current != null){ 
+		            	//if now date is greater than current node, then this node, and all left of it needs to run
+			            if (nowCommand.compareTo(current.element) > 0) {
+			            	//System.out.println("DEBUG: this command should be run " + current.element);
+			        		commandsToRun.add(current.element);
+			        		commandsToDelete.add(current.element); 
+			                TreeNode<ScheduledCommand> temp = current.left;
+			        		current.left = null; //Cuts off left subtree 
+			        		//System.out.println("Cutting off left subtree");
+			        		addCommands(temp); //temp saves the current.left to access after we cut it off
+			                current = current.right;
+			            }
+			            else if (nowCommand.compareTo(current.element) <= 0){
+			                current = current.left;
+			            }
+			            
+		            } //End While
+		            
+		            //Delete the nodes that aren't cut off from the tree
+		            for(ScheduledCommand command : commandsToDelete){
+		            	commands.delete(command);
+		            }
+		        }
+			} //end synchronized
+		
+			for(ScheduledCommand command : commandsToRun){
+	        	//System.out.println("Preorder:");
+	            //commands.preOrder();
+				executeCommand(command);
+			}
+			commandsToRun.clear();
+			commandsToDelete.clear();
+		}
 	}
 		
 	//does some magic... As we move down the tree comparing current time, when we move right, every element to the left should be run
@@ -109,7 +122,7 @@ public class CommandRunnerThread implements Runnable {
 
 	public void start() {
 		//System.out.println("Starting thread");
-		t = new Thread(this, "mainthread");
+		t = new Thread(this, "CommanRunnerThread");
 		t.start();
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public class ScheduledCommand implements Serializable, Comparable<ScheduledCommand> {
 
@@ -133,10 +134,14 @@ public class ScheduledCommand implements Serializable, Comparable<ScheduledComma
 		return commandGroup;
 	}
 
-	public void saveUUIDs() {
+	public boolean saveUUIDs(CommandSender sender) {
+		boolean result = true;
 		for (CommandWithExecutor aCommand : commands) {
-			aCommand.saveExecutorUUID();
+			if(!aCommand.saveExecutorUUID(sender)){
+				result = false;
+			}
 		}
+		return result;
 	}
 
 	@Override

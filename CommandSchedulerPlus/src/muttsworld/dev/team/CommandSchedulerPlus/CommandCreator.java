@@ -71,23 +71,20 @@ public final class CommandCreator {
 		        		case 4 : sender.sendMessage(PluginMessages.prefix + "Enter the how often you want the command to repeat: " + PluginMessages.command + "/csp Days Hours Minutes"); break;
 		        		case 5 : sender.sendMessage(PluginMessages.prefix + "Enter how much time to add to delay when the command is scheduled: " + PluginMessages.command + "/csp Days Hours Minutes"); break;
 		        		case 6 :  //Saving Command
-		        			if(editingCommand == null) {
+		        			if(editingCommand == null) { //This means we're creating a brand new command
 		        				//Saves the UUID in a separate thread
-		        				new CommandSaverThread(currentCommand).start();
-			        			synchronized(commands){
-				        			commands.insert(currentCommand);
-				        		}
+		        				new CommandSaverThread(currentCommand, commands, sender).start();
 		        			}
-		        			else{
+		        			else{ //this means we're editing an existing command. Need to delete old and insert new
 			        			synchronized(commands){
 			        				commands.delete(editingCommand);
-				        			commands.insert(currentCommand);
+			        				new CommandSaverThread(currentCommand, commands, sender).start();
 				        		}
 			        			editingCommand = null;
 		        			}
 				        	commandEditorOption = 0;
 				        	commandEditor = false;
-				        	sender.sendMessage(PluginMessages.prefix + "Command Saved. Exiting the editor."); 
+				        	sender.sendMessage(PluginMessages.prefix + "Exiting the editor."); 
 		        			break;
 		    	        case 7 : 
 		    	        	sender.sendMessage(PluginMessages.prefix + "Exiting");
@@ -310,12 +307,7 @@ public final class CommandCreator {
 		else {
 			aCommand = new ScheduledCommand(commandString.toArray(new String[0]), dateEntry, repeatSlice);
 		}
-		new CommandSaverThread(aCommand).start();
-		synchronized(commands){
-			commands.insert(aCommand);
-		}
-		sender.sendMessage(PluginMessages.prefix + "Command created. ");
-		return;
+		new CommandSaverThread(aCommand, commands, sender).start();
 	}
 	
 	static GregorianCalendar dateEntry(String[] args, CommandSender sender){
