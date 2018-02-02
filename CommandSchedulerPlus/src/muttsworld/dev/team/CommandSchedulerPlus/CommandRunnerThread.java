@@ -30,7 +30,7 @@ public class CommandRunnerThread implements Runnable {
 	@Override
 	public void run() {
 		if(singleCommand != null){
-			plugin.runCommand(singleCommand.getCommands()); 
+			plugin.runCommand(singleCommand); 
 		}
 		else {
 			synchronized(commands){
@@ -87,7 +87,7 @@ public class CommandRunnerThread implements Runnable {
 	
 	public void executeCommand(ScheduledCommand command){
 		//Executes the commands based on the executors
-		plugin.runCommand(command.getCommands()); 
+		plugin.runCommand(command); 
 		//reschedule command 
 		if(!command.getRepeat().isZero()){
 			reschedule(command);

@@ -76,14 +76,20 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 	public boolean saveExecutorUUID(CommandSender sender) {
 		if (!this.executor.equalsIgnoreCase("CONSOLE")
 				&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
-			UUIDProtectedNames.put(0, ProfileUtils.lookup(executor).getId()); //TODO Surround this with try/catch
+			try {
+				UUIDProtectedNames.put(0, ProfileUtils.lookup(executor).getId()); 
+			}
+			catch (Exception e) {
+				sender.sendMessage(PluginMessages.prefix + PluginMessages.error 
+								+ "UUID not found for " + ChatColor.YELLOW + executor);
+				sender.sendMessage(PluginMessages.prefix + ChatColor.YELLOW 
+						+ executor + ChatColor.WHITE + 
+						" has been saved without UUID protection.");
+			}
 			//this.executorUUID = UUIDFetcher.getUUID(executor);
 			//System.out.println("UUID is saved as " + this.executorUUID);
 		}
 		int i = 0;
-		//TODO check if players are online to get UUIDs before searching the mojang api. Do this in profile class
-		//TODO or even getOfflinePlayerUUID() if the player has been on the server before...
-		//TODO don't let them submit a command with a broken UUID... 
 		boolean result = true;
 		for(Iterator<String> iterator = commandString.iterator(); iterator.hasNext(); ){ //read in arguments starting with --
 			String value = iterator.next();
@@ -119,20 +125,24 @@ public class CommandWithExecutor implements Serializable, Comparable<CommandWith
 		while(iterator.hasNext()){ 
 			Entry<Integer, UUID> value = iterator.next();
 			//System.out.println("Updating UUID " + value.getValue());
+			String temp;
 			//System.out.println("Key is " + value.getKey());
-			if(value.getKey() == 0) {
-				if (!this.executor.equalsIgnoreCase("CONSOLE") //if its a player run command
-						&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
-					String temp = ProfileUtils.lookup(value.getValue()).getName();
-					this.executor = temp; 
+			try {
+				temp = ProfileUtils.lookup(value.getValue()).getName();
+				if(value.getKey() == 0) {
+					if (!this.executor.equalsIgnoreCase("CONSOLE") //if its a player run command
+							&& !this.executor.equalsIgnoreCase("ALLPLAYERS")) {
+						this.executor = temp; 
+						//System.out.println("Name from UUID is " + temp);
+					}
+				}
+				else {
 					//System.out.println("Name from UUID is " + temp);
-					//TODO surround with try/catch or check for null...
+					commandString.set(value.getKey(), "" + temp);
 				}
 			}
-			else {
-				String temp = ProfileUtils.lookup(value.getValue()).getName();
-				//System.out.println("Name from UUID is " + temp);
-				commandString.set(value.getKey(), "" + temp);
+			catch (Exception e ){
+				System.out.println("CSP Error looking up saved UUID. Player does not exist");
 			}
 		}
 	}

@@ -86,9 +86,8 @@ public class CommandSchedulerPlus extends JavaPlugin {
     
     //Code in main class so the command handler and threads can share it
     //WARNING: this method must be run outside of the main thread
-    //TODO change this param to ScheduledCommand
-    public void runCommand(ArrayList<CommandWithExecutor> commands){
-		ArrayList<CommandWithExecutor> commandStrings = commands;
+    public void runCommand(ScheduledCommand command){
+		ArrayList<CommandWithExecutor> commandStrings = command.getCommands();
 		for(CommandWithExecutor aCommand : commandStrings){
 			//System.out.println("Running: " + aCommand);
 			String executor = aCommand.getExecutor();
